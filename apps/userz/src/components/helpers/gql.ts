@@ -20,6 +20,22 @@ const queries = {
       }
     }
   `,
+  tags: `
+  query MyQuery($_eq: String = "SafetyFirst") {
+    qtags(  where: {hashtag: {_eq: $_eq}}) {
+      count
+      hashtag
+      rows_with_tag
+    }
+  }
+`,
+  tagquestions: `
+  query MyQuery($_in: [String!] = ["02cda840", "01e4a346"]) {
+  questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
+  genid
+  text
+}
+}`,
 } as { [key: string]: string };
 //dasdas
 export const gql = async (

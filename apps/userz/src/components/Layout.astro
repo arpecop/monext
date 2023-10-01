@@ -38,7 +38,7 @@ const { title,description,logo,tags } = Astro.props;
 						tags &&    tags.filter(({hashtag}:{hashtag:string})=> hashtag.length > 2) .map(({hashtag}:{hashtag:string}) => (
 							 <li>
 								 
-								 <a class="text-black block px-2 m-1 bg-emerald-600 rounded-2xl">#<span>{hashtag}</span></a>
+								 <a href={"/t/"+hashtag} class="text-black block px-2 m-1 bg-emerald-600 rounded-2xl lowercase">#<span>{hashtag}</span></a>
 							 </li>
 							 
 							))

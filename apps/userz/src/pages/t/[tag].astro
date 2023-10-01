@@ -1,0 +1,33 @@
+---
+import Layout from "../../components/Layout.astro";
+import {gql} from "../../components/helpers/gql";
+const { tag } = Astro.params as { tag: string };
+ 
+ const resp  = await gql('tags',{_eq:tag}) as {qtags:{count:number, rows_with_tag:string[]}}
+ 
+ if(!resp.qtags[0]) {
+	  return Astro.redirect('/404')
+  }
+ const arr = resp.qtags[0].rows_with_tag.split(', ')
+ const questions =  await gql('tagquestions',{_in:arr}) as {questions:{genid:string; text:string}[]}
+ console.log(arr,questions);
+ 
+---
+<Layout title={tag} description={'#'+tag} logo={"inner"}>
+	<main> 
+		<h1 class="mb-2 text-3xl font-bold tracking-tight text-gray-200 dark:text-white">#{tag}</h1>
+		<div class="flex flex-col relative">
+ {
+	 questions.questions.map(({genid,text},i) => (
+		 
+		 <a href={'/'+genid}  class="flex mb-4 text-xl  font-bold tracking-tight" >
+			 <span class={"text-xl -rotate-1   text-emerald-700  bg-emerald-700 px-2 text-black leading-3  p-2 rounded-lg   "}> {"A ".repeat(text.length)} </span>
+			 <h5 class="mb-2 break-words z-10 text-black absolute">↿ {text.replaceAll('?',' ')} ⇂</h5>
+			
+		 </a>
+	 
+	 ))
+ }
+ </div>
+	</main>
+</Layout>
