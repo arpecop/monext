@@ -1,0 +1,58 @@
+name: Deploy
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: 🔽 Checkout
+        uses: actions/checkout@v3
+      - name: 🧐 Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: ./
+          mode: ''
+          load-mode: strict
+      - name: Cache
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: 😳 Build
+        run: |
+          echo $APP
+          cd ./apps/$APP
+          npm install
+          npm run build
+          npm run export
+          ls -la
+          rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm*
+          mv ./out ../../
+          mv ./.next ../../
+          mv package.json ../../
+          mv ecosystem.config.js ../../
+          cd ../../
+          rm -rf ./apps ./packages ./.github
+      - name: 🚀 Deploy
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "Rudix"
+          git checkout --orphan "$APP"
+          git add --all
+          git add -A .next out -f
+          git commit  --allow-empty -n -m  "Add build directory"
+      - name: 🥊 Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.APP }}
+          force: true

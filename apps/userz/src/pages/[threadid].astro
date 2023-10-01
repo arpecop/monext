@@ -1,0 +1,31 @@
+---
+import Layout from "../components/Layout.astro";
+import {gql} from "../components/helpers/gql";
+const { threadid } = Astro.params as { threadid: string };
+ 
+ const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],qtags:{hashtag:string}[],thread:{genid:string; text:string}[]}
+ console.log(resp);
+ const rest= resp.thread.filter((_x,i) =>  i !== 0)
+ const formatter = (text:string) => {
+	 let resp = text.replaceAll('@username,','').replaceAll('@username','').split('\n')
+	  return(resp)
+ }
+
+ if(!resp.thread[0]) {
+	  return Astro.redirect('/404')
+  }
+ 
+---
+<Layout title={resp.thread[0].text} description={''} logo={"inner"}>
+	<main>
+		<h1 class="mb-2 text-3xl font-bold tracking-tight text-gray-200 dark:text-white">{resp.thread[0].text}</h1>
+		 
+		<div class="container mx-auto text-l max-w-2xl">
+			{
+			rest.map(({text})  =>  {
+				return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
+			)}
+			</div>
+		 
+	</main>
+</Layout>

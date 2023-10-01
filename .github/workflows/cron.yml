@@ -1,0 +1,82 @@
+name: Artron 📰
+on:
+  schedule:
+    - cron: '*/5 9-23 * * *'
+    - cron: '*/10 0-3 * * *'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cache
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+           cache-name: cache-newz
+        with:
+           path: ~/.npm
+           key: ${{ runner.os }}-newz-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+           restore-keys: |
+             ${{ runner.os }}-newz-${{ env.cache-name }}-
+             ${{ runner.os }}-newz-
+             ${{ runner.os }}-
+      - name: 😳 Build
+        run: |
+          rm -rf package.json
+          npm install -g typescript
+          npm install -g ts-node
+          npm install postgres jsdom @mozilla/readability sanitize-html @swc/wasm nano @types/node ulid node-fetch@2 @types/jsdom @types/node-fetch @types/sanitize-html
+      - name: twentyfour
+        run: |
+          ts-node ./.github/crons/_24.ts
+# node ./.github/crons/_24.js
+      - name: dnevnik
+        run: |
+          ts-node ./.github/crons/_dnevnik.ts
+# node ./.github/crons/_dnevnik.js
+      - name: nova
+        run: |
+          ts-node ./.github/crons/_nova.ts
+# node ./.github/crons/_nova.js
+      - name: mediapool
+        run: |
+          ts-node ./.github/crons/_mediapool.ts
+# node ./.github/crons/_mediapool.js
+      - name: darik
+        run: |
+          ts-node ./.github/crons/_darik.ts
+# node ./.github/crons/_darik.js
+      - name: sega
+        run: |
+          ts-node ./.github/crons/_sega.ts
+# node ./.github/crons/_sega.js
+      - name: dir
+        run: |
+          ts-node ./.github/crons/_dir.ts
+# node ./.github/crons/_dir.js
+  #en 
+      - name: en_variety
+        run: |
+          ts-node ./.github/crons/_en_variety.ts
+# node ./.github/crons/_en_variety.js
+      - name: en_buzzfeed
+        run: |
+          ts-node ./.github/crons/_en_buzzfeed.ts
+# node ./.github/crons/_en_buzzfeed.js
+      - name: en_theverge
+        run: |
+          ts-node ./.github/crons/_en_theverge.ts
+# node ./.github/crons/_en_theverge.js
+      - name: en_vice
+        run: |
+          ts-node ./.github/crons/_en_theverge.ts
+# node ./.github/crons/_en_theverge.js
+      - name: en_fortune
+        run: |
+          ts-node ./.github/crons/_en_fortune_well.ts
+# node ./.github/crons/_en_fortune_well.js
