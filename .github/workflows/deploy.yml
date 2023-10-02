@@ -35,11 +35,9 @@ jobs:
           npm run build
           npm run export
           ls -la
-          rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm*
+          rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm*  
           mv ./out ../../
           mv ./.next ../../
-          mv package.json ../../
-          mv ecosystem.config.js ../../
           cd ../../
           rm -rf ./apps ./packages ./.github
       - name: 🚀 Deploy
