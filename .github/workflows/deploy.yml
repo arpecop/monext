@@ -13,7 +13,7 @@ jobs:
         uses: xom9ikk/dotenv@v2
         with:
           path: ./
-          mode: ''
+          mode: ""
           load-mode: strict
       - name: Cache
         id: cache-npm
@@ -53,6 +53,6 @@ jobs:
       - name: 🥊 Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT_TOKEN }}
           branch: ${{ env.APP }}
           force: true
