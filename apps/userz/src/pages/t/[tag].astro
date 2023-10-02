@@ -12,9 +12,9 @@ const { tag } = Astro.params as { tag: string };
  const questions =  await gql('tagquestions',{_in:arr}) as {questions:{genid:string; text:string}[]}
   
 ---
-<Layout title={tag} description={'#'+tag} logo={"inner"}>
+<Layout title={tag} description={'#'+tag} logo={"inner"} topic={tag}>
 	<main> 
-		<h1 class="mb-2 text-3xl font-bold tracking-tight text-gray-200 dark:text-white">#{tag}</h1>
+	 
 		<div class="flex flex-col relative">
  {
 	 questions.questions.map(({genid,text}) => (
