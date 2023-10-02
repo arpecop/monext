@@ -25,21 +25,19 @@ function extractUniqueHashtags(inputString: string): string[] {
   }
   
  
-  const hashtagsprep = extractUniqueHashtags(rest[0].text);
-  const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string}[]}
+  const hashtagsprep = extractUniqueHashtags(rest[0].text) as string[];
+  const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string,count:number}[]}
  
  
 ---
-<Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags} topic={resp.thread[0].text} >
-	<main>
-	
-		 
-		<div class="container mx-auto text-l max-w-2xl">
-			{
-			rest.map(({text})  =>  {
-				return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
-			)}
-			</div>
-		 
-	</main>
+<Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags}>	 
+		 <article class="prose prose-invert prose-headings:underline mx-auto">
+       <h1 class="text-white font-medium">{resp.thread[0].text}</h1>
+      {
+      rest.map(({text})  =>  {
+        return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
+      )}
+       <!-- ... -->
+     </article>
+	 
 </Layout>

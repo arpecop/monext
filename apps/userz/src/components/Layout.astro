@@ -5,7 +5,7 @@ export interface Props {
 	description?:string
 	logo?:string
 	topic?:string
-	tags?: {hashtag:string}[]
+	tags?: {hashtag:string,count:number}[]
 }
 const { title,description,logo,tags,topic } = Astro.props;
  
@@ -39,9 +39,9 @@ const { title,description,logo,tags,topic } = Astro.props;
 				<div class="flex items-center">
 					<ul class="flex flex-wrap space-x-1 text-sm">
 						{
-						tags && tags.filter(({hashtag})=> hashtag.length > 2) .map(({hashtag,count}:{hashtag:string,count?:number}) => (
+						tags && tags.filter((t:{hashtag:string,count:number})=> t.hashtag.length > 2) .map(({hashtag,count}:{hashtag:string,count?:number}) => (
 							 <li>
-								 <a href={"/t/"+  hashtag} class="text-black block px-3 m-1 bg-emerald-600 rounded-2xl lowercase font-black flex"><span class="material-symbols-outlined text-sm -ml-2 ">
+								 <a href={  (count === 1) ? '#' : "/t/"+ hashtag} class="text-black block px-3 m-1 bg-emerald-600 rounded-2xl lowercase font-black flex"><span class="material-symbols-outlined text-sm -ml-2 ">
 									 tag </span><span>{hashtag}   </span></a>
 							 </li>	 
 							))

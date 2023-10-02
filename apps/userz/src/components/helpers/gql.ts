@@ -49,7 +49,7 @@ query MyQuery($_in: [String!] = ["avocadopit"]) {
 
 export const gql = async (
   queryid: string,
-  variables: { _eq?: string; _in?: string[]; limit: number; offset: number }
+  variables: { _eq?: string; _in?: string[]; limit?: number; offset?: number }
 ) => {
   return new Promise((resolve) => {
     fetch("https://rudix.hasura.app/v1/graphql", {
