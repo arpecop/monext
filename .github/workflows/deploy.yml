@@ -50,12 +50,4 @@ jobs:
           git add --all
           git add -A .next out -f
           git commit  --allow-empty -n -m  "Add build directory"
-      - name: 🥊 Push changes
-        uses: ad-m/github-push-action@master
-        run: |
-          git status
-          git log -n 10
-        with:
-          github_token: ${{ secrets.PAT_TOKEN }}
-          branch: ${{ env.APP }}
-          force: true
+          git push origin "${{ env.APP }}" --force
