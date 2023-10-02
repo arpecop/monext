@@ -4,10 +4,11 @@ export interface Props {
 	title: string;
 	description?:string
 	logo?:string
+	topic?:string
 	tags?: {hashtag:string}[]
 }
-const { title,description,logo,tags } = Astro.props;
-console.log(tags);
+const { title,description,logo,tags,topic } = Astro.props;
+ 
 ---
 
 <!DOCTYPE html>
@@ -31,15 +32,16 @@ console.log(tags);
 				</div>
 			</div>
 		</nav>
+		{topic && 	<h1 class="mb-2 text-4xl  tracking-tight text-gray-200 dark:text-white text-center">{topic}</h1>}
 		<nav>
 			<div class="max-w-screen-xl px-4 py-3 mx-auto">
 				<div class="flex items-center">
 					<ul class="flex flex-wrap space-x-1 text-sm">
 						{
-						tags &&    tags.filter(({hashtag}:{hashtag:string})=> hashtag.length > 2) .map(({hashtag}:{hashtag:string}) => (
+						tags &&    tags.filter(({hashtag})=> hashtag.length > 2) .map(({hashtag,count}:{hashtag:string,count?:number}) => (
 							 <li>
 								 
-								 <a href={"/t/"+hashtag} class="text-black block px-2 m-1 bg-emerald-600 rounded-2xl lowercase">#<span>{hashtag}</span></a>
+								 <a href={"/t/"+  hashtag} class="text-black block px-3 m-1 bg-emerald-600 rounded-2xl lowercase font-black">#<span>{hashtag}   </span></a>
 							 </li>
 							 
 							))

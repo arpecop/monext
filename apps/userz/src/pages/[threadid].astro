@@ -12,7 +12,7 @@ function extractUniqueHashtags(inputString: string): string[] {
 
   return uniqueHashtags;
 }
- const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],qtags:{hashtag:string}[],thread:{genid:string; text:string}[]}
+ const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],thread:{genid:string; text:string}[]}
  
  const rest= resp.thread.filter((_x,i) =>  i !== 0)
  const formatter = (text:string) => {
@@ -26,14 +26,13 @@ function extractUniqueHashtags(inputString: string): string[] {
   
  
   const hashtagsprep = extractUniqueHashtags(rest[0].text);
-  const respx  = await gql('specifictags',{_in:hashtagsprep}) 
-  console.log(respx);
-  
+  const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string}[]}
+ 
  
 ---
-<Layout title={resp.thread[0].text} description={''} logo={"inner"}  >
+<Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags} topic={resp.thread[0].text} >
 	<main>
-		<h1 class="mb-2 text-3xl font-bold tracking-tight text-gray-200 dark:text-white">{resp.thread[0].text}</h1>
+	
 		 
 		<div class="container mx-auto text-l max-w-2xl">
 			{

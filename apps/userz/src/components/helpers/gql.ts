@@ -46,7 +46,7 @@ query MyQuery($_in: [String!] = ["avocadopit"]) {
 }
 `,
 } as { [key: string]: string };
-//dasdas
+
 export const gql = async (
   queryid: string,
   variables: { _eq?: string; _in?: string[]; limit: number; offset: number }
