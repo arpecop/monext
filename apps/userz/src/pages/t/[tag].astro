@@ -20,9 +20,9 @@ const { tag } = Astro.params as { tag: string };
  {
 	 questions.questions.map(({genid,text},i) => (
 		 
-		 <a href={'/'+genid}  class="flex mb-4  text-2xl  font-bold tracking-tight" >
-			 <span class={"text-emerald-700  bg-emerald-700 p-4 text-black leading-3  p-3 rounded-lg"}> {("AAAA ").repeat(text.length / 4)} </span>
-			 <h5 class="z-10 text-black absolute">↿ {text.replaceAll('?',' ')} ⇂</h5>
+		 <a href={'/'+genid}  class="flex mb-4  text-xl  font-black tracking-tight" >
+			 <span class={"text-gray-900  bg-gray-900 p-4 text-black  p-3 rounded-lg"}> {(" aaa ").repeat(text.length / 4)} </span>
+			 <h5 class="z-10 text-gray-200 absolute  mt-3 ml-3">{text.replaceAll('?',' ')}</h5>
 			
 		 </a>
 	 
