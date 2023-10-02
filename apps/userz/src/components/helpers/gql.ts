@@ -36,11 +36,20 @@ const queries = {
   text
 }
 }`,
+  specifictags: `
+query MyQuery($_in: [String!] = ["avocadopit"]) {
+  qtags(where: {hashtag: {_in: $_in}}) {
+    count
+    hashtag
+    rows_with_tag
+  }
+}
+`,
 } as { [key: string]: string };
 //dasdas
 export const gql = async (
   queryid: string,
-  variables: { [key: string]: string | number }
+  variables: { _eq?: string; _in?: string[]; limit: number; offset: number }
 ) => {
   return new Promise((resolve) => {
     fetch("https://rudix.hasura.app/v1/graphql", {

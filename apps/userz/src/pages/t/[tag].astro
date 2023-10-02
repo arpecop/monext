@@ -10,8 +10,7 @@ const { tag } = Astro.params as { tag: string };
   }
  const arr = resp.qtags[0].rows_with_tag.split(', ')
  const questions =  await gql('tagquestions',{_in:arr}) as {questions:{genid:string; text:string}[]}
- console.log(arr,questions);
- 
+  
 ---
 <Layout title={tag} description={'#'+tag} logo={"inner"}>
 	<main> 

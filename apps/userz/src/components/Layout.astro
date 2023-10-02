@@ -7,6 +7,7 @@ export interface Props {
 	tags?: {hashtag:string}[]
 }
 const { title,description,logo,tags } = Astro.props;
+console.log(tags);
 ---
 
 <!DOCTYPE html>
@@ -21,7 +22,7 @@ const { title,description,logo,tags } = Astro.props;
 	<body>
 		<nav >
 			<div class="flex flex-wrap   items-center mx-auto max-w-screen-xl p-4">
-				<a href="https://flowbite.com" class="flex items-center">
+				<a href="/" class="flex items-center">
 					<img src={logo !== 'inner' ? "/logo2.png":"/logotext.png"} class={logo !== 'inner' ? "w-2/4   ":"w-1/2"} />
 					 
 				</a>

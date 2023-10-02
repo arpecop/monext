@@ -2,9 +2,18 @@
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
 const { threadid } = Astro.params as { threadid: string };
+function extractUniqueHashtags(inputString: string): string[] {
+  const hashtagRegex = /#(\w+)/g;
+  const hashtags = inputString.match(hashtagRegex);
+
+  if (!hashtags) return [];
  
+  const uniqueHashtags = Array.from(new Set(hashtags.map(tag =>  tag.slice(1))));
+
+  return uniqueHashtags;
+}
  const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],qtags:{hashtag:string}[],thread:{genid:string; text:string}[]}
- console.log(resp);
+ 
  const rest= resp.thread.filter((_x,i) =>  i !== 0)
  const formatter = (text:string) => {
 	 let resp = text.replaceAll('@username,','').replaceAll('@username','').split('\n')
@@ -14,9 +23,15 @@ const { threadid } = Astro.params as { threadid: string };
  if(!resp.thread[0]) {
 	  return Astro.redirect('/404')
   }
+  
+ 
+  const hashtagsprep = extractUniqueHashtags(rest[0].text);
+  const respx  = await gql('specifictags',{_in:hashtagsprep}) 
+  console.log(respx);
+  
  
 ---
-<Layout title={resp.thread[0].text} description={''} logo={"inner"}>
+<Layout title={resp.thread[0].text} description={''} logo={"inner"}  >
 	<main>
 		<h1 class="mb-2 text-3xl font-bold tracking-tight text-gray-200 dark:text-white">{resp.thread[0].text}</h1>
 		 
