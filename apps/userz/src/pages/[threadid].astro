@@ -12,6 +12,12 @@ function extractUniqueHashtags(inputString: string): string[] {
 
   return uniqueHashtags;
 }
+function removeHashtags(inputString: string): string {
+  const hashtagRegex = /#\w+/g;
+  const stringWithoutHashtags = inputString.replace(hashtagRegex, '');
+
+  return stringWithoutHashtags;
+}
  const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],thread:{genid:string; text:string}[]}
  
  const rest= resp.thread.filter((_x,i) =>  i !== 0)
@@ -34,8 +40,8 @@ function extractUniqueHashtags(inputString: string): string[] {
 		 <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{resp.thread[0].text}</h1>
       {
-      rest.map(({text})  =>  {
-        return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
+      rest.map(({text},i)  =>  {
+        return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
       )}
        <!-- ... -->
      </article>
