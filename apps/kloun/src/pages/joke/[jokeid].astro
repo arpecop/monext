@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import { chunk } from "lodash";
-import { viewh } from "../../../data/hasura";
+import { gql } from "../../components/gql";
 import FacebookShare from "../../components/FacebookShare.astro";
 import FormatJoke from "../../components/FormatJoke.astro";
 import JokeThumbnail from "../../components/JokeThumbnail.astro";
@@ -12,16 +12,14 @@ import Layout from "../../layouts/Layout.astro";
 
 const { jokeid } = Astro.params;
  
-const resp =  await viewh('jokes',{
-  uid: jokeid,
-  limit: 30,
-  offset: 0,
-});
- 
- 
+ const resp =   await gql('jokesingle',{
+   _eq: jokeid,
+   limit: 30
+ });
+ console.log(resp);
 
-const  joke  = resp.joke[0];
-const jokes = resp.joke.filter((x:{uid:string}) => x.uid !== jokeid)
+const  joke  = resp.joke;
+const jokes = resp.jokes.filter((x:{uid:string}) => x.uid !== jokeid)
 const chunks = chunk(jokes, 3);
 
 if (!joke) {

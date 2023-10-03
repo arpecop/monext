@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import { viewh } from "../../../data/hasura";
+import { gql } from "../../components/gql";
 import JokeThumbnail, { Doc } from "../../components/JokeThumbnail.astro";
 import Pagination from "../../components/Pagination.astro";
 import RudSense from "../../components/RudSense.astro";
@@ -12,12 +12,12 @@ const cat = jokecats.find((xx) => xx.slug === x[0])?.cat;
 const pagenum = x[1] ? Number(x[1]) : 1;
 const skip = pagenum * 30 - 30;
 
-const resp =   await viewh('jokes',{
+const resp =   await gql('jokescat',{
   _eq:'JOK'+cat,
   limit: 30,
   offset: skip,
 });
-
+ 
 
 ---
 
