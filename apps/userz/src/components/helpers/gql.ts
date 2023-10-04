@@ -12,11 +12,15 @@ const queries = {
   }
   `,
   thread: `
-    query MyQuery($_eq: String = "dd4d9d64", $limit: Int = 100, $offset: Int = 0) {
+    query MyQuery($_eq: String = "dd4d9d64", $limit: Int = 20, $offset: Int = 0) {
       thread: questions(where: {genid: {_eq: $_eq}},  limit: $limit, offset: $offset) {
         id
         text
         uid
+      }
+      random: questions(where: {genid: {_lt: $_eq}, type: {_eq: "q"}}, limit: $limit, offset: $offset, order_by: {genid: asc}) {
+        genid
+        text
       }
     }
   `,

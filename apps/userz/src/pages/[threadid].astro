@@ -12,14 +12,15 @@ function extractUniqueHashtags(inputString: string): string[] {
   const uniqueHashtags = Array.from(new Set(hashtags.map(tag =>  tag.slice(1))));
 
   return uniqueHashtags;
-}
+} 
 function removeHashtags(inputString: string): string {
   const hashtagRegex = /#\w+/g;
   const stringWithoutHashtags = inputString.replace(hashtagRegex, '');
 
   return stringWithoutHashtags;
 }
- const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],thread:{genid:string; text:string}[]}
+ const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],thread:{genid:string; text:string}[],random:{genid:string; text:string}[]}
+ 
  
  const rest= resp.thread.filter((_x,i) =>  i !== 0)
  const formatter = (text:string) => {
@@ -31,15 +32,14 @@ function removeHashtags(inputString: string): string {
 	  return Astro.redirect('/404')
   }
   
- 
+ //dssd
   const hashtagsprep = extractUniqueHashtags(rest[0].text) as string[];
   
   const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string,count:number,rows_with_tag:string}[]}
   const getarticles = respx.qtags.filter(x => x.count !==1).map(x => {return(shuffle([...x.rows_with_tag.split(', ')]).slice(0,5))}).flat() as string[]
 
   const extended  = await gql('specificids',{_in:getarticles})  as {questions:{genid:string,text:string}[]}
-  
-  console.log(extended);
+ 
  
 ---
 <Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags}>	 
@@ -51,7 +51,7 @@ function removeHashtags(inputString: string): string {
       )}
        <!-- ... -->
      </article>
-	 <h2 class="text-gray-100 font-bold">Extended FAQ</h2>
+	 {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
    <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
      {extended.questions.map(q => ( <li class="space-x-3">
             <a class="flex items-center" href={'/'+q.genid}>
@@ -59,7 +59,14 @@ function removeHashtags(inputString: string): string {
             <span class="pl-2 text-gray-200"> {q.text.replace('?','')}</span>
             </a>
         </li>))}
-    
      </ul>
- 
+ { resp.random[0] && <h2 class="text-gray-100 font-bold">Other questions</h2>}
+ <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
+  {resp.random.map(q => ( <li class="space-x-3">
+         <a class="flex items-center" href={'/'+q.genid}>
+         
+         <span class="pl-2 text-gray-200"> {q.text.replace('?','')}</span>
+         </a>
+     </li>))}
+  </ul>
 </Layout>
