@@ -37,11 +37,19 @@ const queries = {
 }
 }`,
   specifictags: `
-query MyQuery($_in: [String!] = ["avocadopit"]) {
+query MyQuery($_in: [String!]) {
   qtags(where: {hashtag: {_in: $_in}}) {
     count
     hashtag
     rows_with_tag
+  }
+}
+`,
+  specificids: `
+query MyQuery($_in: [String!] = ["84f3861e"]) {
+  questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
+    text
+    genid
   }
 }
 `,

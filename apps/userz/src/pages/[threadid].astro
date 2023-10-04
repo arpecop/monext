@@ -1,6 +1,7 @@
 ---
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
+import { shuffle } from "lodash";
 const { threadid } = Astro.params as { threadid: string };
 function extractUniqueHashtags(inputString: string): string[] {
   const hashtagRegex = /#(\w+)/g;
@@ -32,8 +33,13 @@ function removeHashtags(inputString: string): string {
   
  
   const hashtagsprep = extractUniqueHashtags(rest[0].text) as string[];
-  const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string,count:number}[]}
- 
+  
+  const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string,count:number,rows_with_tag:string}[]}
+  const getarticles = respx.qtags.filter(x => x.count !==1).map(x => {return(shuffle([...x.rows_with_tag.split(', ')]).slice(0,5))}).flat() as string[]
+
+  const extended  = await gql('specificids',{_in:getarticles})  as {questions:{genid:string,text:string}[]}
+  
+  console.log(extended);
  
 ---
 <Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags}>	 
@@ -45,5 +51,15 @@ function removeHashtags(inputString: string): string {
       )}
        <!-- ... -->
      </article>
-	 
+	 <h2 class="text-gray-100 font-bold">Extended FAQ</h2>
+   <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
+     {extended.questions.map(q => ( <li class="space-x-3">
+            <a class="flex items-center" href={'/'+q.genid}>
+            
+            <span class="pl-2 text-gray-200"> {q.text.replace('?','')}</span>
+            </a>
+        </li>))}
+    
+     </ul>
+ 
 </Layout>
