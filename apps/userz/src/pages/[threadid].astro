@@ -56,7 +56,7 @@ function removeHashtags(inputString: string): string {
      {extended.questions.map(q => ( <li class="space-x-3">
             <a class="flex items-center" href={'/'+q.genid}>
             
-            <span class="pl-2 text-gray-200"> {q.text.replace('?','')}</span>
+            <span class="pl-2 text-gray-200 underline"> {q.text.replace('?','')}</span>
             </a>
         </li>))}
      </ul>
@@ -65,7 +65,7 @@ function removeHashtags(inputString: string): string {
   {resp.random.map(q => ( <li class="space-x-3">
          <a class="flex items-center" href={'/'+q.genid}>
          
-         <span class="pl-2 text-gray-200"> {q.text.replace('?','')}</span>
+         <span class="pl-2 text-gray-200 underline"> {q.text.replace('?','')}</span>
          </a>
      </li>))}
   </ul>
