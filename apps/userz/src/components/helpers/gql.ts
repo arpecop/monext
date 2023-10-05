@@ -12,16 +12,17 @@ const queries = {
   }
   `,
   thread: `
-    query MyQuery($_eq: String = "dd4d9d64", $limit: Int = 20, $offset: Int = 0) {
-      thread: questions(where: {genid: {_eq: $_eq}}, limit: $limit, offset: $offset) {
-        text
-        uid
-      }
-      random: qlatest(where: {genid: {_lt: $_eq}}, limit:10) {
-        genid
-        text
-      }
+  query MyQuery($_eq: String = "1d45f1e5", $limit: Int = 20, $offset: Int = 0) {
+    thread: questions(where: {genid: {_eq: $_eq}}, limit: $limit, offset: $offset, order_by: {id: desc}) {
+      text
+      uid
     }
+    random: qlatest(where: {genid: {_lt: $_eq}}, limit: 10) {
+      genid
+      text
+    }
+  }
+
   `,
   tags: `
   query MyQuery($_eq: String = "SafetyFirst") {
