@@ -3,6 +3,7 @@ import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
 import { shuffle } from "lodash";
 const { threadid } = Astro.params as { threadid: string };
+type Thread = {genid:string; text:string}[]
 function extractUniqueHashtags(inputString: string): string[] {
   const hashtagRegex = /#(\w+)/g;
   const hashtags = inputString.match(hashtagRegex);
@@ -19,16 +20,17 @@ function removeHashtags(inputString: string): string {
 
   return stringWithoutHashtags;
 }
- const resp  = await gql('thread',{_eq:threadid}) as {qlatest:{genid:string; text:string}[],thread:{genid:string; text:string}[],random:{genid:string; text:string}[]}
+ const resp  = await gql('thread',{_eq:threadid}) as {qlatest:Thread,thread:Thread,random:Thread,q:Thread}
  
  
- const rest= resp.thread.filter((_x,i) =>  i !== 0)
+ const rest= resp.thread;
+ const question= resp.q[0].text;
  const formatter = (text:string) => {
 	 let resp = text.replaceAll('@username,','').replaceAll('@username','').split('\n')
 	  return(resp)
  }
 
- if(!resp.thread[0]) {
+ if(!rest[0]) {
 	  return Astro.redirect('/404')
   }
   
@@ -44,7 +46,7 @@ function removeHashtags(inputString: string): string {
 ---
 <Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags}>	 
 		 <article class="prose prose-invert prose-headings:underline mx-auto">
-       <h1 class="text-white font-medium">{resp.thread[0].text}</h1>
+       <h1 class="text-white font-medium">{question}</h1>
       {
       rest.map(({text},i)  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
