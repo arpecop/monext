@@ -1,10 +1,10 @@
 const queries = {
   questions: `
   query MyQueryq($limit: Int = 10, $offset: Int = 0,$_eq: String = "dd4d9d64",) {
-    qlatest(limit: $limit, offset: $offset) {
-      genid
-      text
-    }
+   qlatest(limit: $limit, offset: $offset, order_by: {latest_answer_id: desc}) {
+     text
+     genid
+   }
     qtags(limit: 50 ,order_by: {count: desc}, where: {count: {_gte: "110"}}) {
       count
       hashtag
@@ -14,7 +14,6 @@ const queries = {
   thread: `
     query MyQuery($_eq: String = "dd4d9d64", $limit: Int = 20, $offset: Int = 0) {
       thread: questions(where: {genid: {_eq: $_eq}}, limit: $limit, offset: $offset) {
-        id
         text
         uid
       }
