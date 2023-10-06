@@ -8,7 +8,7 @@ const { tag } = Astro.params as { tag: string };
  if(!resp.qtags[0]) {
 	  return Astro.redirect('/404')
   }
- const arr = resp.qtags[0].rows_with_tag.split(', ')
+ const arr = resp.qtags[0].rows_with_tag.split(', ').slice(0,50)
  const questions =  await gql('tagquestions',{_in:arr}) as {questions:{genid:string; text:string}[]}
   
 ---
