@@ -6,14 +6,13 @@ let email: string | null = null;
 let phone: string | null = null;
 let firstname: string | null = null;
 let lastname: string | null = null;
-const edit = Astro.url.searchParams.get("edit") || 0;
-const del = Astro.url.searchParams.get("delete") || 0;
+// const edit = Astro.url.searchParams.get("edit") || 0;
+// const del = Astro.url.searchParams.get("delete") || 0;
 
 const form = new FormGroup([
 	{
 		name: "id",
 		label: "id *",
-		value: edit || 0,
 	},
 	{
 		name: "firstname",
@@ -95,15 +94,15 @@ if (Astro.request.method === "POST") {
 }
 // edit delete search
 
-if (del) {
-	await fetch("https://rudix.hasura.app/api/rest/energo/" + del, {
-		method: "DELETE",
-		body: JSON.stringify({ id: del }),
-	});
-	return Astro.redirect("/energopro/");
-}
-if (edit) {
-}
+// if (del) {
+// 	await fetch("https://rudix.hasura.app/api/rest/energo/" + del, {
+// 		method: "DELETE",
+// 		body: JSON.stringify({ id: del }),
+// 	});
+// 	return Astro.redirect("/energopro/");
+// }
+// if (edit) {
+// }
 ---
 
 <!DOCTYPE html>
