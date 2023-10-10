@@ -3,6 +3,7 @@ import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
 import { shuffle } from "lodash";
 const { threadid } = Astro.params as { threadid: string };
+
 type Thread = {genid:string; text:string}[]
 function extractUniqueHashtags(inputString: string): string[] {
   const hashtagRegex = /#(\w+)/g;
@@ -45,10 +46,9 @@ function removeHashtags(inputString: string): string {
  
 ---
 <Layout title={resp.thread[0].text} description={''} logo={"inner"}  tags={respx.qtags}>	 
-		 <article class="prose prose-invert prose-headings:underline mx-auto">
+	   <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
-      {
-      rest.map(({text},i)  =>  {
+      {  rest.map(({text},i)  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
       )}
        <!-- ... -->

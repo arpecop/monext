@@ -3,7 +3,7 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  color: "#FFFFFF";
+  color: #ffffff;
 }
 
 h1 {
@@ -45,6 +45,17 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
   gap: 1rem;
   padding: 0;
+}
+.field textarea,
+.field input,
+.field select {
+  @apply bg-transparent border border-gray-300 text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+}
+.multiple form {
+  @apply flex;
+}
+.multiple form .field input[name="submit"] {
+  @apply ml-1 mt-6;
 }
 @font-face {
   font-family: "Tilt";
