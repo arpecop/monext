@@ -17,6 +17,7 @@
     "@lucia-auth/adapter-postgresql": "^2.0.1",
     "@tailwindcss/typography": "^0.5.9",
     "@types/lodash": "^4.14.199",
+    "@westtrade/astro-form": "1.0.2-alpha",
     "astro": "^3.2.0",
     "astro-forms": "^1.0.11",
     "flowbite": "^1.8.1",

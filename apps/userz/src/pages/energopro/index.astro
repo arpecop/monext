@@ -1,50 +1,63 @@
 ---
-import Form, { FormGroup } from "@astro-reactive/form";
+import { Form } from "astro-forms";
 import "../../../base.css";
 let errorMessage: string | null = null;
 let email: string | null = null;
 let phone: string | null = null;
 let firstname: string | null = null;
 let lastname: string | null = null;
-// const edit = Astro.url.searchParams.get("edit") || 0;
-// const del = Astro.url.searchParams.get("delete") || 0;
+const edit = Astro.url.searchParams.get("edit") || 0;
+const del = Astro.url.searchParams.get("delete") || 0;
 
-const form = new FormGroup([
-	{
-		name: "id",
-		label: "id *",
+const form = {
+	type: "object",
+	properties: {
+		id: {
+			type: "number",
+			title: "Name",
+		},
+		firstname: {
+			type: "string",
+			title: "First Name",
+		},
+		lastname: {
+			type: "string",
+			title: "First Name",
+		},
+		submit: {
+			type: "submit",
+			title: "Submit",
+		},
 	},
-	{
-		name: "firstname",
-		label: "First Name *",
-		value: firstname || "",
+};
+
+const emails = {
+	type: "object",
+	properties: {
+		emails: {
+			type: "string",
+			title: "Email/s",
+		},
+		submit: {
+			type: "submit",
+			title: "+",
+		},
 	},
-	{
-		name: "lastname",
-		label: "Last Name *",
-		value: lastname || "",
+};
+const phones = {
+	type: "object",
+	properties: {
+		phones: {
+			type: "string",
+			title: "Email/s",
+		},
+		submit: {
+			type: "submit",
+			title: "+",
+		},
 	},
-]);
-const emails = new FormGroup([
-	{
-		name: "emails",
-		label: "Email/s",
-		value: email || "",
-	},
-]);
-const phones = new FormGroup([
-	{
-		name: "code",
-		label: "Phone/s",
-		type: "dropdown",
-		options: ["+359", "+44"],
-	},
-	{
-		name: "phones",
-		label: " (numbers)",
-		value: phone || "",
-	},
-]);
+};
+
 let list = [];
 
 const response = await fetch("https://rudix.hasura.app/api/rest/energo");
@@ -92,17 +105,16 @@ if (Astro.request.method === "POST") {
 		}
 	}
 }
-// edit delete search
 
-// if (del) {
-// 	await fetch("https://rudix.hasura.app/api/rest/energo/" + del, {
-// 		method: "DELETE",
-// 		body: JSON.stringify({ id: del }),
-// 	});
-// 	return Astro.redirect("/energopro/");
-// }
-// if (edit) {
-// }
+if (del) {
+	await fetch("https://rudix.hasura.app/api/rest/energo/" + del, {
+		method: "DELETE",
+		body: JSON.stringify({ id: del }),
+	});
+	return Astro.redirect("/energopro/");
+}
+if (edit) {
+}
 ---
 
 <!DOCTYPE html>
@@ -110,7 +122,7 @@ if (Astro.request.method === "POST") {
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-	<title>SSR page EN pro task</title>
+	<title>SSR page nrg pro task</title>
 </head>
 <body>
 	<div class="flex flex-col h-screen">
@@ -210,13 +222,13 @@ if (Astro.request.method === "POST") {
 			{
 				names.vdb_["vdb_energo"].map((person) => (
 					<div class="flex border-b p-2">
-						<div class="  grow">
+						<div class="grow">
 							{person.lastname}, {person.firstname}
 						</div>
-						<div class="  grow">
+						<div class="grow">
 							{person.emails ? person.emails : "No emails"}
 						</div>
-						<div class="  grow">
+						<div class="grow">
 							{person.phones ? person.emails : "No phones"}
 						</div>
 						<div>
@@ -240,39 +252,12 @@ if (Astro.request.method === "POST") {
 		<div class="grow-0 container mx-auto">
 			<h1 class="mb-4 text-2xl">Add new Employe</h1>
 			<div class="flex justify-center mb-4">
-				<div class="w-1/2 pr-2">
-					<Form
-						formGroups={form}
-						submitControl={{
-							name: "submit",
-							type: "submit",
-							value: "Добави!",
-						}}
-						validateOnLoad={true}
-						method={"post"}
-					/>
+				<div class="w-1/2 pr-2 nrgpro">
+					<Form schema={form} action="/energopro/" method="post" />
 				</div>
 				<div class="multiple">
-					<Form
-						formGroups={emails}
-						submitControl={{
-							name: "submit",
-							type: "submit",
-							value: "+",
-						}}
-						validateOnLoad={true}
-						method={"post"}
-					/>
-					<Form
-						formGroups={phones}
-						submitControl={{
-							name: "submit",
-							type: "submit",
-							value: "+",
-						}}
-						validateOnLoad={true}
-						method={"post"}
-					/>
+					<Form schema={emails} action="/energopro/" method="post" />
+					<Form schema={phones} action="/energopro/" method="post" />
 				</div>
 			</div>
 		</div>

@@ -46,16 +46,19 @@ h1 {
   gap: 1rem;
   padding: 0;
 }
-.field textarea,
-.field input,
-.field select {
+.nrgpro form div label input,
+.multiple form div label  input 
+  {
   @apply bg-transparent border border-gray-300 text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
 }
-.multiple form {
+.multiple form   div {
   @apply flex;
 }
-.multiple form .field input[name="submit"] {
-  @apply ml-1 mt-6;
+.nrgpro form div button {
+  @apply   px-2 bg-gray-900 mt-2 p-2 border rounded-md;
+}
+.multiple form div button {
+  @apply ml-1 mt-6 px-2 bg-gray-900 border rounded-md;
 }
 @font-face {
   font-family: "Tilt";
