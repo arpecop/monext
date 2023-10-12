@@ -49,8 +49,7 @@ if (Astro.request.method === "POST") {
 			search: `${firstname} ${lastname} ${phones} ${emails}`.toLowerCase(),
 		};
 		const rawResponse = await fetch(
-			"https://rudix.hasura.app/api/rest/energo/" +
-				(isId?.length >= 1 ? isId : ""),
+			"https://rudix.hasura.app/api/rest/energo/" + (isId ? isId : ""),
 			{
 				method: "POST",
 				body: JSON.stringify({
