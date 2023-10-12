@@ -35,6 +35,7 @@ if (Astro.request.method === "POST") {
 	const lastname = formData.get("lastname");
 	const emails = formData.get("emails");
 	const phones = formData.get("phones");
+	console.log(emails, phones, "<====");
 
 	if (!firstname || !lastname) {
 		// Display an error message if first name and last name are required.
@@ -46,16 +47,14 @@ if (Astro.request.method === "POST") {
 			lastname,
 			phones,
 			emails,
+			search: `${firstname} ${lastname} ${phones} ${emails}`.toLowerCase(),
 		};
 		const rawResponse = await fetch(
 			"https://rudix.hasura.app/api/rest/energo",
 			{
 				method: "POST",
 				body: JSON.stringify({
-					object: {
-						...object,
-						search: JSON.stringify(object),
-					},
+					object,
 				}),
 			}
 		);
@@ -98,7 +97,7 @@ if (del) {
 				class="invert"
 			/>
 
-			<form class="mx-2 mb-1">
+			<form class="mx-2 mb-1" method="get">
 				<label
 					for="default-search"
 					class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
@@ -148,18 +147,11 @@ if (del) {
 							<div class="flex flex-col py-2">
 								<div>
 									✉️{" "}
-									{person.emails
-										? person.emails
-										: "No emails"}
+									{person.emails ? person.emails : "No email"}
 								</div>
 								<div>
-									{person.phones &&
-										"📞 " +
-											person.phones
-												?.split(",")
-												.map((x) => (
-													<a href={"call:" + x}>x</a>
-												))}
+									📞{" "}
+									{person.phones ? person.phones : "No Phone"}
 								</div>
 							</div>
 							<div class="flex flex-col text-right p-2">
@@ -244,14 +236,14 @@ if (del) {
 						>
 							<input type="hidden" name="id" />
 							<input type="hidden" name="emails" id="emails" />
-							<input type="text" name="phones" id="phones" />
+							<input type="hidden" name="phones" id="phones" />
 							<label
-								>First Name<input
+								>First Name *<input
 									type="text"
 									name="firstname"
 								/></label
 							><label
-								>Last Name<input
+								>Last Name *<input
 									type="text"
 									name="lastname"
 								/></label
@@ -284,7 +276,6 @@ if (del) {
 									/></label
 								><a class="add" id="addphone">+</a>
 								<div class="flex flex-wrap" id="phoneContainer">
-									dsadas
 								</div>
 							</div>
 						</div>
@@ -339,7 +330,6 @@ if (del) {
 						emails
 					);
 				});
-
 			document
 				.getElementById("addphone")
 				.addEventListener("click", function () {
@@ -350,6 +340,18 @@ if (del) {
 						phones
 					);
 				});
+
+			// Get the input element, handle case where user directly submit
+			const inputElementE = document.getElementById("email");
+			const inputElementP = document.getElementById("phone");
+
+			// Add an event listener to capture input value while typing
+			inputElementE.addEventListener("input", function () {
+				document.getElementById("emails").value = inputElementE.value;
+			});
+			inputElementP.addEventListener("input", function () {
+				document.getElementById("phones").value = inputElementP.value;
+			});
 		</script>
 	</body>
 </html>
