@@ -1,88 +1,18 @@
 ---
-import { Form } from "astro-forms";
 import "../../base.css";
 let errorMessage: string | null = null;
-
-let firstname: string | null = null;
-let lastname: string | null = null;
 // Initialize edit, del, phone, and email values based on URL parameters.
 const edit = Astro.url.searchParams.get("edit") || 0;
 const del = Astro.url.searchParams.get("delete") || 0;
-const phone = Astro.url.searchParams.get("phone");
-const email = Astro.url.searchParams.get("email");
-const emailremove = Astro.url.searchParams.get("emailremove");
-const phoneremove = Astro.url.searchParams.get("phoneremove");
-const currentPath = Astro.url.search;
-
 // Define a data schema for your main form.
 interface FormSchema {
 	type: string;
 	value?: string;
 	properties: {
-		[key: string]: { type: string; title?: string; value?: string };
+		[key: string]: { type?: string; title?: string; value?: string };
 	};
 	items?: FormSchema;
 }
-// Define the schema for the main form.
-const mainform: FormSchema = {
-	type: "object",
-
-	properties: {
-		id: {
-			type: "string",
-			title: "",
-		},
-		firstname: {
-			type: "string",
-			title: "First Name",
-		},
-		lastname: {
-			type: "string",
-			title: "Last Name",
-		},
-		address: {
-			type: "string",
-			title: "Address",
-		},
-		submit: {
-			type: "submit",
-			title: "Submit",
-		},
-	},
-};
-// Define a schema for the email form.
-const emailform: FormSchema = {
-	type: "object",
-	properties: {
-		email: {
-			type: "string",
-			title: "Email/s",
-		},
-		submit: {
-			type: "submit",
-			title: "+",
-		},
-	},
-};
-
-// Initialize arrays to hold email and phone form data.
-
-const phoneform: FormSchema = {
-	type: "object",
-
-	properties: {
-		phone: {
-			type: "string",
-			title: "Phone/s",
-		},
-		submit: {
-			type: "submit",
-			title: "+",
-		},
-	},
-};
-// Initialize arrays to hold email and phone form data.
-
 // Fetch data from a remote API.
 const response = await fetch("https://rudix.hasura.app/api/rest/energo");
 const names: {
@@ -96,28 +26,35 @@ const names: {
 		}[];
 	};
 } = await response.json();
+
 // Handle form submission when the request method is POST.
 if (Astro.request.method === "POST") {
 	const formData = await Astro.request.formData();
-	const isId = formData.get("id") as string;
-	firstname = formData.get("firstname") as string;
-	lastname = formData.get("lastname") as string;
+	const isId = formData.get("id");
+	const firstname = formData.get("firstname");
+	const lastname = formData.get("lastname");
+	const emails = formData.get("emails");
+	const phones = formData.get("phones");
 
 	if (!firstname || !lastname) {
 		// Display an error message if first name and last name are required.
 		errorMessage = "Names   are required";
 	} else {
 		// Submit the form data to a remote API.
+		const object = {
+			firstname,
+			lastname,
+			phones,
+			emails,
+		};
 		const rawResponse = await fetch(
 			"https://rudix.hasura.app/api/rest/energo",
 			{
 				method: "POST",
 				body: JSON.stringify({
 					object: {
-						firstname,
-						lastname,
-						phones: phone,
-						emails: email,
+						...object,
+						search: JSON.stringify(object),
 					},
 				}),
 			}
@@ -127,8 +64,7 @@ if (Astro.request.method === "POST") {
 			errorMessage = content.error;
 		} else {
 			// Redirect to a specific URL after successful form submission. Delete temporary data
-			Astro.cookies.delete("cookiemail");
-			Astro.cookies.delete("cookiephone");
+
 			return Astro.redirect("/energopro/");
 		}
 	}
@@ -141,22 +77,6 @@ if (del) {
 	});
 	return Astro.redirect("/energopro/");
 }
-// Handle email form addition.
-let updatedSearch = "";
-
-if (email || phone || emailremove || phoneremove) {
-	const cookiemail = Astro.cookies.get("cookiemail")?.value;
-	const cookiephone = Astro.cookies.get("cookiephone")?.value;
-	if (email) {
-		Astro.cookies.set("cookiemail", `${cookiemail || ""},${email}`);
-	} else {
-		Astro.cookies.set("cookiephone", `${cookiephone || ""},${phone}`);
-	}
-
-	return Astro.redirect("/energopro/");
-}
-const cookiemail = Astro.cookies.get("cookiemail")?.value;
-const cookiephone = Astro.cookies.get("cookiephone")?.value;
 ---
 
 <html>
@@ -317,48 +237,119 @@ const cookiephone = Astro.cookies.get("cookiephone")?.value;
 				}
 				<div class="flex justify-center mb-4">
 					<div class="w-1/2 pr-2 nrgpro">
-						<Form
-							schema={mainform}
+						<form
 							action="/energopro/"
 							method="post"
-						/>
+							enctype="multipart/form-data"
+						>
+							<input type="hidden" name="id" />
+							<input type="hidden" name="emails" id="emails" />
+							<input type="text" name="phones" id="phones" />
+							<label
+								>First Name<input
+									type="text"
+									name="firstname"
+								/></label
+							><label
+								>Last Name<input
+									type="text"
+									name="lastname"
+								/></label
+							><label
+								>Address<input
+									type="text"
+									name="address"
+								/></label
+							><button type="submit">Submit</button>
+						</form>
 					</div>
-					<div class="multiple">
-						<Form schema={emailform} />
-						<div class="flex">
-							{
-								cookiemail
-									?.split(",")
-									.filter((x) => x.length > 2)
-									.map((x) => (
-										<a
-											href={
-												"/energopro/?emailremove=" + x
-											}
-											class="m-1 p-1 text-xs bg-sky-800 rounded-md"
-										>
-											{x}{" "}
-										</a>
-									))
-							}
-						</div>
+					<div>
+						<div class="multiple">
+							<label>
+								Email/s
+								<input type="text" name="email" id="email" />
+							</label>
+							<a class="add" id="addemail">+</a>
 
-						<Form schema={phoneform} />
-						<div class="flex">
-							{
-								cookiephone
-									?.split(",")
-									.filter((x) => x.length > 2)
-									.map((x) => (
-										<a class="m-1 p-1 text-xs bg-sky-800 rounded-md">
-											{x}{" "}
-										</a>
-									))
-							}
+							<div class="flex flex-wrap" id="emailContainer">
+							</div>
+						</div>
+						<div class="multiple">
+							<div>
+								<label
+									>Phone/s<input
+										type="text"
+										name="phone"
+										id="phone"
+									/></label
+								><a class="add" id="addphone">+</a>
+								<div class="flex flex-wrap" id="phoneContainer">
+									dsadas
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<script>
+			let emails = [];
+			let phones = [];
+			function renderEmails(container, array) {
+				const emailContainer = document.getElementById(container);
+				emailContainer.innerHTML = ""; // Clear existing content
+				array.forEach(function (email, index) {
+					const emailDiv = document.createElement("a");
+					emailDiv.className =
+						"m-1 p-1 pr-4 text-xs bg-sky-800 rounded-md flex relative cursor-pointer";
+					emailDiv.textContent = email;
+					const newItemButton = document.createElement("div");
+					newItemButton.className =
+						"bg-pink-700  absolute right-0 p-1 top-0 rounded-md rounded-l-none";
+					newItemButton.textContent = "x"; // Set the button text from the array
+					newItemButton.addEventListener("click", function () {
+						emails.splice(index, 1); // Remove the item from the array
+						renderEmails(container); // Re-render the emails
+					});
+					emailDiv.appendChild(newItemButton);
+					emailContainer.appendChild(emailDiv);
+				});
+			}
+
+			function getValueFromInput(
+				container,
+				dummyInputId,
+				populateID,
+				arrayToUpdate
+			) {
+				var inputElement = document.getElementById(dummyInputId);
+				var inputElementForm = document.getElementById(populateID);
+				arrayToUpdate.push(inputElement.value);
+				inputElementForm.value = arrayToUpdate.join(" , ");
+				inputElement.value = "";
+				renderEmails(container, arrayToUpdate);
+			}
+			document
+				.getElementById("addemail")
+				.addEventListener("click", function () {
+					getValueFromInput(
+						"emailContainer",
+						"email",
+						"emails",
+						emails
+					);
+				});
+
+			document
+				.getElementById("addphone")
+				.addEventListener("click", function () {
+					getValueFromInput(
+						"phoneContainer",
+						"phone",
+						"phones",
+						phones
+					);
+				});
+		</script>
 	</body>
 </html>

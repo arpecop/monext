@@ -46,23 +46,27 @@ h1 {
   gap: 1rem;
   padding: 0;
 }
-.nrgpro form div label input,
-.multiple form div label  input 
+.nrgpro form   label input,
+.multiple     label  input 
   {
   @apply bg-transparent border border-gray-300 text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:ring-blue-500;
 }
-.nrgpro form div label input[name=id] {
+.nrgpro form   label input[name=id] {
   display: none
 }
 
-.multiple form div {
-  @apply flex;
+.multiple {
+  @apply relative;
 }
-.nrgpro form div button {
+ 
+.nrgpro form   button {
   @apply   px-2 bg-gray-900 mt-2 p-2 border rounded-md;
 }
-.multiple form div button {
-  @apply ml-1 mt-6 px-2 bg-gray-900 border rounded-md w-10;
+.multiple  .add {
+  @apply   px-2 bg-gray-900 mt-2 p-2 border rounded-md absolute top-4 right-0 rounded-l-none cursor-pointer;
+}
+.multiple form   a {
+  @apply ml-1 mt-6 px-2 bg-gray-900 border rounded-md w-10 h-2;
 }
 @font-face {
   font-family: "Tilt";
