@@ -2,8 +2,8 @@
 import "../../base.css";
 let errorMessage: string | null = null;
 // Initialize edit, del, phone, and email values based on URL parameters.
-const edit = Astro.url.searchParams.get("edit") || 0;
-const del = Astro.url.searchParams.get("delete") || 0;
+const edit = Astro.url.searchParams.get("edit");
+const del = Astro.url.searchParams.get("delete");
 // Define a data schema for your main form.
 interface FormSchema {
 	type: string;
@@ -49,7 +49,8 @@ if (Astro.request.method === "POST") {
 			search: `${firstname} ${lastname} ${phones} ${emails}`.toLowerCase(),
 		};
 		const rawResponse = await fetch(
-			"https://rudix.hasura.app/api/rest/energo",
+			"https://rudix.hasura.app/api/rest/energo/" +
+				(isId?.length >= 1 ? isId : ""),
 			{
 				method: "POST",
 				body: JSON.stringify({
@@ -217,7 +218,14 @@ if (del) {
 					!edit ? (
 						<h1 class="mb-4 text-2xl">Add new Employe</h1>
 					) : (
-						<h1 class="mb-4 text-2xl">Edit Employe</h1>
+						<h1 class="mb-4 text-2xl">
+							Edit Employe:{" "}
+							{
+								names.vdb_.vdb_energo.find(
+									(x) => x.id === Number(edit)
+								)?.firstname
+							}
+						</h1>
 					)
 				}
 				<div class="flex justify-center mb-4">
@@ -227,7 +235,7 @@ if (del) {
 							method="post"
 							enctype="multipart/form-data"
 						>
-							<input type="hidden" name="id" />
+							<input type="hidden" name="id" value={edit} />
 							<input type="hidden" name="emails" id="emails" />
 							<input type="hidden" name="phones" id="phones" />
 							<label
