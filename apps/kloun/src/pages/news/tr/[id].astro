@@ -1,42 +1,41 @@
 ---
 export const prerender = false;
-import db from "../../../../data/client";
-// function checkNumeric(str: string): boolean {
-//   const chars: string[] = str.split('');
-//   console.log('chars', chars);
-//   const nums: string[] = chars.filter((char: string) => !isNaN(parseInt(char)) && char !== ' ');
-//   console.log('nums', nums);
-//   return nums.length > chars.length / 2;
-// }
+import {   gql } from "../../../../../userz/src/components/helpers/gql";
+ 
 
 const { id } = Astro.params as { id: string };
-const data = await db.get(id);
-const { title, content, html, type } = data as {
+const data = await gql(`query MyQuery($_eq: String = "01H84F7XPSG1ESNF20HDTRFSCC") {
+	  newsbg_by_pk(nid: $_eq) {
+	    html
+	    title
+	    cat
+	    id
+	    nid
+	  }
+	}
+`,{_eq:id}) as   {newsbg_by_pk:{
 	title: string;
-	content?: string;
-	html: string;
+	cat:string;
+	html?: {type:string; content:string;}[];
 	type: string;
+}
 };
-const parsed = content
-	? JSON.parse(content).html.map((x: string) => ({
-			type: "p",
-			content: x,
-	  }))
-	: html;
+ 
+ 
 ---
 
 <head>
 	<meta charset="UTF-8" />
 </head>
 <div>
-	<h1 class="font-bold sm:text-2xl md:text-4xl" id="title">{title}</h1>
+	<h1 class="font-bold sm:text-2xl md:text-4xl" id="title">{ data.newsbg_by_pk.title}</h1>
 	<article class="leading-relaxed" id="article">
-		{
-			parsed.map(({ type, content }: { type: string; content: string }) =>
+		{data.newsbg_by_pk.html &&
+			data.newsbg_by_pk.html.map(({ type, content }) =>
 				type === "p" ? <p>{content}</p> : <img src={content} />
 			)
 		}
 	</article>
-	{type}
-	<div id="emp">{type === "NewsBG" ? "император" : "emperor"}</div>
+	{data.newsbg_by_pk.cat}
+	<div id="emp">{data.newsbg_by_pk.cat === "NewsBG" ? "император" : "emperor"}</div>
 </div>

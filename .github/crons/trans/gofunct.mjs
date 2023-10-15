@@ -1,167 +1,158 @@
-import async from 'async'
-import { JSDOM } from 'jsdom'
-import nano from 'nano'
-import puppeteer from 'puppeteer'
-import sanitizeHtml from 'sanitize-html'
-const n1 = nano('https://db.kloun.lol')
+import async from "async";
+import { JSDOM } from "jsdom";
+// import nano from "nano";
+import puppeteer from "puppeteer";
+import sanitizeHtml from "sanitize-html";
 
-// import postgres from 'postgres'
-// 
-// const sql = postgres({
-//   host: 'wasp.local', // Postgres ip address[s] or domain name[s]
-//   port: 5432, // Postgres server port[s]
-//   database: 'postgres', // Name of database to connect to
-//   username: 'postgres', // Username of database user
-//   password: 'maximus' // Password of database user
-// })
-
-const dbprod = n1.use('worker')
 export async function parseSanitizedHTML({ title, html }) {
-  const dom = new JSDOM(html)
-  const elements = dom.window.document.body.children
-  const sanitized = []
+  const dom = new JSDOM(html);
+  const elements = dom.window.document.body.children;
+  const sanitized = [];
   for (let i = 0; i < elements.length; i++) {
-    const element = elements[i]
-    if (element.tagName.toLowerCase() === 'p') {
-      sanitized.push({ type: 'p', content: element.textContent ?? '' })
-    } else if (element.tagName.toLowerCase() === 'img') {
-      const src = element.getAttribute('src')
+    const element = elements[i];
+    if (element.tagName.toLowerCase() === "p") {
+      sanitized.push({ type: "p", content: element.textContent ?? "" });
+    } else if (element.tagName.toLowerCase() === "img") {
+      const src = element.getAttribute("src");
       if (src) {
-        sanitized.push({ type: 'img', content: src })
+        sanitized.push({ type: "img", content: src });
       }
     }
   }
-  return { title, html: sanitized }
+  return { title, html: sanitized };
 }
 
 export const trans = async ({ url, from, to }) => {
   const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--disable-dev-shm-usage']
-  })
-  const page = await browser.newPage()
+    headless: "new",
+    args: ["--disable-dev-shm-usage"],
+  });
+  const page = await browser.newPage();
   await page.setViewport({
     width: 5640,
     height: 5480,
-    deviceScaleFactor: 1
-  })
+    deviceScaleFactor: 1,
+  });
   await page.setUserAgent(
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1'
-  )
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+  );
   await page.goto(
     `https://kloun-lol.translate.goog/news/tr/${url}/?_x_tr_sl=${from}&_x_tr_tl=${to}`,
-    { waitUntil: 'domcontentloaded' }
-  )
-  await page.waitForSelector('#emp', { visible: true })
+    { waitUntil: "domcontentloaded" }
+  );
+  await page.waitForSelector("#emp", { visible: true });
   async function checkForEmperor(emp) {
-    let element
+    let element;
     while (element !== emp) {
-      element = await page.$eval('#emp', el => el.innerText)
-      await new Promise(resolve => setTimeout(resolve, 2500))
+      element = await page.$eval("#emp", (el) => el.innerText);
+      await new Promise((resolve) => setTimeout(resolve, 2500));
     }
-    return 'ok'
+    return "ok";
   }
-  await checkForEmperor(from === 'bg' ? 'emperor' : 'император')
+  await checkForEmperor(from === "bg" ? "emperor" : "император");
   const myDivHtml = await page.evaluate(() => {
-    const myDiv = document.getElementById('article')
-    return myDiv.innerHTML
-  })
+    const myDiv = document.getElementById("article");
+    return myDiv.innerHTML;
+  });
   const title = await page.evaluate(() => {
-    const myDiv = document.getElementById('title')
-    return myDiv.innerText
-  })
+    const myDiv = document.getElementById("title");
+    return myDiv.innerText;
+  });
 
-  await page.close()
-  await browser.close()
+  await page.close();
+  await browser.close();
   const html = sanitizeHtml(myDivHtml, {
-    allowedTags: ['p', 'img'],
+    allowedTags: ["p", "img"],
     allowedAttributes: {
-      img: ['src']
-    }
-  })
-  return parseSanitizedHTML({ title, html })
-}
+      img: ["src"],
+    },
+  });
+  return parseSanitizedHTML({ title, html });
+};
 
 export async function go(id, sourcelang) {
-  const bodyprod = await dbprod.get(id)
+  const bodyprod = await dbprod.get(id);
   const structure =
-    sourcelang === 'bg'
-      ? { from: 'bg', to: 'en', type: 'NewsEN', trans: '1' }
-      : { from: 'en', to: 'bg', type: 'NewsBG', trans: '1' }
+    sourcelang === "bg"
+      ? { from: "bg", to: "en", type: "NewsEN", trans: "1" }
+      : { from: "en", to: "bg", type: "NewsBG", trans: "1" };
   const structureopposite =
-    sourcelang === 'bg'
-      ? { from: 'en', to: 'bg', type: 'NewsBG', trans: '1' }
-      : { from: 'bg', to: 'en', type: 'NewsEN', trans: '1' }
-  const bodylen = JSON.stringify(bodyprod).length
+    sourcelang === "bg"
+      ? { from: "en", to: "bg", type: "NewsBG", trans: "1" }
+      : { from: "bg", to: "en", type: "NewsEN", trans: "1" };
+  const bodylen = JSON.stringify(bodyprod).length;
   if (bodylen < 500) {
     await dbprod.insert({
       ...bodyprod,
-      type: 'NewsBGbugged',
-      trans: '1'
-    })
-    return new Promise(resolve => {
-      resolve(id + ' done')
-    })
+      type: "NewsBGbugged",
+      trans: "1",
+    });
+    return new Promise((resolve) => {
+      resolve(id + " done");
+    });
   }
-  delete bodyprod._id
-  const enx = await trans({ url: id, ...structure })
+  delete bodyprod._id;
+  const enx = await trans({ url: id, ...structure });
   const engdb = await dbprod.insert({
     ...bodyprod,
     ...enx,
     ...structure,
-    trans: '1'
-  })
-  const bgx = await trans({ url: engdb.id, ...structureopposite })
+    trans: "1",
+  });
+  const bgx = await trans({ url: engdb.id, ...structureopposite });
   console.log([
     {
       bg: `https://db.kloun.lol/worker/${id}`,
       l: JSON.stringify(bgx).length,
-      retranslated: true
+      retranslated: true,
     },
-    { en: `https://db.kloun.lol/worker/${engdb.id}`, l: JSON.stringify(enx).length }
-  ])
+    {
+      en: `https://db.kloun.lol/worker/${engdb.id}`,
+      l: JSON.stringify(enx).length,
+    },
+  ]);
   try {
-    delete bodyprod.content
+    delete bodyprod.content;
     await dbprod.insert({
       ...bodyprod,
       ...bgx,
       _id: id,
-      trans: '1'
-    })
-    return new Promise(resolve => {
-      resolve(`${id} done`)
-    })
+      trans: "1",
+    });
+    return new Promise((resolve) => {
+      resolve(`${id} done`);
+    });
   } catch (e) {
-    console.log(e)
-    return new Promise(resolve => {
-      resolve(`${id} done error`)
-    })
+    console.log(e);
+    return new Promise((resolve) => {
+      resolve(`${id} done error`);
+    });
   }
 }
 
 export const receiveMessages = async (view, sourcelang) => {
   dbprod
-    .view('newsbg', view, {
+    .view("newsbg", view, {
       limit: 5000,
-      descending: true
+      descending: true,
     })
-    .then(data => {
-      console.log(`new batch start from`, data.rows[0])
+    .then((data) => {
+      console.log(`new batch start from`, data.rows[0]);
       async.eachOfLimit(
         data.rows,
         20,
         (message, _key, cb) => {
           go(message.id, sourcelang).then(() => {
-            cb()
-          })
+            cb();
+          });
         },
         () => {
-          console.log('done -=====-')
+          console.log("done -=====-");
           //receiveMessages()
-          return new Promise(resolve => {
-            resolve('')
-          })
+          return new Promise((resolve) => {
+            resolve("");
+          });
         }
-      )
-    })
-}
+      );
+    });
+};

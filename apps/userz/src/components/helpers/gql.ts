@@ -76,7 +76,7 @@ export const gql = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query: queries[queryid],
+        query: queryid.length < 20 ? queries[queryid] : queryid,
         variables,
       }),
     })
