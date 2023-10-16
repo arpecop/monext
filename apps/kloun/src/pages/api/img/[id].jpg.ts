@@ -1,18 +1,15 @@
 import type { APIRoute } from "astro";
-import db from "../../../../data/client.js";
 
+import { gql } from "../../../components/gql";
 export const prerender = false;
 
 export const get: APIRoute = async function get({ params }) {
   const id = params.id || "";
 
-  const datax = await db.view("newsbg/news", {
-    limit: 1,
-    key: id,
-    update: false,
-  });
+  const datax = await gql(`newssingle`, { _eq: id });
+  console.log(datax);
 
-  const response = await fetch(datax.image);
+  const response = await fetch(datax.newsbg_by_pk.image);
   const buffer = await response.arrayBuffer();
   return new Response(buffer, {
     status: 200,

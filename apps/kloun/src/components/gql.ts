@@ -31,6 +31,7 @@ const queries = {
       link
       nid
       title
+      image
       trans
     }
     newsbg(limit: 10, offset: 1, where: {nid: {_lte: $_eq}}) {
