@@ -3,6 +3,7 @@ export const prerender = false;
 import {uniqBy} from "lodash";
 
 import {   viewh } from "../../../../../data/hasura.js";
+import { gql } from "../../../../components/gql";
 
 import CardNews from "../../../../components/CardNews.astro";
 import RudSense from "../../../../components/RudSense.astro";
@@ -12,12 +13,8 @@ function countAlphanumeric(str: string) {
   const matches = str.match(regex);
   return matches ? matches.length : 0;
 }
-
-// function getUniqueStrings(arr1:string[], arr2:string[]) {
-//   return arr1.filter(str => !arr2.includes(str));
-// }
-function getLastP(arrz: (string | { type: string; content: string })[]) {
  
+function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
     if (typeof x === "string") {
       return { type: "p", content: x, i };
@@ -52,38 +49,39 @@ const { newsid } = Astro.params as { newsid: string; slug?: string };
 
 //const differencies = getUniqueStrings(keys,terms)
  
- 
-const newsfetch = viewh(`newsbg`,{limit:10,offset:10,_lte:newsid});
-const contentfetch = fetch(
-  `https://cdn.kloun.lol/${newsid}.json`
-).then((res) => res.json());
-const resp = await Promise.all([newsfetch, contentfetch]).then((results) => ({
-  article: results[1],
-  news: results[0],
-}));
+ function formatDate(date: Date): string {
+   const options: Intl.DateTimeFormatOptions = {
+     year: "numeric",
+     month: "long",
+     day: "numeric",
+     hour: "numeric",
+     minute: "numeric",
+     hour12: false,
+   };
+   return date.toLocaleString("bg-BG", options);
+ }
+ function getRandomDate(year: number): Date {
+   const month = Math.floor(Math.random() * 12) + 1;
+   const day = Math.floor(Math.random() * 31) + 1;
+   const hour = Math.floor(Math.random() * 14) + 9;
+   return new Date(year, month - 1, day, hour);
+ }
 
  
+const newsfetch = await gql(`newssingle`,{_eq:newsid});
+ const { title,  date ,html} = newsfetch.newsbg_by_pk as {date:string; title:string,html?:string[]};
+ let contentfetch;
+ if(!html) {
+    contentfetch = await fetch(
+     `https://cdn.kloun.lol/${newsid}.json`
+   ).then((res) => res.json());
+   
+ } else {
+   contentfetch = html
+ }
+
  
 
-function formatDate(date: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-  };
-  return date.toLocaleString("bg-BG", options);
-}
-function getRandomDate(year: number): Date {
-  const month = Math.floor(Math.random() * 12) + 1;
-  const day = Math.floor(Math.random() * 31) + 1;
-  const hour = Math.floor(Math.random() * 14) + 9;
-  return new Date(year, month - 1, day, hour);
-}
-
- const { title,  date } = resp.news.article[0] as any;
 ---
 
 <Layout
@@ -108,7 +106,7 @@ function getRandomDate(year: number): Date {
     <RudSense type="inarticle" />
     <article class="leading-relaxed" id="article">
       {
-        getLastP( resp.article ||resp.article.html ).map(
+        getLastP( contentfetch.html || html ).map(
           ({
             type,
             content,
@@ -156,7 +154,7 @@ function getRandomDate(year: number): Date {
   </div>
   <div class="flex flex-wrap gap-3">
     {
-      resp.news.newsbg.map(({ nid, title, key, date, image,id }) => (
+      newsfetch.newsbg.map(({ nid, title, key, date, image,id }) => (
         <CardNews
           title={title}
           img={image}

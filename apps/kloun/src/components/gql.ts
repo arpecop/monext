@@ -24,6 +24,24 @@ const queries = {
     }
   }
 `,
+  newssingle: `query MyQuery($_eq: String = "01HCWNX3NAE10A4E9AFC1K0GM2") {
+    newsbg_by_pk(nid: $_eq) {
+      date
+      html
+      link
+      nid
+      title
+      trans
+    }
+    newsbg(limit: 10, offset: 1, where: {nid: {_lte: $_eq}}) {
+      id
+      nid
+      image
+      title
+    }
+  }
+
+`,
 } as { [key: string]: string };
 
 export const gql = async (

@@ -1,4 +1,3 @@
-
 import { JSDOM } from "jsdom";
 
 import { getUniqueStrings, scrapeArticle, scrheaders } from "./sanitize";
@@ -11,9 +10,13 @@ const go = async () => {
   const d = await response.text();
   const links1 = Array.from(new JSDOM(d).window.document.querySelectorAll("a"))
     .map((link: HTMLElement) => link.getAttribute("href"))
-    .filter((href) => href !== null && href.includes('dariknews.bg') && href.split('-').length >= 4) as string[];
+    .filter(
+      (href) =>
+        href !== null &&
+        href.includes("dariknews.bg") &&
+        href.split("-").length >= 4
+    ) as string[];
   const links = getUniqueStrings(links1).map((link) => `https:${link}`);
-
 
   await Promise.all(links.map((link) => scrapeArticle(link, ["Снимка: "])));
   return links;
@@ -21,5 +24,3 @@ const go = async () => {
 //getArticle('https://dariknews.bg/novini/sviat/razmirici-i-bezredici-v-dzhamiiata-al-aksa-v-erusalim-snimkivideo-2343767').then(() => console.log('done'));
 
 go().then((links) => console.log(links.length));
-
-
