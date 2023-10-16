@@ -30,7 +30,7 @@ jobs:
           rm -rf package.json
           npm install -g typescript
           npm install -g ts-node
-          npm install postgres jsdom @mozilla/readability sanitize-html @swc/wasm nano @types/node ulid node-fetch  @types/jsdom @types/node-fetch @types/sanitize-html
+          npm install jsdom @mozilla/readability sanitize-html @swc/wasm nano @types/node ulid node-fetch  @types/jsdom @types/node-fetch @types/sanitize-html
       - name: twentyfour
         run: |
           ts-node ./.github/crons/_24.ts
