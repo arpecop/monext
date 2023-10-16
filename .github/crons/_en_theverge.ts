@@ -25,7 +25,6 @@ const go = async () => {
     links.map((link) => scrapeArticle(link, ["Снимка: "], "NewsENProcess"))
   );
 
-  await updateview();
   return links;
 };
 //scrapeArticle('https://www.theverge.com/2023/5/31/23743515/google-chromecast-support-ending-2013', ['xxx'], "TestEN").then(() => console.log('done'));
