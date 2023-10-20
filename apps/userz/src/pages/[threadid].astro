@@ -39,8 +39,9 @@ function removeHashtags(inputString: string): string {
   const hashtagsprep = extractUniqueHashtags(rest[0].text) as string[];
   
   const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string,count:number,rows_with_tag:string}[]}
-  const getarticles = respx.qtags.filter(x => x.count !==1).map(x => {return(shuffle([...x.rows_with_tag.split(', ')]).slice(0,5))}).flat() as string[]
 
+  const getarticles = respx.qtags.filter(x => x.count !==1).map(x =>  x.hashtag).flat() as string[]
+ 
   const extended  = await gql('specificids',{_in:getarticles})  as {questions:{genid:string,text:string}[]}
  
  

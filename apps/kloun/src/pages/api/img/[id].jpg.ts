@@ -6,8 +6,9 @@ export const prerender = false;
 export const get: APIRoute = async function get({ params }) {
   const id = params.id || "";
 
-  const datax = await gql(`newssingle`, { _eq: id });
-  console.log(datax);
+  const datax = (await gql(`newssingle`, {
+    _eq: id,
+  })) as { newsbg_by_pk: { image: string } };
 
   const response = await fetch(datax.newsbg_by_pk.image);
   const buffer = await response.arrayBuffer();

@@ -5,6 +5,7 @@ import  chunk  from 'lodash/chunk';
 type Data = {genid:string; text:string}[]
 const resp  = await gql('questions',{limit:30}) as {qlatest: Data, qtags:{hashtag:string}[]}
 const chunks = chunk(resp.qlatest, 10) as Data[]
+console.log(resp);
  
  
 ---

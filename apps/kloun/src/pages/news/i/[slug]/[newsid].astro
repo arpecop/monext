@@ -67,14 +67,19 @@ const { newsid } = Astro.params as { newsid: string; slug?: string };
    return new Date(year, month - 1, day, hour);
  }
 
- 
-const newsfetch = await gql(`newssingle`,{_eq:newsid});
- const { title,  date ,html} = newsfetch.newsbg_by_pk as {date:string; title:string,html?:string[]};
- let contentfetch;
+type Article = {
+   type: string;
+   content: string;
+   i: number;
+   html?:Article
+ }[]
+const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { image: string,date:string; title:string,html?:Article } };
+ const { title,  date ,html} = newsfetch.newsbg_by_pk  
+ let contentfetch:Article;
  if(!html) {
     contentfetch = await fetch(
      `https://cdn.kloun.lol/${newsid}.json`
-   ).then((res) => res.json());
+   ).then((res) => res.json()) as Article;
    
  } else {
    contentfetch = html
@@ -106,7 +111,7 @@ const newsfetch = await gql(`newssingle`,{_eq:newsid});
     <RudSense type="inarticle" />
     <article class="leading-relaxed" id="article">
       {
-        getLastP( contentfetch.html || html ).map(
+        getLastP(    html || contentfetch.html ).map(
           ({
             type,
             content,
