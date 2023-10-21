@@ -73,7 +73,7 @@ export const gql = async (
   variables: { _eq?: string; _in?: string[]; limit?: number; offset?: number }
 ) => {
   return new Promise((resolve) => {
-    fetch("https://hasura.kloun.lol/v1/graphql", {
+    fetch("https://rudix.hasura.app/v1/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
