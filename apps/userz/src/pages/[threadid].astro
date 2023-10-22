@@ -1,13 +1,15 @@
 ---
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
+ const { threadid } = Astro.params as { threadid: string };
+ const apiBaseUrl = import.meta.env.DB_URL2
 // import { neon } from '@neondatabase/serverless';
-// 
+
 // const sql = neon(process.env['DB_URL2'] || '');
-const { threadid } = Astro.params as { threadid: string };
+//
 // const responsex = await sql`SELECT genid FROM questions  WHERE type = 'q'  ORDER BY embed <->  (SELECT embed FROM questions  WHERE genid = '50234727') LIMIT 10;`;
- 
-//dasd
+// console.log(responsex);
+
 
 
 type Thread = {genid:string; text:string}[]
@@ -55,13 +57,13 @@ function removeHashtags(inputString: string): string {
 <Layout title={question} description={''} logo={"inner"}  tags={respx.qtags}>	 
 	   <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
+   {apiBaseUrl}
       {  rest.map(({text},i)  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
       )}
        <!-- ... -->
      </article>
 	 {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
-   {process.env['DB_URL2'] } {import.meta.env.DATABASE_URL}
    <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
      {extended.questions.map(q => ( <li class="space-x-3">
             <a class="flex items-center" href={'/'+q.genid}>
