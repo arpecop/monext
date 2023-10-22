@@ -1,16 +1,17 @@
 ---
+import { neon } from '@neondatabase/serverless';
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
- const { threadid } = Astro.params as { threadid: string };
- const apiBaseUrl = import.meta.env.DB_URL2
-// import { neon } from '@neondatabase/serverless';
 
-// const sql = neon(process.env['DB_URL2'] || '');
-//
-// const responsex = await sql`SELECT genid FROM questions  WHERE type = 'q'  ORDER BY embed <->  (SELECT embed FROM questions  WHERE genid = '50234727') LIMIT 10;`;
-// console.log(responsex);
+const apiBaseUrl = import.meta.env.DB_URL2 || process.env.DB_URL2
 
+console.log(apiBaseUrl);
+const sql = neon(apiBaseUrl);
+// 
+const responsex = await sql`SELECT genid FROM questions  WHERE type = 'q'  ORDER BY embed <->  (SELECT embed FROM questions  WHERE genid = '50234727') LIMIT 10;`;
+ 
 
+const { threadid } = Astro.params as { threadid: string };
 
 type Thread = {genid:string; text:string}[]
 function extractUniqueHashtags(inputString: string): string[] {
@@ -57,7 +58,7 @@ function removeHashtags(inputString: string): string {
 <Layout title={question} description={''} logo={"inner"}  tags={respx.qtags}>	 
 	   <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
- -----  {apiBaseUrl} <pre>{JSON.stringify(process.env)}</pre> -----
+ {JSON.stringify(responsex)}
       {  rest.map(({text},i)  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
       )}
