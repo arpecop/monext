@@ -12,7 +12,7 @@ export default defineConfig({
       minify: false,
     },
     define: {
-      "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
+      "process.env.DB_URL2": JSON.stringify("rudix"),
     },
   },
 });
