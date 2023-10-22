@@ -60,6 +60,18 @@ query MyQuery2($_in: [String!]) {
 `,
   specificids: `
 query MyQuery($_in: [String!] = ["84f3861e"]) {
+    questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
+      text
+      genid
+    }
+    answers:questions(where: {genid: {_in: $_in}, type: {_eq: "a"}}) {
+      text
+      genid
+    }
+  }
+`,
+  specificidsthreads: `
+query MyQuery($_in: [String!] = ["84f3861e"]) {
   questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
     text
     genid

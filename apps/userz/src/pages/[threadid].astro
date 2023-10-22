@@ -1,37 +1,46 @@
 ---
+type Thread = {genid:string; text:string}[]
 import { neon } from '@neondatabase/serverless';
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
 
 const apiBaseUrl = import.meta.env.DB_URL2 || process.env.DB_URL2
-
-console.log(apiBaseUrl);
 const sql = neon(apiBaseUrl);
-// 
-const responsex = await sql`SELECT genid FROM questions  WHERE type = 'q'  ORDER BY embed <->  (SELECT embed FROM questions  WHERE genid = '50234727') LIMIT 10;`;
- 
 
 const { threadid } = Astro.params as { threadid: string };
+const respOne  =   gql('thread',{_eq:threadid}) 
+const respTwo =   sql`
+ SELECT genid
+FROM questions
+WHERE type = 'a'
+ORDER BY embed <->
+(SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
+LIMIT 10;
+`;
 
-type Thread = {genid:string; text:string}[]
+const prom = await Promise.all([respOne, respTwo]).then((values) => {
+  return({resp:values[0],simResultsOne:values[1]})
+}) as {resp: {qlatest:Thread,thread:Thread,random:Thread,q:Thread},simResultsOne:{genid:string}[]};
+
+const {simResultsOne,resp} = prom
+
+
+const simResults = simResultsOne.map(x => x.genid)
+ 
+
 function extractUniqueHashtags(inputString: string): string[] {
   const hashtagRegex = /#(\w+)/g;
   const hashtags = inputString.match(hashtagRegex);
-
   if (!hashtags) return [];
- 
   const uniqueHashtags = Array.from(new Set(hashtags.map(tag =>  tag.slice(1))));
-
   return uniqueHashtags;
 } 
 function removeHashtags(inputString: string): string {
   const hashtagRegex = /#\w+/g;
   const stringWithoutHashtags = inputString.replace(hashtagRegex, '');
-
   return stringWithoutHashtags;
 }
- const resp  = await gql('thread',{_eq:threadid}) as {qlatest:Thread,thread:Thread,random:Thread,q:Thread}
- 
+
  
  const rest= resp.thread;
  const question= resp.q[0].text;
@@ -42,44 +51,38 @@ function removeHashtags(inputString: string): string {
 
  if(!rest[0]) {
 	  return Astro.redirect('/404')
-  }
+  } 
   
- //dssd
-  const hashtagsprep = extractUniqueHashtags(rest[0].text) as string[];
-  
-  const respx  = await gql('specifictags',{_in:hashtagsprep})  as {qtags:{hashtag:string,count:number,rows_with_tag:string}[]}
-
-  const getarticles = respx.qtags.filter(x => x.count !==1).map(x =>  x.hashtag).flat() as string[]
- 
-  const extended  = await gql('specificids',{_in:getarticles})  as {questions:{genid:string,text:string}[]}
- 
+ const extended  = await gql('specificids',{_in:simResults})  as {questions:{genid:string,text:string}[],answers:{genid:string,text:string}[]}
+ const thread = extended.questions.map((x,i) => ({
+   q:{text:x.text,genid:x.genid},
+   a:extended.answers[i].text
+ }))
+ console.log(thread);
  
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={respx.qtags}>	 
+<Layout title={question} description={''} logo={"inner"}  tags={[]}>	 
 	   <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
- {JSON.stringify(responsex)}
+ 
       {  rest.map(({text},i)  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
       )}
        <!-- ... -->
-     </article>
-	 {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
-   <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
-     {extended.questions.map(q => ( <li class="space-x-3">
-            <a class="flex items-center" href={'/'+q.genid}>
-            
-            <span class="pl-2 text-gray-200 underline"> {q.text.replace('?','')}</span>
-            </a>
-        </li>))}
-     </ul>
- { resp.random[0] && <h2 class="text-gray-100 font-bold">Other questions</h2>}
- <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
-  {resp.random.map(q => ( <li class="space-x-3">
-         <a class="flex items-center" href={'/'+q.genid}>
+       
+       {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
+        
+          {thread.map((q) => ( <div class="space-x-3">
+                 <a class="flex items-center" href={'/'+q.q.genid}>
+                 
+                 <h2 class="pl-2 text-gray-200 underline"> {q.q.text.replace('?','')}</h2>
+                 </a>
+         {q.a}
          
-         <span class="pl-2 text-gray-200 underline"> {q.text.replace('?','')}</span>
-         </a>
-     </li>))}
-  </ul>
+             </div>))}
+       
+     </article>
+	
+ 
+ 
 </Layout>
