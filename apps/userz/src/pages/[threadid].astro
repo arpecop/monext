@@ -15,7 +15,7 @@ FROM questions
 WHERE type = 'a'
 ORDER BY embed <->
 (SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
-LIMIT 10;
+LIMIT 10 OFFSET 1;
 `;
 
 const prom = await Promise.all([respOne, respTwo]).then((values) => {
@@ -45,8 +45,8 @@ function removeHashtags(inputString: string): string {
  const rest= resp.thread;
  const question= resp.q[0].text;
  const formatter = (text:string) => {
-	 let resp = text.replaceAll('@username,','').replaceAll('@username','').split('\n')
-	  return(resp)
+	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
+	 return(resp)
  }
 
  if(!rest[0]) {
@@ -58,7 +58,7 @@ function removeHashtags(inputString: string): string {
    q:{text:x.text,genid:x.genid},
    a:extended.answers[i].text
  }))
- console.log(thread);
+ 
  
 ---
 <Layout title={question} description={''} logo={"inner"}  tags={[]}>	 
@@ -66,7 +66,7 @@ function removeHashtags(inputString: string): string {
        <h1 class="text-white font-medium">{question}</h1>
  
       {  rest.map(({text},i)  =>  {
-        return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{i=== 0 ? removeHashtags(x) : x}</p>))  }</div>)}
+        return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
       )}
        <!-- ... -->
        
@@ -74,11 +74,11 @@ function removeHashtags(inputString: string): string {
         
           {thread.map((q) => ( <div class="space-x-3">
                  <a class="flex items-center" href={'/'+q.q.genid}>
-                 
+              
                  <h2 class="pl-2 text-gray-200 underline"> {q.q.text.replace('?','')}</h2>
                  </a>
-         {q.a}
-         
+     
+         { formatter(q.a).map(x => (<p>{x}</p>))}
              </div>))}
        
      </article>
