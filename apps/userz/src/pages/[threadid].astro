@@ -7,7 +7,7 @@ const sql = neon(process.env['DB_URL2'] || '');
 const { threadid } = Astro.params as { threadid: string };
 const responsex = await sql`SELECT genid FROM questions  WHERE type = 'q'  ORDER BY embed <->  (SELECT embed FROM questions  WHERE genid = '50234727') LIMIT 10;`;
  
-
+//dasd
 
 
 type Thread = {genid:string; text:string}[]
