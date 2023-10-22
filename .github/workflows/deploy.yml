@@ -15,24 +15,13 @@ jobs:
           path: ./
           mode: ""
           load-mode: strict
-      - name: Cache
-        id: cache-npm
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
       - name: 😳 Build
         env:
           DB_URL2: ${{ secrets.DB_URL2 }}
           DB_URL: ${{ secrets.DB_URL }}
         run: |
           echo $APP
+          printenv
           cd ./apps/$APP
           npm install
           npm run build
