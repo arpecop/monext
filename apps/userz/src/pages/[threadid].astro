@@ -61,7 +61,7 @@ function removeHashtags(inputString: string): string {
        <!-- ... -->
      </article>
 	 {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
-   {process.env['DB_URL2'] }
+   {process.env['DB_URL2'] } {import.meta.env.DATABASE_URL}
    <ul class="space-y-4 text-left text-gray-100 conntainer mx-auto">
      {extended.questions.map(q => ( <li class="space-x-3">
             <a class="flex items-center" href={'/'+q.genid}>
