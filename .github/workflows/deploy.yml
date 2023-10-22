@@ -30,6 +30,7 @@ jobs:
       - name: 😳 Build
         run: |
           echo $APP
+          declare -p > .env
           cd ./apps/$APP
           npm install
           npm run build
