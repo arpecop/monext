@@ -16,6 +16,7 @@
     "@astrojs/tailwind": "^5.0.0",
     "@jsfe/core": "^0.0.5",
     "@lucia-auth/adapter-postgresql": "^2.0.1",
+    "@neondatabase/serverless": "^0.6.0",
     "@tailwindcss/typography": "^0.5.9",
     "@types/lodash": "^4.14.199",
     "@westtrade/astro-form": "1.0.2-alpha",
@@ -26,6 +27,7 @@
     "graphql-request": "^6.1.0",
     "lodash": "^4.17.21",
     "lucia": "^2.4.1",
+    "pg": "^8.11.3",
     "postcss": "^8.4.31",
     "postgres": "^3.3.5",
     "tailwindcss": "^3.3.3",
@@ -35,6 +37,7 @@
     "wrangler": "^2.20.1"
   },
   "devDependencies": {
-    "@astrojs/cloudflare": "^7.3.1"
+    "@astrojs/cloudflare": "^7.3.1",
+    "typescript": "^5.0.0"
   }
 }
