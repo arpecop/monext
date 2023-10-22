@@ -26,7 +26,6 @@ jobs:
           npm install
           npm run build
           npm run export
-          ls -la
           rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm* ./package.json
           mv ./out ../../
           mv ./.next ../../
