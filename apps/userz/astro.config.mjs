@@ -11,8 +11,5 @@ export default defineConfig({
     build: {
       minify: false,
     },
-    define: {
-      "process.env.DB_URL2": JSON.stringify("rudix"),
-    },
   },
 });
