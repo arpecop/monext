@@ -12,7 +12,6 @@ const respOne  =   gql('thread',{_eq:threadid})
 const respTwo =   sql`
  SELECT genid
 FROM questions
-WHERE type = 'a'
 ORDER BY embed <->
 (SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
 LIMIT 10 OFFSET 1;
