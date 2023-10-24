@@ -27,11 +27,11 @@ const {simResultsOne,resp} = prom
 const simResults = simResultsOne.map(x => x.genid)
  
 
-function extractUniqueHashtags(inputString: string): string[] {
+function extractUniqueHashtags(inputString: string): {hashtag:string,count:number}[] {
   const hashtagRegex = /#(\w+)/g;
   const hashtags = inputString.match(hashtagRegex);
   if (!hashtags) return [];
-  const uniqueHashtags = Array.from(new Set(hashtags.map(tag =>  tag.slice(1))));
+  const uniqueHashtags = Array.from(new Set(hashtags.map(tag =>  ({hashtag:tag.slice(1),count:10}))));
   return uniqueHashtags;
 } 
 function removeHashtags(inputString: string): string {
@@ -57,10 +57,12 @@ function removeHashtags(inputString: string): string {
    q:{text:x.text,genid:x.genid},
    a:extended.answers[i].text
  }))
+ const flat = extractUniqueHashtags(thread.flatMap(x => x.a).join(' '))
+ console.log(flat);
  
  
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={[]}>	 
+<Layout title={question} description={''} logo={"inner"}  tags={flat}>	 
 	   <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
  
