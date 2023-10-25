@@ -51,10 +51,13 @@ function removeHashtags(inputString: string): string {
   } 
   
  const extended  = await gql('specificids',{_in:simResults})  as {questions:{genid:string,text:string}[],answers:{genid:string,text:string}[]}
+
  const thread = extended.questions.map((x,i) => ({
    q:{text:x.text,genid:x.genid},
-   a:extended.answers[i].text
+   a:extended.answers[i]?.text || ''
  }))
+ 
+ 
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
  const tagz = await gql('specifictags',{_in:flat.flatMap(x => x.hashtag)}) as {qtags:{count:number,hashtag:string}[]}
  const tagzfiltered = tagz.qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)
