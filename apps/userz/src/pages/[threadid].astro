@@ -3,6 +3,7 @@ type Thread = {genid:string; text:string}[]
 import { neon } from '@neondatabase/serverless';
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
+import {uniq} from 'lodash'
 
 const apiBaseUrl = import.meta.env.DB_URL2 || process.env.DB_URL2
 const sql = neon(apiBaseUrl);
@@ -22,12 +23,9 @@ const prom = await Promise.all([respOne, respTwo]).then((values) => {
 }) as {resp: {qlatest:Thread,thread:Thread,random:Thread,q:Thread},simResultsOne:{genid:string}[]};
 
 const {simResultsOne,resp} = prom
-
-
 const simResults = simResultsOne.map(x => x.genid)
- 
 
-function extractUniqueHashtags(inputString: string): {hashtag:string,count:number}[] {
+async function extractUniqueHashtags(inputString: string): Promise<{hashtag:string,count:number}[]> {
   const hashtagRegex = /#(\w+)/g;
   const hashtags = inputString.match(hashtagRegex);
   if (!hashtags) return [];
@@ -57,12 +55,14 @@ function removeHashtags(inputString: string): string {
    q:{text:x.text,genid:x.genid},
    a:extended.answers[i].text
  }))
- const flat = extractUniqueHashtags(thread.flatMap(x => x.a).join(' '))
- console.log(flat);
+ const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
+ const tagz = await gql('specifictags',{_in:flat.flatMap(x => x.hashtag)}) as {qtags:{count:number,hashtag:string}[]}
+ const tagzfiltered = tagz.qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)
+ 
  
  
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={flat}>	 
+<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered}>	 
 	   <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
  
