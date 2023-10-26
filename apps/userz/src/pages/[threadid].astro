@@ -5,25 +5,10 @@ import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
 import {uniq} from 'lodash'
 
-const apiBaseUrl = import.meta.env.DB_URL2 || process.env.DB_URL2
-const sql = neon(apiBaseUrl);
+const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
+const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
 
 const { threadid } = Astro.params as { threadid: string };
-const respOne  =   gql('thread',{_eq:threadid}) 
-const respTwo =   sql`
- SELECT genid
-FROM questions
-ORDER BY embed <->
-(SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
-LIMIT 10 OFFSET 1;
-`;
-
-const prom = await Promise.all([respOne, respTwo]).then((values) => {
-  return({resp:values[0],simResultsOne:values[1]})
-}) as {resp: {qlatest:Thread,thread:Thread,random:Thread,q:Thread},simResultsOne:{genid:string}[]};
-
-const {simResultsOne,resp} = prom
-const simResults = simResultsOne.map(x => x.genid)
 
 async function extractUniqueHashtags(inputString: string): Promise<{hashtag:string,count:number}[]> {
   const hashtagRegex = /#(\w+)/g;
@@ -38,15 +23,33 @@ function removeHashtags(inputString: string): string {
   return stringWithoutHashtags;
 }
 
+
+const respOne  =  sql`select text from questions where genid = ${threadid} and type = 'q'`
+const respOneThread  =  sql`select text,genid from questions where genid = ${threadid} and type = 'a'`
+const respTwo =   sql2`
+ SELECT genid
+FROM questions
+ORDER BY embed <->
+(SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
+LIMIT 10 OFFSET 1;
+`;
+
+const prom = await Promise.all([respOne, respTwo,respOneThread]).then((values) => {
+  return({resp:values[0][0],simResultsOne:values[1],threadx:values[2]})
+}) as { resp:{text:string},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
+console.log(prom);
+const {simResultsOne,resp,threadx} = prom
+const simResults = simResultsOne.map(x => x.genid)
+
  
- const rest= resp.thread;
- const question= resp.q[0].text;
+ const rest=  threadx;
+ const question= resp.text;
  const formatter = (text:string) => {
 	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
 	 return(resp)
  }
 
- if(!rest[0]) {
+ if(!threadx[0]) {
 	  return Astro.redirect('/404')
   } 
   
@@ -56,7 +59,8 @@ function removeHashtags(inputString: string): string {
    q:{text:x.text,genid:x.genid},
    a:extended.answers[i]?.text || ''
  }))
- 
+  
+  console.log(thread);
  
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
  const tagz = await gql('specifictags',{_in:flat.flatMap(x => x.hashtag)}) as {qtags:{count:number,hashtag:string}[]}
