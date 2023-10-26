@@ -1,3 +1,8 @@
+import { neon } from "@neondatabase/serverless";
+
+const apiBaseUrl = process.env.DB_URL1 || "";
+console.log(apiBaseUrl);
+export const sql = neon(apiBaseUrl);
 const queries = {
   jokescat: `query MyQuery($limit: Int = 1, $offset: Int = 10, $_eq: String = "JOKРазни") {
     jokes(limit: $limit, offset: $offset, where: {cat: {_eq: $_eq}}) {
