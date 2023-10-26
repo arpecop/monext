@@ -60,7 +60,7 @@ const simResults = simResultsOne.map(x => x.genid)
    a:extended.answers[i]?.text || ''
  }))
   
-  console.log(thread);
+ 
  
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
  const tagz = await gql('specifictags',{_in:flat.flatMap(x => x.hashtag)}) as {qtags:{count:number,hashtag:string}[]}
