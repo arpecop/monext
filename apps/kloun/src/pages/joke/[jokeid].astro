@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import { chunk } from "lodash";
-import { gql } from "../../components/gql";
+import {  sql } from "../../../data/hasura";
 import FacebookShare from "../../components/FacebookShare.astro";
 import FormatJoke from "../../components/FormatJoke.astro";
 import JokeThumbnail from "../../components/JokeThumbnail.astro";
@@ -12,14 +12,13 @@ import Layout from "../../layouts/Layout.astro";
 
 const { jokeid } = Astro.params;
  
- const resp =   await gql('jokesingle',{
-   _eq: jokeid,
-   limit: 30
- });
- console.log(resp);
+ 
+ const resp = await sql`select uid,joke from jokes where uid = ${jokeid} limit 1`;
+ 
+ 
 
-const  joke  = resp.joke;
-const jokes = resp.jokes.filter((x:{uid:string}) => x.uid !== jokeid)
+const  joke  = resp[0];
+const jokes = resp.filter((x:{uid:string}) => x.uid !== jokeid)
 const chunks = chunk(jokes, 3);
 
 if (!joke) {
