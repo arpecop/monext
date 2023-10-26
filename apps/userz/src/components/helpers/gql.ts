@@ -1,3 +1,8 @@
+import { neon } from "@neondatabase/serverless";
+
+const apiBaseUrl = process.env.DB_URL1 || "";
+export const sql = neon(apiBaseUrl);
+
 const queries = {
   questions: `
  query MyQuery($limit: Int = 10) {
@@ -10,8 +15,8 @@ const queries = {
      hashtag
    }
  }
-
   `,
+  questionssql: `select * from qlatest order by id desc limit 30;`,
   thread: `
 query MyQuery($_eq: String = "b82f99b1") {
         q: questions(where: {genid: {_eq: $_eq}, type: {_eq: "q"}}) {
@@ -30,8 +35,6 @@ query MyQuery($_eq: String = "b82f99b1") {
         text
       }
   }
-
-
   `,
   tags: `
   query MyQuery($_eq: String = "SafetyFirst") {
