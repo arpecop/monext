@@ -1,5 +1,4 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": ["*.ts", "*.astro"],
-  "types": ["bun-types"]
+  "include": ["*.ts", "*.astro"]
 }

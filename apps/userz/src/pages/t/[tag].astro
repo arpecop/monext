@@ -1,14 +1,22 @@
 ---
 import Layout from "../../components/Layout.astro";
 import {gql} from "../../components/helpers/gql";
+import { neon } from "@neondatabase/serverless";
+
+const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
 const { tag } = Astro.params as { tag: string };
  
- const resp  = await gql('tags',{_eq:tag}) as {qtags:{count:number, rows_with_tag:string[]}}
+ const resp  = await sql`select hashtag,rows_with_tag from qtags where hashtag = ${tag} limit 1;` 
  
- if(!resp.qtags[0]) {
+ if(!resp[0]) {
 	  return Astro.redirect('/404')
   }
- const arr = resp.qtags[0].rows_with_tag.split(', ').slice(0,50)
+ const arr = resp[0].rows_with_tag.split(', ') 
+ console.log(`'${arr.join(`','`)}'`);
+ const test = await sql`SELECT *
+ FROM questions
+ WHERE genid in (${arr})`
+ console.log(test);
  const questions =  await gql('tagquestions',{_in:arr}) as {questions:{genid:string; text:string}[]}
   
 ---
