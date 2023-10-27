@@ -8,7 +8,12 @@ export default defineConfig({
   adapter: cloudflare(),
   server: { port: 3000, host: true },
   experimental: {
-    assets: false,
+    assets: true,
+  },
+  image: {
+    service: {
+      entrypoint: "./src/image-service.ts",
+    },
   },
   integrations: [
     tailwind({
