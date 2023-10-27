@@ -15,16 +15,4 @@ export default defineConfig({
       config: { applyBaseStyles: false },
     }),
   ],
-  build: {
-    platform: "node",
-  },
-  vite: {
-    build: {
-      minify: true,
-    },
-    define: {
-      "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
-      "process.env.DB_URL1": JSON.stringify(process.env.DB_URL1),
-    },
-  },
 });
