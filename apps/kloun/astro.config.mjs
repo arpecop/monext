@@ -4,7 +4,7 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "hybrid",
+  output: "server",
   adapter: cloudflare(),
   server: { port: 3000, host: true },
   integrations: [
