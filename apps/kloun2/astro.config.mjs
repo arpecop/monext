@@ -7,6 +7,9 @@ export default defineConfig({
   output: "server",
   adapter: cloudflare(),
   server: { port: 3000, host: true },
+  experimental: {
+    assets: false,
+  },
   integrations: [
     tailwind({
       config: { applyBaseStyles: false },
