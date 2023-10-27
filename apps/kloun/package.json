@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build --platform=node",
     "export": "mkdir ./.next && cp -a ./dist ./out",
     "preview": "astro preview",
     "astro": "astro"

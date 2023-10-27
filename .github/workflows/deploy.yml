@@ -25,7 +25,7 @@ jobs:
           printenv
           cd ./apps/$APP
           npm install
-          npm run build
+          npm run build --platform=node
           npm run export
           rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm* ./package.json
           mv ./out ../../
