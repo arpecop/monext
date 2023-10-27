@@ -5,7 +5,10 @@ import tailwind from "@astrojs/tailwind";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    mode: "directory",
+    functionPerRoute: true,
+  }),
   server: { port: 3000, host: true },
   integrations: [
     tailwind({
@@ -14,7 +17,7 @@ export default defineConfig({
   ],
   vite: {
     build: {
-      minify: false,
+      minify: true,
     },
     define: {
       "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
