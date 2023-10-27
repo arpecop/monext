@@ -13,7 +13,8 @@ function countAlphanumeric(str: string) {
   const matches = str.match(regex);
   return matches ? matches.length : 0;
 }
- 
+const { newsid } = Astro.params as { newsid: string; slug?: string };
+const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { image: string,date:string; title:string,html?:Article } };
 function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
     if (typeof x === "string") {
@@ -41,13 +42,9 @@ function getLastP(arrz: (string | { type: string; content: string })[]) {
   });
   return arrx;
 }
-const { newsid } = Astro.params as { newsid: string; slug?: string };
 
-//const keys:string[] = slug.split('-').filter(x => x.length > 4)
 
-// const newsterms = await sqlquery('select * from keyz where key =  "'+keys.join('" or key = "zxxx')+'"');
-
-//const differencies = getUniqueStrings(keys,terms)
+ 
  
  function formatDate(date: Date): string {
    const options: Intl.DateTimeFormatOptions = {
@@ -73,7 +70,7 @@ type Article = {
    i: number;
    html?:Article
  }[]
-const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { image: string,date:string; title:string,html?:Article } };
+
  const { title,  date ,html} = newsfetch.newsbg_by_pk  
  let contentfetch:Article;
  if(!html) {
