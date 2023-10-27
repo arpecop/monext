@@ -18,7 +18,8 @@ jobs:
       - name: 😳 Build
         env:
           DB_URL2: ${{ secrets.DB_URL2 }}
-          DB_URL: ${{ secrets.DB_URL }}
+          DB_URL1: ${{ secrets.DB_URL1 }}
+          DB_URL: ${{ secrets.DB_URL1 }}
         run: |
           echo $APP
           printenv
