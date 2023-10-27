@@ -15,6 +15,9 @@ export default defineConfig({
       config: { applyBaseStyles: false },
     }),
   ],
+  build: {
+    platform: "node",
+  },
   vite: {
     build: {
       minify: true,
