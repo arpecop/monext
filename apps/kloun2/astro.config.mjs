@@ -8,7 +8,6 @@ export default defineConfig({
   adapter: cloudflare({
     mode: "directory",
   }),
-  server: { port: 3000, host: true },
   experimental: {
     assets: true,
   },
