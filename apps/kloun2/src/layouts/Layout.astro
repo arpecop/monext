@@ -1,0 +1,82 @@
+---
+import "../../global.css";
+import "../../other.css";
+import "@fontsource-variable/inter/index.css";
+
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+interface Props {
+title: string;
+description: string;
+image?: string;
+noContainer?: boolean;
+hideFooter?:boolean
+}
+const { title, description, image,hideFooter } = Astro.props;
+const currentPath = "https://kloun.lol" + Astro.url.pathname;
+---
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width" />
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<title>{title}</title>
+	<meta name="description" content={description || "Zero in on  social media presence by checking out their  profiles, featuring photos and engaging content" } />
+	<link rel="canonical" href={currentPath} />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:site" content="@site" />
+	<meta name="twitter:creator" content="@handle" />
+	<meta property="fb:app_id" content="281985576166744" />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:url" content={currentPath} />
+	<meta property="og:type" content="article" />
+	<meta property="og:image" content={image || "https://kloun.lol/images/og.jpg" } />
+	<meta property="og:image:alt" content="Og Image Alt" />
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta property="og:image:width" content="800" />
+	<meta property="og:image:height" content="600" />
+	<meta property="og:site_name" content="kloun.lol" />
+	<meta name="theme-color" media="(prefers-color-scheme: light)" content="light" />
+	{!hideFooter && (<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5476404733919333" crossorigin="anonymous"></script>)}
+</head>
+
+<body>
+	<div class="flex-col flex min-h-screen">
+		<Header />
+
+		<div class="container mx-auto  px-4 sm:px-6 lg:px-8 grow">
+			<slot />
+		</div>
+		<Footer />
+		<div id="fb-root"></div>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-PDX6T8DTFR"></script>
+		<script id="rendered-js" is:inline>
+			function fbshare(url) {
+				window.open(
+					"http://www.facebook.com/sharer.php?u=" +
+					encodeURIComponent(url),
+					"sharer",
+					"toolbar=0,status=0,width=626,height=436"
+				);
+				return false;
+			}
+			window.dataLayer = window.dataLayer || [];
+
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-PDX6T8DTFR");
+		</script>
+		<style is:global>
+			img {
+				content-visibility: auto;
+			}
+		</style>
+	</div>
+</body>
+
+</html>
