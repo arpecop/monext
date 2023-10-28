@@ -5,10 +5,20 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "types": ["vite/client"],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": [
+      "vite/client"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
   "compileOnSave": false,
-  "exclude": ["src", "wwwroot"],
-  "include": ["required.ts"]
+  "exclude": [
+    "src",
+    "wwwroot"
+  ],
+  "include": [
+    "required.ts"
+  ]
 }

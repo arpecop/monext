@@ -10,11 +10,12 @@ const { business } = Astro.params as { business?: string };
 console.log(business);
 
 const x = business ? business.split("/") : (["a"] as string[]);
- 
+let resp;
 let pagenum = 1;
 let items = 0;
 let slug = "";
- 
+let cats;
+let firms;
 
 if (business?.includes("/")) {
 	pagenum = x[1] ? Number(x[1].replace(/\//g, "")) : 1;
