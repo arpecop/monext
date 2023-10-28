@@ -8,7 +8,11 @@ export default defineConfig({
   adapter: cloudflare({
     mode: "directory",
   }),
-
+  build: {
+    rollupOptions: {
+      external: [/^node:.*/],
+    },
+  },
   image: {
     service: {
       entrypoint: "./src/image-service.ts",
