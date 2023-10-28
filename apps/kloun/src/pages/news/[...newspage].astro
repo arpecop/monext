@@ -1,0 +1,53 @@
+---
+export const prerender = false;
+import { viewh } from "../../../data/hasura.js";
+import CardNews from "../../components/CardNews.astro";
+import Pagination from "../../components/Pagination.astro";
+import Layout from "../../layouts/Layout.astro";
+const { newspage } = Astro.params as { newspage: string };
+
+const pagenum = newspage ? Number(newspage) : 1;
+
+const skip = pagenum * 30 - 30;
+const resp =   await viewh('newsbg',{
+  offset: skip,
+  limit: 30,
+});
+ 
+---
+
+<Layout
+  title={`Новини от на страница ${pagenum}`}
+  description={`Новини  `}
+  hideFooter={true}
+>
+  <div class="flex flex-wrap gap-3">
+    {
+      resp.newsbg.map(
+        ({
+          nid,
+          title,
+          date,
+          key,
+          image,
+          id
+        }: {
+          nid: string;
+          title: string;
+          date: string;
+          key: string;
+          image: string;
+          id:number;
+        }) => (
+          <CardNews title={title} img={image} date={date} key={key} nid={nid} id={id} />
+        )
+      )
+    }
+  </div>
+  <Pagination
+    items={resp.aggregator[0].total_count}
+    currentPage={pagenum}
+    pageSize={30}
+    prefix="/news/"
+  />  
+</Layout>

@@ -1,0 +1,46 @@
+---
+export const prerender = false;
+import {  viewh } from "../../data/hasura.js";
+ 
+import CatButton from "../components/CatButton.astro";
+import RudSense from "../components/RudSense.astro";
+import { slugify } from "../components/utils/formatter";
+import Layout from "../layouts/Layout.astro";
+const catsx = await  viewh(`aggregator`,{}) as {aggregator:{cat:string,total_count:number}[]};
+ 
+const cats =  catsx.aggregator.filter((x)=> x.cat).filter(x=> x.cat.includes("JOK") && !x.cat.includes("JOKEN"))
+    .filter((x: { total_count: number }) => x.total_count > 1)
+    .map((x: { cat: string; total_count: number }) => ({
+        cat: x.cat.replace("JOK", ""),
+        slug: slugify(x.cat.replace("JOK", "").replace("ъ", " ")),
+        count: x.total_count,
+    }))
+    .sort((a: { count: number }, b: { count: number }) => b.count - a.count);
+ 
+---
+
+<Layout
+    title="Вицове и забавни котки и мемета"
+    description="Вицове и забавни котки и мемета"
+    hideFooter={true}
+>
+    <RudSense main={true} />
+    <h1 class="text-5xl text-gradient">Вицове</h1>
+    <div class="my-3 flex w-full flex-wrap gap-3">
+        {
+            cats.map(
+                ({
+                    cat,
+                    slug,
+                    count,
+                }: {
+                    cat: string;
+                    slug: string;
+                    count: number;
+                }) => (
+                    <CatButton title={cat} url={"/cat/" + slug} count={count} />
+                )
+            )
+        }
+    </div>
+</Layout>
