@@ -18,21 +18,20 @@ jobs:
       - name: 😳 Build
         env:
           DB_URL2: ${{ secrets.DB_URL2 }}
-          DB_URL1: ${{ secrets.DB_URL1 }}
-          DB_URL: ${{ secrets.DB_URL1 }}
+          DB_URL: ${{ secrets.DB_URL }}
         run: |
           echo $APP
           printenv
           cd ./apps/$APP
           npm install
-          npm run build --platform=node
+          npm run build
           npm run export
           rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm* ./package.json
           mv ./out ../../
           mv ./.next ../../
           mv ecosystem.config.js ../../
           cd ../../
-          rm -rf ./package.json ./.env
+          rm -rf ./package.json
           mv ./pack.json ./package.json
           rm -rf ./apps ./packages ./.github
       - name: 🚀 Deploy

@@ -9,7 +9,7 @@
     "export": "mkdir ./.next && cp -a ./dist ./out",
     "preview": "astro preview",
     "astro": "astro"
-  }, 
+  },
   "dependencies": {
     "@astrojs/cloudflare": "^7.0.0",
     "@astrojs/tailwind": "^5.0.0",
