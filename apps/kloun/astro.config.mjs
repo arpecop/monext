@@ -6,11 +6,6 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   output: "server",
   adapter: cloudflare(),
-  build: {
-    rollupOptions: {
-      external: [/^node:.*/],
-    },
-  },
   integrations: [
     tailwind({
       config: { applyBaseStyles: false },
