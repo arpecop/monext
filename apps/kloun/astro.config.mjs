@@ -11,7 +11,6 @@ export default defineConfig({
       external: [/^node:.*/],
     },
   },
-
   integrations: [
     tailwind({
       config: { applyBaseStyles: false },
