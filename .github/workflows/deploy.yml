@@ -32,7 +32,7 @@ jobs:
           mv ./.next ../../
           mv ecosystem.config.js ../../
           cd ../../
-          rm -rf ./package.json
+          rm -rf ./package.json ./.env
           mv ./pack.json ./package.json
           rm -rf ./apps ./packages ./.github
       - name: 🚀 Deploy
