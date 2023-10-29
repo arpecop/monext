@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import { gql } from "../../components/gql";
+import {  sql } from "../../../data/hasura";
 import JokeThumbnail, { Doc } from "../../components/JokeThumbnail.astro";
 import Pagination from "../../components/Pagination.astro";
 import RudSense from "../../components/RudSense.astro";
@@ -12,11 +12,15 @@ const cat = jokecats.find((xx) => xx.slug === x[0])?.cat;
 const pagenum = x[1] ? Number(x[1]) : 1;
 const skip = pagenum * 30 - 30;
 
-const resp =   await gql('jokescat',{
-  _eq:'JOK'+cat,
-  limit: 30,
-  offset: skip,
-});
+ 
+const respx = sql`select uid,joke from jokes where cat = ${'JOK'+cat} LIMIT 30 OFFSET ${skip}`;
+const respxx = sql`select  total_count from aggregator where cat_with_suffix = ${'JOK'+cat} LIMIT 1`;
+
+const resp = await Promise.all([respx, respxx]).then((results) => ({
+  aggregator: results[1],
+  jokes: results[0],
+}));
+ 
 ---
 
 <Layout
