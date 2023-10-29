@@ -1,23 +1,24 @@
 ---
+export const prerender = false;
+ 
+import { viewh } from "../../data/hasura";
 import CardNews from "../components/CardNews.astro";
 import CatButton from "../components/CatButton.astro";
 import RudSense from "../components/RudSense.astro";
 import { jokecats } from "../components/utils/data/jokecats.js";
 import Layout from "../layouts/Layout.astro";
-import { neon } from "@neondatabase/serverless";
-const sql = neon(process.env.DB_URL1);
- const newsxx = await sql`select title,image,nid,date,id  from newsbg where cat='NewsBG' order by id desc limit 30;`;
- 
+const newsx = viewh('newsbg',{ offset: 0, limit: 10 });
 
 const memesx = fetch(
-  `https://pr0gramm.com/api/items/get?flags=1&promoted=1&cache=7200`
+  `https://cache.monastro.workers.dev/proxy?url=${encodeURIComponent(
+    "https://pr0gramm.com/api/items/get?flags=1&promoted=1&cache=7200"
+  )}`
 ).then((res) => res.json());
 
-const resp = await Promise.all([newsxx, memesx]).then((results) => ({
+const resp = await Promise.all([newsx, memesx]).then((results) => ({
   memes: results[1].items,
   news: results[0],
 }));
- 
 
  
 const { news, memes } = resp;
@@ -25,7 +26,7 @@ const { news, memes } = resp;
 ---
 
 <Layout
-  title="Клоунада? Вземете дневната си доза смях и новини в kloun.lol!"
+  title="Вицове и забавни котки и мемета"
   description="Вицове и забавни котки и мемета"
 >
  
@@ -43,30 +44,28 @@ const { news, memes } = resp;
   </p>
      </div>
    </div>
-    
- 
- 
+   
   <h1 class="text-3xl font-black">Актуално</h1>
   <RudSense />
   <div class="flex flex-wrap gap-3">
     {
-      news.map(
+      news.newsbg.map(
         ({
           nid,
           title,
           date,
-          
+          key,
           image,
           id
         }: {
           nid: string;
           title: string;
           date: string;
- 
+          key: string;
           image: string;
           id:number;
         }) => (
-          <CardNews title={title} img={image} date={date} key={nid} nid={nid} id={id} />
+          <CardNews title={title} img={image} date={date} key={key} nid={nid} id={id} />
         )
       )
     }
