@@ -16,7 +16,7 @@ const { jokeid } = Astro.params;
    _eq: jokeid,
    limit: 30
  });
- console.log(resp);
+ 
 
 const  joke  = resp.joke;
 const jokes = resp.jokes.filter((x:{uid:string}) => x.uid !== jokeid)
