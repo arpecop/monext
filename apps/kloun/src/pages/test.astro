@@ -1,0 +1,10 @@
+---
+import {db} from '../components/db';
+const id = '01HDXRTCCYEJAQ76HDY6NKS45V'
+const test =  await db.selectFrom('newsbg')
+    .where('nid', '=', id)
+    .selectAll()
+    .executeTakeFirst()
+---
+
+{JSON.stringify(test)}

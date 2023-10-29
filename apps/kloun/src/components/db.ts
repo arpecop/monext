@@ -10,6 +10,7 @@ const dialect = new PostgresDialect({
     password: process.env.DB_URL1?.split(":")[2].split("@")[0] || "",
     port: 5432,
     max: 1000,
+    ssl: true,
   }),
 });
 
