@@ -1,5 +1,11 @@
 const urlh = "https://rudix.hasura.app/api/rest/";
 
+import { neon } from "@neondatabase/serverless";
+
+const apiBaseUrl = process.env.DB_URL1 || "";
+console.log(apiBaseUrl);
+export const sql = neon(apiBaseUrl);
+
 export const viewh = (endpoint: string, params?: any) => {
   const urlparams = new URLSearchParams(params).toString();
   console.log(`${urlh}${endpoint}?${urlparams}`, "<--- urlx");
@@ -27,4 +33,4 @@ export default {
   geth,
 };
 
-//dasdasddasd
+//dasdasd
