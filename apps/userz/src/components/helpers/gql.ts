@@ -1,7 +1,18 @@
-import { neon } from "@neondatabase/serverless";
-
-const apiBaseUrl = process.env.DB_URL1 || "";
-export const sql = neon(apiBaseUrl);
+export const sql = async (query: string) => {
+  return new Promise((resolve) => {
+    fetch("https://sql.monastro.workers.dev/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        resolve(result);
+      });
+  });
+};
 
 const queries = {
   questions: `

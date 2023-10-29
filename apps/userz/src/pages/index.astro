@@ -4,8 +4,8 @@ import { sql} from "../components/helpers/gql";
 import  chunk  from 'lodash/chunk';
 type Data = {genid:string; text:string}[]
  
-const resp2  =  sql(`select text,genid from qlatest order by id desc limit 30;`);
-const resp3 =  sql(`select hashtag,count from qtags order by count desc limit 30;`);
+const resp2 = sql(`select text,genid from qlatest order by id desc limit 30;`);
+const resp3 = sql(`select hashtag,count from qtags order by count desc limit 30;`);
  
 const resp = await Promise.all([resp2, resp3]).then((values) => { 
 	return({qlatest:values[0],qtags:values[1]})}) as {qlatest: Data, qtags:{hashtag:string,count:number}[]};

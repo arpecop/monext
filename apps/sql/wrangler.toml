@@ -1,0 +1,11 @@
+name = "sql"
+main = "src/index.ts"
+compatibility_date = "2022-05-16"
+usage_model = "bundled"
+env = { }
+
+[triggers]
+crons = [ ]
+
+[ai]
+binding = "AI"
