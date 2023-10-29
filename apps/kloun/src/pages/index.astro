@@ -4,8 +4,8 @@ import CatButton from "../components/CatButton.astro";
 import RudSense from "../components/RudSense.astro";
 import { jokecats } from "../components/utils/data/jokecats.js";
 import Layout from "../layouts/Layout.astro";
-import {  sql } from "../../data/hasura";
-//const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
+import { neon } from "@neondatabase/serverless";
+const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
  const newsxx = await sql`select title,image,nid,date,id  from newsbg where cat='NewsBG' order by id desc limit 30;`;
  
 
