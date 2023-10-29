@@ -12,9 +12,4 @@ export default defineConfig({
       config: { applyBaseStyles: false },
     }),
   ],
-  vite: {
-    define: {
-      "process.env.DB_URL1": process.env.DB_URL1,
-    },
-  },
 });
