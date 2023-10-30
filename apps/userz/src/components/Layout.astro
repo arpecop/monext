@@ -41,8 +41,8 @@ const { title, description, logo, tags, topic } = Astro.props;
 				<div class="flex items-center absolute right-4">
 					<a
 						href="/auth"
-						class="text-md text-blue-600 hover:underline font-black"
-						>Sign In</a
+						class="text-md text-emerald-600 hover:underline font-black"
+						><span class="material-symbols-outlined absolute -ml-6 -mt-0.5">badge</span>Sign In</a
 					>
 				</div>
 			</div>
@@ -57,7 +57,7 @@ const { title, description, logo, tags, topic } = Astro.props;
 		<nav>
 			<div class="max-w-screen-xl px-4 py-3 mx-auto">
 				<div class="flex items-center">
-					<ul class="flex flex-wrap space-x-1 text-sm">
+					<ul class="flex flex-wrap space-x-1 text-md">
 						{
 							tags &&
 								tags
@@ -82,11 +82,11 @@ const { title, description, logo, tags, topic } = Astro.props;
 															? "#"
 															: "/t/" + hashtag
 													}
-													class="text-black block px-3 m-1 bg-emerald-600 rounded-2xl lowercase font-black flex"
+													class="text-black block px-3 mx-1 mb-3 bg-emerald-600 rounded-2xl lowercase font-black flex text-md"
 												>
 													<>
-														<span class="material-symbols-outlined text-sm -ml-2 ">
-															tag{" "}
+														<span class="material-symbols-outlined  -ml-2 ">
+															tag
 														</span>
 														<span>{hashtag} </span>
 													</>

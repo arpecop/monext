@@ -37,7 +37,6 @@ LIMIT 10 OFFSET 1;
 const prom = await Promise.all([respOne, respTwo,respOneThread]).then((values) => {
   return({resp:values[0][0],simResultsOne:values[1],threadx:values[2]})
 }) as { resp:{text:string},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
-console.log(prom);
 const {simResultsOne,resp,threadx} = prom
 const simResults = simResultsOne.map(x => x.genid)
 
@@ -70,22 +69,17 @@ const simResults = simResultsOne.map(x => x.genid)
  
 ---
 <Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered}>	 
-	   <article class="prose prose-invert prose-headings:underline mx-auto">
+    <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
  
-      {  rest.map(({text},i)  =>  {
+      {  rest.map(({text})  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
       )}
-       <!-- ... -->
-       
        {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
-        
           {thread.map((q) => ( <div class="space-x-3">
                  <a class="flex items-center" href={'/'+q.q.genid}>
-              
-                 <h2 class="pl-2 text-gray-200 underline"> {q.q.text.replace('?','')}</h2>
+                    <h2 class="pl-2 text-gray-200 underline"> {q.q.text.replace('?','')}</h2>
                  </a>
-     
          { formatter(q.a).map(x => (<p>{x}</p>))}
              </div>))}
        
