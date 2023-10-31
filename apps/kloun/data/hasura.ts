@@ -1,14 +1,21 @@
 const urlh = "https://rudix.hasura.app/api/rest/";
 
-import { neon } from "@neondatabase/serverless";
+export async function sql(query: string) {
+  // Default options are marked with *
+  const response = await fetch("https://sql.monastro.workers.dev", {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
 
-const apiBaseUrl = process.env.DB_URL1 || "";
-console.log(apiBaseUrl);
-export const sql = neon(apiBaseUrl);
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify({ query }), // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
 
 export const viewh = (endpoint: string, params?: any) => {
   const urlparams = new URLSearchParams(params).toString();
-  console.log(`${urlh}${endpoint}?${urlparams}`, "<--- urlx");
   const res = fetch(`${urlh}${endpoint}${params ? "?" + urlparams : ""}`).then(
     (response) => response.json()
   );

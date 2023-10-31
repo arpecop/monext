@@ -1,13 +1,15 @@
 ---
 export const prerender = false;
  
-import { viewh } from "../../data/hasura";
+import { viewh,sql } from "../../data/hasura";
 import CardNews from "../components/CardNews.astro";
 import CatButton from "../components/CatButton.astro";
 import RudSense from "../components/RudSense.astro";
 import { jokecats } from "../components/utils/data/jokecats.js";
 import Layout from "../layouts/Layout.astro";
 const newsx = viewh('newsbg',{ offset: 0, limit: 10 });
+ const newsxx = sql(`select title,image,nid,date,id  from newsbg where cat='NewsBG' order by id desc limit 30;`);
+ 
 
 const memesx = fetch(
   `https://cache.monastro.workers.dev/proxy?url=${encodeURIComponent(
@@ -15,13 +17,16 @@ const memesx = fetch(
   )}`
 ).then((res) => res.json());
 
-const resp = await Promise.all([newsx, memesx]).then((results) => ({
+const resp = await Promise.all([newsxx, memesx]).then((results) => ({
   memes: results[1].items,
   news: results[0],
 }));
+ 
 
  
 const { news, memes } = resp;
+
+ 
  
 ---
 
@@ -50,7 +55,7 @@ const { news, memes } = resp;
   <RudSense />
   <div class="flex flex-wrap gap-3">
     {
-      news.newsbg.map(
+      news.map(
         ({
           nid,
           title,
