@@ -13,16 +13,12 @@ import Layout from "../../layouts/Layout.astro";
 
 const { jokeid } = Astro.params;
  
- 
 const x1 = sql(`select joke,uid from jokes where uid = '${jokeid}' limit 1`)
 const x2 = sql(`select  joke,uid  from jokes where uid <= '${jokeid}' and lang= 'bg' limit 30 offset 1`)
- 
  const resp = await Promise.all([x1, x2]).then((results) => ({
    joke: results[0],
    jokes: results[1],
  }));
- 
- 
 const joke  = resp.joke[0];
  
 const jokes = resp.jokes.filter((x:{uid:string}) => x.uid !== jokeid)

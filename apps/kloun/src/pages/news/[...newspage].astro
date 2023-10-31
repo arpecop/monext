@@ -1,6 +1,7 @@
 ---
 export const prerender = false;
-import { viewh } from "../../../data/hasura.js";
+ 
+import { sql } from "../../../data/hasura";
 import CardNews from "../../components/CardNews.astro";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -9,10 +10,15 @@ const { newspage } = Astro.params as { newspage: string };
 const pagenum = newspage ? Number(newspage) : 1;
 
 const skip = pagenum * 30 - 30;
-const resp =   await viewh('newsbg',{
-  offset: skip,
-  limit: 30,
-});
+ 
+const x1 = sql(`select nid,title,date,image,id from newsbg where cat = 'NewsBG' order by id desc limit 30  offset ${skip}`)
+const x2 = sql(`select total_count from aggregator where cat_with_suffix = 'NewsBG' limit 1`)
+ const resp = await Promise.all([x1, x2]).then((results) => ({
+   newsbg: results[0],
+   aggregator: results[1],
+ }));
+ 
+ console.log(resp);
  
 ---
 
