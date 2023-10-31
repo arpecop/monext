@@ -4,6 +4,7 @@ import {uniqBy} from "lodash";
 
  
 import { gql } from "../../../../components/gql";
+import { sql } from "../../../../data/hasura";
 
 import CardNews from "../../../../components/CardNews.astro";
 import RudSense from "../../../../components/RudSense.astro";
@@ -22,9 +23,6 @@ function getLastP(arrz: (string | { type: string; content: string })[]) {
       return { ...x, i };
     }
   });
-      
-
-
   const emptylines = arr.filter((x) => countAlphanumeric(x.content) !== 0);
   const lastPElemIndex = emptylines.reduce((acc, curr, index) => {
     if (curr.type === "p") {
@@ -42,13 +40,6 @@ function getLastP(arrz: (string | { type: string; content: string })[]) {
   return arrx;
 }
 const { newsid } = Astro.params as { newsid: string; slug?: string };
-
-//const keys:string[] = slug.split('-').filter(x => x.length > 4)
-
-// const newsterms = await sqlquery('select * from keyz where key =  "'+keys.join('" or key = "zxxx')+'"');
-
-//const differencies = getUniqueStrings(keys,terms)
- 
  function formatDate(date: Date): string {
    const options: Intl.DateTimeFormatOptions = {
      year: "numeric",
@@ -80,13 +71,9 @@ const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { imag
     contentfetch = await fetch(
      `https://cdn.kloun.lol/${newsid}.json`
    ).then((res) => res.json()) as Article;
-   
  } else {
    contentfetch = html
  }
-
- 
-
 ---
 
 <Layout
@@ -100,7 +87,7 @@ const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { imag
   <div class="flex justify-center items-center">
     <div class="p-1 rounded-lg bg-gradient-to-r from-fuchsia-500 to-cyan-500">
       <img
-        src={"https://imgnews.kloun.lol/api/img/" + newsid + ".jpg"}
+        src={"/api/img/" + newsid + ".jpg"}
         class="rounded-md"
         loading="lazy"
         alt={title}
