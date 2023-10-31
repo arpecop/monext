@@ -1,14 +1,14 @@
 ---
 export const prerender = false;
  
-import { viewh,sql } from "../../data/hasura";
+import { sql } from "../../data/hasura";
 import CardNews from "../components/CardNews.astro";
 import CatButton from "../components/CatButton.astro";
 import RudSense from "../components/RudSense.astro";
 import { jokecats } from "../components/utils/data/jokecats.js";
 import Layout from "../layouts/Layout.astro";
-const newsx = viewh('newsbg',{ offset: 0, limit: 10 });
- const newsxx = sql(`select title,image,nid,date,id  from newsbg where cat='NewsBG' order by id desc limit 30;`);
+ 
+const newsxx = sql(`select title,image,nid,date,id  from newsbg where cat='NewsBG' order by id desc limit 30;`);
  
 
 const memesx = fetch(
