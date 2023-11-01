@@ -24,7 +24,7 @@ function removeHashtags(inputString: string): string {
 }
 
 
-const respOne  =  sql`select text from questions where genid = ${threadid} and type = 'q'`
+const respOne  =  sql`select id,text,image from questions where genid = ${threadid} and type = 'q'`
 const respOneThread  =  sql`select text,genid from questions where genid = ${threadid} and type = 'a'`
 const respTwo =   sql2`
  SELECT genid
@@ -36,13 +36,15 @@ LIMIT 10 OFFSET 1;
 
 const prom = await Promise.all([respOne, respTwo,respOneThread]).then((values) => {
   return({resp:values[0][0],simResultsOne:values[1],threadx:values[2]})
-}) as { resp:{text:string},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
+}) as { resp:{text:string, image?: string,id:number},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
 const {simResultsOne,resp,threadx} = prom
 const simResults = simResultsOne.map(x => x.genid)
 
  
  const rest=  threadx;
  const question= resp.text;
+ const image = resp.image;
+ console.log(image);
  const formatter = (text:string) => {
 	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
 	 return(resp)
@@ -71,7 +73,9 @@ const simResults = simResultsOne.map(x => x.genid)
 <Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered}>	 
     <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
- 
+       {image && image !== 'none' && (<div>
+         <img src={"https://cdn.kloun.lol/"+resp.id+".jpg"} class="rounded-md">
+         </div>)}
       {  rest.map(({text})  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
       )}

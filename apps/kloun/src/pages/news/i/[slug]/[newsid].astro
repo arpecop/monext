@@ -1,10 +1,8 @@
 ---
 export const prerender = false;
 import {uniqBy} from "lodash";
-
  
-import { gql } from "../../../../components/gql";
-import { sql } from "../../../../data/hasura";
+import { sql } from "../../../../../data/hasura";
 
 import CardNews from "../../../../components/CardNews.astro";
 import RudSense from "../../../../components/RudSense.astro";
@@ -14,7 +12,11 @@ function countAlphanumeric(str: string) {
   const matches = str.match(regex);
   return matches ? matches.length : 0;
 }
+const { newsid } = Astro.params as { newsid: string; slug?: string };
  
+const newsfetch = await sql(`select * from newsbg where nid >= '${newsid}' limit 10`)
+ 
+ const { title,  date ,html} = newsfetch[0]  
 function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
     if (typeof x === "string") {
@@ -39,7 +41,7 @@ function getLastP(arrz: (string | { type: string; content: string })[]) {
   });
   return arrx;
 }
-const { newsid } = Astro.params as { newsid: string; slug?: string };
+
  function formatDate(date: Date): string {
    const options: Intl.DateTimeFormatOptions = {
      year: "numeric",
@@ -64,8 +66,7 @@ type Article = {
    i: number;
    html?:Article
  }[]
-const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { image: string,date:string; title:string,html?:Article } };
- const { title,  date ,html} = newsfetch.newsbg_by_pk  
+
  let contentfetch:Article;
  if(!html) {
     contentfetch = await fetch(
@@ -98,7 +99,7 @@ const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { imag
     <RudSense type="inarticle" />
     <article class="leading-relaxed" id="article">
       {
-        getLastP(    html || contentfetch.html ).map(
+        getLastP(  html || contentfetch.html ).map(
           ({
             type,
             content,
@@ -146,7 +147,7 @@ const newsfetch = await gql(`newssingle`,{_eq:newsid}) as { newsbg_by_pk: { imag
   </div>
   <div class="flex flex-wrap gap-3">
     {
-      newsfetch.newsbg.map(({ nid, title, key, date, image,id }) => (
+      newsfetch.map(({ nid, title, key, date, image,id }) => (
         <CardNews
           title={title}
           img={image}
