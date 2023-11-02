@@ -1,12 +1,13 @@
 ---
 type Thread = {genid:string; text:string}[]
-import { neon } from '@neondatabase/serverless';
+import { neon,Client } from '@neondatabase/serverless';
 import Layout from "../components/Layout.astro";
 import {gql} from "../components/helpers/gql";
 import {uniq} from 'lodash'
 
 const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
 const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
+
 
 const { threadid } = Astro.params as { threadid: string };
 
@@ -44,7 +45,7 @@ const simResults = simResultsOne.map(x => x.genid)
  const rest=  threadx;
  const question= resp.text;
  const image = resp.image;
- console.log(image);
+ 
  const formatter = (text:string) => {
 	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
 	 return(resp)
@@ -53,8 +54,15 @@ const simResults = simResultsOne.map(x => x.genid)
  if(!threadx[0]) {
 	  return Astro.redirect('/404')
   } 
-  
- const extended  = await gql('specificids',{_in:simResults})  as {questions:{genid:string,text:string}[],answers:{genid:string,text:string}[]}
+ 
+ 
+ 
+const extended1 = await sql('SELECT text,genid,type FROM questions WHERE  genid IN ('+simResults.map(id => `'${id}'`).join(', ')+');');
+const questions = extended1.filter(x=> x.type === 'q')
+const answers  = extended1.filter(x=> x.type === 'a')
+
+ const extended  = {questions,answers:questions.map(x => answers.find(xone => xone.genid === x.genid))} as {questions:{genid:string,text:string}[],answers:{genid:string,text:string}[]};
+ 
 
  const thread = extended.questions.map((x,i) => ({
    q:{text:x.text,genid:x.genid},
@@ -62,10 +70,11 @@ const simResults = simResultsOne.map(x => x.genid)
  }))
   
  
- 
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
- const tagz = await gql('specifictags',{_in:flat.flatMap(x => x.hashtag)}) as {qtags:{count:number,hashtag:string}[]}
- const tagzfiltered = tagz.qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)
+ 
+const qtags = await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+flat.flatMap(x => "'"+x.hashtag+"'").join(', ')+');') 
+ 
+ const tagzfiltered =  qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)  as {count:number,hashtag:string}[] 
  
  
  
@@ -73,7 +82,7 @@ const simResults = simResultsOne.map(x => x.genid)
 <Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered}>	 
     <article class="prose prose-invert prose-headings:underline mx-auto">
        <h1 class="text-white font-medium">{question}</h1>
-       {image && image !== 'none' && (<div>
+       {image && image !== 'none' && (<div class="justify-center flex">
          <img src={"https://cdn.userz.net/"+resp.id+".jpg"} class="rounded-md">
          </div>)}
       {  rest.map(({text})  =>  {
