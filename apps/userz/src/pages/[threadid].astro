@@ -1,14 +1,10 @@
 ---
 type Thread = {genid:string; text:string}[]
-import { neon,Client } from '@neondatabase/serverless';
+import { neon  } from '@neondatabase/serverless';
 import Layout from "../components/Layout.astro";
-import {gql} from "../components/helpers/gql";
 import {uniq} from 'lodash'
-
 const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
 const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
-
-
 const { threadid } = Astro.params as { threadid: string };
 
 async function extractUniqueHashtags(inputString: string): Promise<{hashtag:string,count:number}[]> {
@@ -25,10 +21,10 @@ function removeHashtags(inputString: string): string {
 }
 
 
-const respOne  =  sql`select id,text,image from questions where genid = ${threadid} and type = 'q'`
+const respOne = sql`select id,text,image from questions where genid = ${threadid} and type = 'q'`
 const respOneThread  =  sql`select text,genid from questions where genid = ${threadid} and type = 'a'`
-const respTwo =   sql2`
- SELECT genid
+const respTwo = sql2`
+SELECT genid
 FROM questions
 ORDER BY embed <->
 (SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
@@ -38,6 +34,8 @@ LIMIT 10 OFFSET 1;
 const prom = await Promise.all([respOne, respTwo,respOneThread]).then((values) => {
   return({resp:values[0][0],simResultsOne:values[1],threadx:values[2]})
 }) as { resp:{text:string, image?: string,id:number},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
+ 
+
 const {simResultsOne,resp,threadx} = prom
 const simResults = simResultsOne.map(x => x.genid)
 
@@ -79,12 +77,28 @@ const qtags = await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+fla
  
  
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered}>	 
+<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	 
     <article class="prose prose-invert prose-headings:underline mx-auto">
-       <h1 class="text-white font-medium">{question}</h1>
-       {image && image !== 'none' && (<div class="justify-center flex">
-         <img src={"https://cdn.userz.net/"+resp.id+".jpg"} class="rounded-md">
-         </div>)}
+       
+       {image && image !== 'none' ? ( 
+         <div class="relative">
+           <img
+            src={"https://cdn.userz.net/"+resp.id+".jpg"}
+             alt="Cover image"
+             width="1250"
+             height="500"
+             class="object-cover w-full h-64 lg:h-96 rounded-lg"
+             style="aspect-ratio: 1250 / 500; object-fit: cover;"
+           />
+           <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
+             <h1 class="text-3xl   text-white text-center bg-black bg-opacity-50 rounded-lg p-2">
+               {question}
+             </h1>
+           </div>
+         </div>
+          
+         
+          ) :(<h1 class="text-white font-medium">{question}</h1>)}
       {  rest.map(({text})  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
       )}
