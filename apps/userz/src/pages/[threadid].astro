@@ -84,11 +84,11 @@ const qtags = await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+fla
          <div class="relative">
            <img
             src={"https://cdn.userz.net/"+resp.id+".jpg"}
-             alt="Cover image"
              width="1250"
              height="500"
              class="object-cover w-full h-64 lg:h-96 rounded-lg"
              style="aspect-ratio: 1250 / 500; object-fit: cover;"
+             alt={question}
            />
            <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
              <h1 class="text-3xl   text-white text-center bg-black bg-opacity-50 rounded-lg p-2">
