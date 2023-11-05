@@ -77,28 +77,27 @@ const qtags = await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+fla
  
  
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	 
-    <article class="prose prose-invert prose-headings:underline mx-auto">
+<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	
+  {image && image !== 'none' ? ( 
+   <div class="relative">
+     <img
+      src={"https://cdn.userz.net/"+resp.id+".jpg"}
+       width="1250"
+       height="500"
+       class="object-cover w-full h-64 lg:h-96"
+       style="aspect-ratio: 1250 / 500; object-fit: cover;"
+       alt={question}
+     />
+     <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
+       <h1 class="text-3xl   text-white text-center bg-black bg-opacity-80 rounded-lg p-2">
+         {question}
+       </h1>
+     </div>
+   </div>
+    ) :(<h1 class="text-white font-medium text-3xl text-center">{question}</h1>)} 
+    <article class="prose prose-invert  mx-auto">
        
-       {image && image !== 'none' ? ( 
-         <div class="relative">
-           <img
-            src={"https://cdn.userz.net/"+resp.id+".jpg"}
-             width="1250"
-             height="500"
-             class="object-cover w-full h-64 lg:h-96 rounded-lg"
-             style="aspect-ratio: 1250 / 500; object-fit: cover;"
-             alt={question}
-           />
-           <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
-             <h1 class="text-3xl   text-white text-center bg-black bg-opacity-50 rounded-lg p-2">
-               {question}
-             </h1>
-           </div>
-         </div>
-          
-         
-          ) :(<h1 class="text-white font-medium">{question}</h1>)}
+    
       {  rest.map(({text})  =>  {
         return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
       )}
