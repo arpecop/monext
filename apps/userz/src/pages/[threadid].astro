@@ -16,7 +16,7 @@ async function extractUniqueHashtags(inputString: string): Promise<{hashtag:stri
 } 
 function removeHashtags(inputString: string): string {
   const hashtagRegex = /#\w+/g;
-  const stringWithoutHashtags = inputString.replace(hashtagRegex, '');
+  const stringWithoutHashtags = inputString.replaceAll('\\n','\n').replace(hashtagRegex, '');
   return stringWithoutHashtags;
 }
 
