@@ -13,6 +13,7 @@
   "dependencies": {
     "@astro-reactive/form": "^0.9.0",
     "@astro-reactive/validator": "^0.4.0",
+    "@astrojs/sitemap": "^3.0.3",
     "@astrojs/tailwind": "^5.0.2",
     "@jsfe/core": "^0.0.5",
     "@lucia-auth/adapter-postgresql": "^2.0.1",

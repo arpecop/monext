@@ -34,6 +34,7 @@ LIMIT 10 OFFSET 1;
 const prom = await Promise.all([respOne, respTwo,respOneThread]).then((values) => {
   return({resp:values[0][0],simResultsOne:values[1],threadx:values[2]})
 }) as { resp:{text:string, image?: string,id:number},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
+console.log(prom);
  
 
 const {simResultsOne,resp,threadx} = prom
@@ -54,8 +55,10 @@ const simResults = simResultsOne.map(x => x.genid)
   } 
  
  
- 
-const extended1 = await sql('SELECT text,genid,type FROM questions WHERE  genid IN ('+simResults.map(id => `'${id}'`).join(', ')+');');
+ const qury = 'SELECT text,genid,type FROM questions WHERE  genid IN ('+simResults.map(id => `'${id}'`).join(', ')+');'
+
+const extended1 = await sql(qury);
+
 const questions = extended1.filter(x=> x.type === 'q')
 const answers  = extended1.filter(x=> x.type === 'a')
 
@@ -70,11 +73,14 @@ const answers  = extended1.filter(x=> x.type === 'a')
  
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
  
-const qtags = await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+flat.flatMap(x => "'"+x.hashtag+"'").join(', ')+');') 
- 
- const tagzfiltered =  qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)  as {count:number,hashtag:string}[] 
- 
- 
+ let qtags;
+ let tagzfiltered:{count:number,hashtag:string}[]
+ if(flat[0]) {
+ qtags =   await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+flat.flatMap(x => "'"+x.hashtag+"'").join(', ')+');')  
+ tagzfiltered =  qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)  
+ } else {
+   tagzfiltered = []
+ }
  
 ---
 <Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	

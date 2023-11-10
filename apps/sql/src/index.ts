@@ -17,18 +17,19 @@ export default {
 			}
 		}
 
-		const client = new Client(env.DATABASE_URL);
-		await client.connect();
-
 		if (request.method === 'POST') {
 			const reqBody = await readRequestBody(request);
-			const query = JSON.parse(reqBody)
-				.query.replaceAll('DROP', '')
+
+			const { query, db } = JSON.parse(reqBody);
+			const client = new Client(db ? env.DATABASE_ML : env.DATABASE_URL);
+			await client.connect();
+			const queryx = query
+				.replaceAll('DROP', '')
 				.replaceAll('drop', '')
 				.replaceAll('delete', '')
 				.replaceAll('delete', '')
 				.replaceAll('+', ' ') as string;
-			const { rows } = await client.query(query);
+			const { rows } = await client.query(queryx);
 			ctx.waitUntil(client.end());
 			return new Response(JSON.stringify(rows));
 		} else if (request.method === 'GET') {
