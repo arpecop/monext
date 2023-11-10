@@ -5,7 +5,7 @@ import  chunk  from 'lodash/chunk';
 const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
 type Data = {genid:string; text:string}[]
  
-const resp2 = sql`select text,genid from qlatest order by id desc limit 30;`;
+const resp2 = sql`select text,genid from questions where type = 'q' order by id desc limit 30;`;
 const resp3 = sql`select hashtag,count from qtags order by count desc limit 30;`;
  
 const resp = await Promise.all([resp2, resp3]).then((values) => { 
