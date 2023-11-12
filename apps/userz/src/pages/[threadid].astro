@@ -42,8 +42,8 @@ const simResults = simResultsOne.map(x => x.genid)
 
  
  const rest=  threadx;
- const question= resp.text;
- const image = resp.image;
+ const question= resp?.text ;
+ const image = resp?.image;
  
  const formatter = (text:string) => {
 	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
