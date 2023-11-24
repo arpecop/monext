@@ -4,8 +4,14 @@ import { neon } from '@neondatabase/serverless';
 import  chunk  from 'lodash/chunk';
 const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
 type Data = {genid:string; text:string}[]
+const currentDate = new Date()
+
+// Getting the day of the year
+const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1) * 849;
+
  
-const resp2 = sql`select text,genid from questions where type = 'q' order by id desc limit 30;`;
+ 
+const resp2 = sql`select text,genid from questions where type = 'q' order by id desc limit 30 offset ${dayOfYear};`;
 const resp3 = sql`select hashtag,count from qtags order by count desc limit 30;`;
  
 const resp = await Promise.all([resp2, resp3]).then((values) => { 
@@ -13,7 +19,7 @@ const resp = await Promise.all([resp2, resp3]).then((values) => {
 const chunks = chunk(resp.qlatest, 10) as Data[]
  
 ---
-<Layout title="userz dot net." tags={resp.qtags}>
+<Layout title="userz dot net." tags={resp.qtags}> 
 		<div class="container mx-auto">
 		<div class="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3">
 		{chunks.map((chunk) => (
@@ -21,7 +27,8 @@ const chunks = chunk(resp.qlatest, 10) as Data[]
 			{
 				chunk.map(({genid,text}) => (
 					<div class="grid">
-					<a href={'/'+genid} class="p-6  m-3  border border-emerald-600 border-4 rounded-lg shadow hover:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+					<a href={'/'+genid} class="p-6  m-3  border border-emerald-600 border-4 rounded-lg shadow hover:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 relative">
+						<div class="absolute -top-1 -right-0.5 bg-emerald-600 px-2 rounded-bl-md  rounded-tr-lg text-xs text-black">{new Date().toISOString().split('T')[0]}</div>
 						<h5 class="mb-2 text-xl xs:text-2xl sm:text-3xl font-bold tracking-tight text-gray-200">	{text.replaceAll('?',' ')}</h5>
 					</a>
 					</div>
