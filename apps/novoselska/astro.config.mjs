@@ -5,5 +5,5 @@ import tailwind from '@astrojs/tailwind';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://dr-novoselska.com/',
-  integrations: [sitemap(), tailwind()],
+  integrations: [tailwind()],
 });

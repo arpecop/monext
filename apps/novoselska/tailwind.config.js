@@ -11,7 +11,6 @@ export default {
         '.fs-0': {
           fontSize: '2.281rem',
           lineHeight: 1.1,
-
           '@media (min-width: 768px)': {
             fontSize: '3.583rem',
           },
