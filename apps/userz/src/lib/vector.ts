@@ -1,6 +1,6 @@
 export const getsimilar = async (
   id: number
-): Promise<{ result: { id: number; payload: { id: string } }[] }> => {
+): Promise<{ id: number; payload: { id: string } }[]> => {
   const data = await fetch(
     "https://vector.kloun.lol/collections/qustionz/points/recommend",
     {

@@ -1,6 +1,6 @@
 export const gquery = async (
   query: string,
-  variables?: { [key: string]: number | string }
+  variables?: { [key: string]: unknown }
 ) => {
   const response = await fetch("https://hasura.kloun.lol/v1/graphql", {
     method: "POST",
@@ -12,6 +12,6 @@ export const gquery = async (
   });
 
   const json = await response.json();
-  console.log(json);
+
   return Promise.resolve(json.data);
 };
