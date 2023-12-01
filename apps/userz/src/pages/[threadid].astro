@@ -1,9 +1,10 @@
 ---
-import { neon  } from '@neondatabase/serverless';
+ 
 import {getsimilar} from '../lib/vector'
 import Layout from "../components/Layout.astro";
+import {gquery} from '../lib/graph'
 import {uniq} from 'lodash'
-const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
+ 
 // const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
 const { threadid } = Astro.params as { threadid: string };
 
@@ -20,41 +21,53 @@ function removeHashtags(inputString: string): string {
   return stringWithoutHashtags;
 }
 
-
-const respOne = await sql`select id,image  from questions where genid = ${threadid} and type = 'q'` as {id:number,image?:string}[]
-
-const image = respOne[0].image
  
-const simResultsOne  =   await getsimilar(respOne[0].id)
+
+const respOne = await gquery(`query MyQuery($_eq: String = "what-is-the-mandalorian-ship-called") {
+    single: questions(limit: 1, where: {genid: {_eq: $_eq}}) {
+      id
+      text
+      image
+    }
+  }
+
+`,{_eq:threadid})as {single:{id:number,image?:string}[]}
+
+
+const image = respOne.single[0]?.image
+ 
+const simResultsOne = await getsimilar(respOne.single[0].id)
+ 
 const simResults = simResultsOne.map(x => x.payload.id)
 const ids = [threadid,...simResults]
+ 
+ 
+const extended = await gquery(`query MyQuery( $_in: [String!] = "") {
+    questions(where: {genid: {_in: $_in}}) {
+      genid
+      text
+      type
+    }
+  }
 
- 
-const extended1 = await sql('SELECT text,genid,type FROM questions WHERE  genid IN ('+ids.map(id => `'${id}'`).join(', ')+');');
- 
- // as { resp:{text:string, image?: string,id:number},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]}
- 
+`,{_in:ids})
  
  const formatter = (text:string) => {
 	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
 	 return(resp)
  }
 
- if(!extended1[0]) {
-	  return Astro.redirect('/404')
-  } 
+ // if(!extended[0]) {
+	//   return Astro.redirect('/404')
+ //  } 
  
 
-const questions = extended1.filter(x=> x.type === 'q') 
-const answers  = extended1.filter(x=> x.type === 'a') 
+const questions = extended.questions.filter(x=> x.type === 'q') 
+const answers  = extended.questions.filter(x=> x.type === 'a') 
  
 const question = questions[0].text
 const answer = answers[0].text
-
  
- 
- 
-
  const thread = questions.map((x,i) => ({
    q:{text:x.text,genid:x.genid},
    a:answers[i]?.text || ''
@@ -63,16 +76,23 @@ const answer = answers[0].text
  
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
  
- let qtags;
  let tagzfiltered:{count:number,hashtag:string}[]
+ console.log(flat);
  if(flat[0]) {
- qtags =   await sql('SELECT hashtag,count FROM qtags WHERE hashtag IN ('+flat.flatMap(x => "'"+x.hashtag+"'").join(', ')+');')  
- tagzfiltered =  qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)  
+ const qtags = await gquery(`query MyQuery($_in: [String!] = "") {
+     qtags(where: {hashtag: {_in: $_in}}) {
+       count
+       hashtag
+     }
+   }
+
+ `,{_in:flat.map(x=> x.hashtag)})
+
+ tagzfiltered =  qtags.qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)  
+
  } else {
    tagzfiltered = []
  }
-
- 
 ---
 <Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	
   {image && image !== 'none' ? ( 
@@ -93,8 +113,6 @@ const answer = answers[0].text
    </div>
     ) :(<h1 class="text-white font-medium text-3xl text-center">{question}</h1>)} 
     <article class="prose prose-invert  mx-auto">
-       
-    
    <div class="text-white text-xl font-light">{formatter(answer).map(x=> (<p>{x}</p>))  }</div> 
        
        {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
@@ -104,9 +122,6 @@ const answer = answers[0].text
                  </a>
          { formatter(q.a).map(x => (<p>{x}</p>))}
              </div>))}
-       
      </article>
-	
- 
  
 </Layout>

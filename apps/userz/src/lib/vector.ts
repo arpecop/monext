@@ -21,5 +21,6 @@ export const getsimilar = async (
     }
   );
   const json = await data.json();
+
   return Promise.resolve(json.result);
 };

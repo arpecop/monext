@@ -1,23 +1,38 @@
 ---
 import Layout from "../components/Layout.astro";
-import { neon } from '@neondatabase/serverless';
+// import { neon } from '@neondatabase/serverless';
 import  chunk  from 'lodash/chunk';
-const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
+import {gquery} from '../lib/graph'
+ 
 type Data = {genid:string; text:string}[]
 const currentDate = new Date()
 
+const data = await gquery(`query MyQuery @cached {
+ 
+	  questions(limit: 30, order_by: {id: desc}, where: {pr1: {_neq: "null"}, type: {_eq: "q"}}) {
+ 
+		text
+		type
+		genid
+	  }
+ 
+
+	  qtags(order_by: {count: desc}, limit: 40) {
+		  count
+		  hashtag
+		}
+	}
+`)
+ 
+ console.log(data);
+
 // Getting the day of the year
 const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1) * 849;
-
-const resp2 = sql`select text,genid from questions where type = 'q' order by id desc limit 30 offset ${dayOfYear};`;
-const resp3 = sql`select hashtag,count from qtags order by count desc limit 30;`;
  
-const resp = await Promise.all([resp2, resp3]).then((values) => { 
-	return({qlatest:values[0],qtags:values[1]})}) as {qlatest: Data, qtags:{hashtag:string,count:number}[]};
-const chunks = chunk(resp.qlatest, 10) as Data[]
+const chunks = chunk(data.questions, 10) as Data[]
  
 ---
-<Layout title="userz dot net." tags={resp.qtags}> 
+<Layout title="userz dot net." tags={data.qtags}> 
 		<div class="container mx-auto">
 		<div class="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3">
 		{chunks.map((chunk) => (
