@@ -12,15 +12,12 @@ export const getsimilar = async (
         with_vector: false,
         using: null,
       }),
-      cache: "default",
-      credentials: "include",
       headers: {
         Accept: "application/json",
         "api-key": "AppleWebKit",
         "Content-Type": "application/json",
       },
       method: "POST",
-      mode: "cors",
     }
   );
   const json = await data.json();
