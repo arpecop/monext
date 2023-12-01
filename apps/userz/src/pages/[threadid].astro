@@ -1,10 +1,11 @@
 ---
 type Thread = {genid:string; text:string}[]
 import { neon  } from '@neondatabase/serverless';
+import {getsimilar} from '../lib/vector'
 import Layout from "../components/Layout.astro";
 import {uniq} from 'lodash'
 const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
-const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
+// const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
 const { threadid } = Astro.params as { threadid: string };
 
 async function extractUniqueHashtags(inputString: string): Promise<{hashtag:string,count:number}[]> {
@@ -21,54 +22,44 @@ function removeHashtags(inputString: string): string {
 }
 
 
-const respOne = sql`select id,text,image from questions where genid = ${threadid} and type = 'q'`
-const respOneThread  =  sql`select text,genid from questions where genid = ${threadid} and type = 'a'`
-const respTwo = sql2`
-SELECT genid
-FROM questions
-ORDER BY embed <->
-(SELECT embed FROM questions WHERE genid = ${threadid} LIMIT 1)
-LIMIT 10 OFFSET 1;
-`;
+const respOne = await sql`select id,image  from questions where genid = ${threadid} and type = 'q'` as {id:number,image?:string}[]
 
-const prom = await Promise.all([respOne, respTwo,respOneThread]).then((values) => {
-  return({resp:values[0][0],simResultsOne:values[1],threadx:values[2]})
-}) as { resp:{text:string, image?: string,id:number},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]};
-console.log(prom);
+const image = respOne[0].image
  
-
-const {simResultsOne,resp,threadx} = prom
-const simResults = simResultsOne.map(x => x.genid)
+const simResultsOne  =   await getsimilar(respOne[0].id)
+const simResults = simResultsOne.map(x => x.payload.id)
+const ids = [threadid,...simResults]
 
  
- const rest=  threadx;
- const question= resp?.text ;
- const image = resp?.image;
+const extended1 = await sql('SELECT text,genid,type FROM questions WHERE  genid IN ('+ids.map(id => `'${id}'`).join(', ')+');');
+ 
+ // as { resp:{text:string, image?: string,id:number},threadx:Thread,q:Thread ,simResultsOne:{genid:string}[]}
+ 
  
  const formatter = (text:string) => {
 	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
 	 return(resp)
  }
 
- if(!threadx[0]) {
+ if(!extended1[0]) {
 	  return Astro.redirect('/404')
   } 
  
+
+const questions = extended1.filter(x=> x.type === 'q') 
+const answers  = extended1.filter(x=> x.type === 'a') 
  
- const qury = 'SELECT text,genid,type FROM questions WHERE  genid IN ('+simResults.map(id => `'${id}'`).join(', ')+');'
+const question = questions[0].text
+const answer = answers[0].text
 
-const extended1 = await sql(qury);
-
-const questions = extended1.filter(x=> x.type === 'q')
-const answers  = extended1.filter(x=> x.type === 'a')
-
- const extended  = {questions,answers:questions.map(x => answers.find(xone => xone.genid === x.genid))} as {questions:{genid:string,text:string}[],answers:{genid:string,text:string}[]};
+ 
+ 
  
 
- const thread = extended.questions.map((x,i) => ({
+ const thread = questions.map((x,i) => ({
    q:{text:x.text,genid:x.genid},
-   a:extended.answers[i]?.text || ''
- }))
+   a:answers[i]?.text || ''
+ })).filter(x => x.q.genid !== threadid)
   
  
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
@@ -81,13 +72,14 @@ const answers  = extended1.filter(x=> x.type === 'a')
  } else {
    tagzfiltered = []
  }
+
  
 ---
 <Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	
   {image && image !== 'none' ? ( 
    <div class="relative">
      <img
-      src={"https://cdn.userz.net/"+resp.id+".jpg"}
+      src={"https://cdn.userz.net/xxx.jpg"}
        width="1250"
        height="500"
        class="object-cover w-full h-64 lg:h-96"
@@ -104,10 +96,9 @@ const answers  = extended1.filter(x=> x.type === 'a')
     <article class="prose prose-invert  mx-auto">
        
     
-      {  rest.map(({text})  =>  {
-        return(<div class="text-white text-xl font-light">{formatter(text).map(x=> (<p>{x}</p>))  }</div>)}
-      )}
-       {extended.questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
+   <div class="text-white text-xl font-light">{formatter(answer).map(x=> (<p>{x}</p>))  }</div> 
+       
+       {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
           {thread.map((q) => ( <div class="space-x-3">
                  <a class="flex items-center" href={'/'+q.q.genid}>
                     <h2 class="pl-2 text-gray-200 underline"> {q.q.text.replace('?','')}</h2>

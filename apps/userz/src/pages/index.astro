@@ -9,8 +9,6 @@ const currentDate = new Date()
 // Getting the day of the year
 const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1) * 849;
 
- 
- 
 const resp2 = sql`select text,genid from questions where type = 'q' order by id desc limit 30 offset ${dayOfYear};`;
 const resp3 = sql`select hashtag,count from qtags order by count desc limit 30;`;
  
