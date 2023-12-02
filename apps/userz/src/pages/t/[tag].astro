@@ -1,23 +1,36 @@
 ---
 import Layout from "../../components/Layout.astro";
 import {gql} from "../../components/helpers/gql";
-import { neon } from "@neondatabase/serverless";
+import {gquery} from '../../lib/graph'
 
-const sql = neon(import.meta.env.DB_URL1 || process.env.DB_URL1);
+ 
 const { tag } = Astro.params as { tag: string };
  
- const resp  = await sql`select hashtag,rows_with_tag from qtags where hashtag = ${tag} limit 1;` 
+ const resp = await gquery(`query MyQuery($_eq: String ) {
+      qtags(where: {hashtag: {_eq: $_eq}}) {
+        count
+        hashtag
+        rows_with_tag
+      }
+    }
+ `,{_eq:tag})
  
- if(!resp[0]) {
+ 
+ if(!resp.qtags[0]) {
 	  return Astro.redirect('/404')
   }
- const arr = resp[0].rows_with_tag.split(', ') 
- console.log(`'${arr.join(`','`)}'`);
- const test = await sql`SELECT *
- FROM questions
- WHERE genid in (${arr})`
- console.log(test);
- const questions =  await gql('tagquestions',{_in:arr}) as {questions:{genid:string; text:string}[]}
+ const arr = resp.qtags[0].rows_with_tag.split(', ') 
+ 
+ const questions   = await gquery(`query MyQuery($_in: [String!] = "") {
+     questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}, limit: 10) {
+       genid
+       text
+       type
+     }
+   }
+ `,{_in:arr})
+
+ console.log(questions);
   
 ---
 <Layout title={tag} description={'#'+tag} logo={"inner"} topic={tag}>
