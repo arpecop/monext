@@ -3,7 +3,7 @@
 import {getsimilar} from '../lib/vector'
 import Layout from "../components/Layout.astro";
 import {gquery} from '../lib/graph'
-import {uniq} from 'lodash'
+ 
  
 // const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
 const { threadid } = Astro.params as { threadid: string };
@@ -86,7 +86,7 @@ const answers  = extended.questions.filter(({type}:{type:string})=>  type === 'a
  })).filter(x => x.q.genid !== threadid)
   
  
- const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
+ const flat = await extractUniqueHashtags(thread.flatMap(x => x.a).join(' '))
  
  let tagzfiltered:{count:number,hashtag:string}[]
  
