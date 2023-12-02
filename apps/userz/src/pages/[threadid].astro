@@ -40,10 +40,15 @@ const respOne = await gquery(`query MyQuery($_eq:String) {
 
 `,{_eq:threadid})as {single:{id:number,image?:string,text:string}[],answer:{id:number,image?:string, text:string}[]}
  
-
+console.log(respOne.single);
 
 const image = respOne.single[0]?.image
-const question = respOne.single[0].text
+const question = respOne.single[0]?.text
+
+ if(!question) {
+  return Astro.redirect('/404')
+ } 
+ 
 const answer = respOne.answer[0].text
  
 const simResultsOne = await getsimilar(respOne.single[0].id)  
@@ -67,9 +72,7 @@ const extended = await gquery(`query MyQuery( $_in: [String!] = "") {
 	 return(resp)
  }
 
- if(!question) {
-    return Astro.redirect('/404')
-   } 
+
  
 
 const questions = extended.questions.filter(({type}:{type:string})=>  type === 'q') 
@@ -86,7 +89,7 @@ const answers  = extended.questions.filter(({type}:{type:string})=>  type === 'a
  const flat = await extractUniqueHashtags(uniq(thread.flatMap(x => x.a)).join(' '))
  
  let tagzfiltered:{count:number,hashtag:string}[]
- console.log(flat);
+ 
  if(flat[0]) {
  const qtags = await gquery(`query MyQuery($_in: [String!] = "") {
      qtags(where: {hashtag: {_in: $_in}}) {
