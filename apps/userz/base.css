@@ -20,7 +20,18 @@ h1 {
     white 60%
   );
 }
+ul::-webkit-scrollbar {
+  height: 10px;
+}
 
+ul::-webkit-scrollbar-thumb {
+  background-color: #333; /* Customize thumb color */
+  border-radius: 6px; /* Adjust border radius to round corners */
+}
+
+ul::-webkit-scrollbar-track {
+  background-color: #000; /* Customize track color */
+}
 .instructions {
   line-height: 1.6;
   margin: 1rem 0;
@@ -46,26 +57,25 @@ h1 {
   gap: 1rem;
   padding: 0;
 }
-.nrgpro form   label input,
-.multiple     label  input 
-  {
+.nrgpro form label input,
+.multiple label input {
   @apply bg-transparent border border-gray-300 text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:ring-blue-500;
 }
-.nrgpro form   label input[name=id] {
-  display: none
+.nrgpro form label input[name="id"] {
+  display: none;
 }
 
 .multiple {
   @apply relative;
 }
- 
-.nrgpro form   button {
-  @apply   px-2 bg-gray-900 mt-2 p-2 border rounded-md;
+
+.nrgpro form button {
+  @apply px-2 bg-gray-900 mt-2 p-2 border rounded-md;
 }
-.multiple  .add {
-  @apply   px-2 bg-gray-900 mt-2 p-2 border rounded-md absolute top-4 right-0 rounded-l-none cursor-pointer;
+.multiple .add {
+  @apply px-2 bg-gray-900 mt-2 p-2 border rounded-md absolute top-4 right-0 rounded-l-none cursor-pointer;
 }
-.multiple form   a {
+.multiple form a {
   @apply ml-1 mt-6 px-2 bg-gray-900 border rounded-md w-10 h-2;
 }
 @font-face {
