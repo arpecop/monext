@@ -4,9 +4,9 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "hybrid",
+  output: "server",
   adapter: cloudflare(),
-  site: "https://userz.net",
+
   integrations: [tailwind()],
   vite: {
     build: {
