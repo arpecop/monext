@@ -3,31 +3,32 @@ import Layout from "../components/Layout.astro";
 // import { neon } from '@neondatabase/serverless';
 import  chunk  from 'lodash/chunk';
 import {gquery} from '../lib/graph'
+import {daysarr}   from '../lib/days'
+import { getsimilar } from "../lib/vector";
  
 type Data = {genid:string; text:string}[]
 const currentDate = new Date()
 
-const data = await gquery(`query MyQuery @cached {
+
+const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1);
+const genid = daysarr[dayOfYear]
+
+const simResultsOne = await getsimilar(genid,30)  
  
-	  questions(limit: 30, order_by: {id: desc}, where: {pr1: {_neq: "null"}, type: {_eq: "q"}}) {
- 
+const data = await gquery(`
+	query MyQuery( $_in: [String!])  {
+	  questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
 		text
 		type
 		genid
 	  }
- 
-
 	  qtags(order_by: {count: desc}, limit: 40) {
 		  count
 		  hashtag
 		}
 	}
-`)
+`,{_in:simResultsOne.map(x=> x.payload.id)})
  
- console.log(data);
-
-// Getting the day of the year
-const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1) * 849;
  
 const chunks = chunk(data.questions, 10) as Data[]
  

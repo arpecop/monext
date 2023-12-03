@@ -1,11 +1,12 @@
 export const getsimilar = async (
-  id: number
+  id: number,
+  limit?: number
 ): Promise<{ id: number; payload: { id: string } }[]> => {
   const data = await fetch(
     "https://vector.kloun.lol/collections/qustionz/points/recommend",
     {
       body: JSON.stringify({
-        limit: 10,
+        limit: limit || 10,
         positive: [id],
         offset: 0,
         with_payload: true,
