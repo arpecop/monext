@@ -106,7 +106,7 @@ const answers  = extended.questions.filter(({type}:{type:string})=>  type === 'a
    tagzfiltered = []
  }
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image}>	
+<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image && image !== 'none' ? image : null}>	
   {image && image !== 'none' ? ( 
    <div class="relative">
      <img
