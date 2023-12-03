@@ -30,7 +30,7 @@ ul::-webkit-scrollbar-thumb {
 }
 
 ul::-webkit-scrollbar-track {
-  background-color: #000; /* Customize track color */
+  background-color: #030905; /* Customize track color */
 }
 .instructions {
   line-height: 1.6;
