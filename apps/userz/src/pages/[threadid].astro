@@ -25,22 +25,22 @@ function removeHashtags(inputString: string): string {
 
 const respOne = await gquery(`query MyQuery($_eq:String) {
     single: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "q"}}) {
-      id
+      uuid
       genid
       text
       image
     }
     answer: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "a"}}) {
-      id
+      uuid
       genid
       text
       image
     }
   }
 
-`,{_eq:threadid})as {single:{id:number,image?:string,text:string}[],answer:{id:number,image?:string, text:string}[]}
+`,{_eq:threadid})as {single:{uuid:string,image?:string,text:string}[],answer:{uuid:string,image?:string, text:string}[]}
  
-console.log(respOne.single);
+ 
 
 const image = respOne.single[0]?.image
 const question = respOne.single[0]?.text
@@ -51,7 +51,9 @@ const question = respOne.single[0]?.text
  
 const answer = respOne.answer[0].text
  
-const simResultsOne = await getsimilar(respOne.single[0].id)  
+const simResultsOne = await getsimilar(respOne.single[0].uuid)  
+console.log(respOne.single[0].id);
+ 
  
 const simResults = simResultsOne.map(x => x.payload.id)
 const ids = [threadid,...simResults]
