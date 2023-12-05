@@ -12,7 +12,7 @@ const currentDate = new Date()
 
 const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1);
 const genid = daysarr[dayOfYear]
-
+console.log(genid);
 const simResultsOne = await getsimilar(genid,30)  
 console.log(simResultsOne);
  
