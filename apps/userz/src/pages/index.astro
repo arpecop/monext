@@ -14,6 +14,7 @@ const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentD
 const genid = daysarr[dayOfYear]
 
 const simResultsOne = await getsimilar(genid,30)  
+console.log(simResultsOne);
  
 const data = await gquery(`
 	query MyQuery( $_in: [String!])  {
