@@ -39,9 +39,6 @@ const respOne = await gquery(`query MyQuery($_eq:String) {
   }
 
 `,{_eq:threadid})as {single:{uuid:string,image?:string,text:string}[],answer:{uuid:string,image?:string, text:string}[]}
-
-console.log(respOne);
- 
  
 
 const image = respOne.single[0]?.image
