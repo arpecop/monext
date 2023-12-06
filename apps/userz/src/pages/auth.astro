@@ -1,10 +1,11 @@
 ---
 import { postgres as postgresAdapter } from "@lucia-auth/adapter-postgresql";
 import { lucia } from "lucia";
-import postgres from "postgres";
+
+import { neon } from "@neondatabase/serverless";
 import Layout from "../components/Layout.astro";
 
-const sql = postgres(process.env.DATABASE_URL + "&sslmode=require" || "");
+const sql = neon(process.env.DATABASE_URL + "&sslmode=require" || "");
 
 const auth = lucia({
   adapter: postgresAdapter(sql, {
