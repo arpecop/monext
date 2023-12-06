@@ -1,14 +1,15 @@
 ---
-import { postgres as postgresAdapter } from "@lucia-auth/adapter-postgresql";
+import { prisma } from "@lucia-auth/adapter-prisma";
 import { lucia } from "lucia";
 
-import { neon } from "@neondatabase/serverless";
 import Layout from "../components/Layout.astro";
 
-const sql = neon(process.env.DATABASE_URL + "&sslmode=require" || "");
+import { PrismaClient } from "@prisma/client";
+
+const client = new PrismaClient();
 
 const auth = lucia({
-  adapter: postgresAdapter(sql, {
+  adapter: prisma(client, {
     user: "auth_user",
     key: "user_key",
     session: "user_session",
@@ -25,9 +26,6 @@ if (Astro.request.method === "POST") {
     await auth.createUser({
       userId: "userz",
       key: null,
-      attributes: {
-        email: email,
-      },
     });
     const key = await auth.createKey({
       userId: "userz",
@@ -79,6 +77,7 @@ if (Astro.request.method === "POST") {
         id="email"
         type="email"
         placeholder="Email"
+        value="dasd@dsd.co"
       />
     </div>
     <div>
@@ -97,7 +96,7 @@ if (Astro.request.method === "POST") {
         class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
         type="submit"
       >
-        Sign Up
+        Sign Up 1
       </button>
     </div>
   </form>
