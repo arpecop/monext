@@ -1,34 +1,74 @@
 ---
-import { prisma } from "@lucia-auth/adapter-prisma";
-import { PrismaClient } from "@prisma/client/edge";
+import { postgres as postgresAdapter } from "@lucia-auth/adapter-postgresql";
 import { lucia } from "lucia";
-import { astro } from "lucia/middleware";
+import postgres from "postgres";
 import Layout from "../components/Layout.astro";
 
-const client = new PrismaClient();
+const sql = postgres(process.env.DATABASE_URL + "&sslmode=require" || "");
+
 const auth = lucia({
-  env: "PROD",
-  middleware: astro(),
-  adapter: prisma(client, {
-    user: "auth_user", // model User {}
-    key: "user_key", // model Key {}
-    session: "user_session", // model Session {}
+  adapter: postgresAdapter(sql, {
+    user: "auth_user",
+    key: "user_key",
+    session: "user_session",
   }),
+  env: "PROD",
 });
 
-// create a user
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const username = data.get("email");
+    const email = data.get("email");
+    const password = data.get("password");
+    await auth.createUser({
+      userId: "userz",
+      key: null,
+      attributes: {
+        email: email,
+      },
+    });
+    const key = await auth.createKey({
+      userId: "userz",
+      providerId: "email",
+      providerUserId: "user@example1.com",
+      password: "123456",
+    });
+    // Do something with the data
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
 
-// const user = await auth.createUser({
-//   userId: "userz",
-//   key: null,
-//   attributes: {
-//     email: "rudix@dd.xo",
-//   },
-// });
+// try {
+//   const { userId } = await auth.authenticate({
+//     providerId: "email",
+//     providerUserId: email,
+//     password,
+//   });
+
+//   // successful authentication
+// } catch (e) {
+//   console.log(e);
+
+// }
 ---
 
 <Layout title="userz dot net." tags={[]} logo={"inner"}>
-  <form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3">
+  <form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3" method="POST">
+    <div>
+      <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
+        Username
+      </label>
+      <input
+        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="username"
+        type="text"
+        placeholder="username"
+      />
+    </div>
     <div>
       <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
         Email
@@ -50,6 +90,14 @@ const auth = lucia({
         type="password"
         placeholder="******************"
       />
+    </div>
+    <div>
+      <button
+        class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+        type="submit"
+      >
+        Sign Up
+      </button>
     </div>
   </form>
 </Layout>

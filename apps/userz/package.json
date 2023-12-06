@@ -25,7 +25,6 @@
     "graphql-request": "^6.1.0",
     "lodash": "^4.17.21",
     "lucia": "^2.7.2",
-    "lucia-auth": "^1.8.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "textrank-node": "^0.1.9",
