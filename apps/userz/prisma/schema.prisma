@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model company {
+  id    Int?
+  uid   String  @id
+  title String?
+  nid   String?
+  cat   String?
+}
+
+model jokes {
+  uid  String  @id
+  cat  String?
+  lang String?
+  id   Int     @default(autoincrement())
+  joke String?
+
+  @@index([cat, uid], map: "jokes_cat")
+}
+
+model newsbg {
+  title String?
+  nid   String  @id
+  id    Int     @unique @default(autoincrement())
+  image String?
+  date  String?
+  link  String?
+  cat   String  @default("")
+  html  Json?
+  trans String?
+  embed String?
+}
+
+model tweets {
+  uid String  @id
+  cat String?
+
+  @@index([cat], map: "tweets_cat")
+}

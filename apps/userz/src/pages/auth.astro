@@ -1,0 +1,52 @@
+---
+import { prisma } from "@lucia-auth/adapter-prisma";
+import { PrismaClient } from "@prisma/client/edge";
+import { lucia } from "lucia";
+import Layout from "../components/Layout.astro";
+
+const client = new PrismaClient();
+
+const auth = lucia({
+  adapter: prisma(client),
+});
+
+try {
+  const key = await auth.createKey({
+    userId: "1",
+    providerId: "email",
+    providerUserId: "user@example.com",
+    password: "123456",
+  });
+} catch (e) {
+  console.log(e);
+
+  // unexpected database errors
+}
+---
+
+<Layout title="userz dot net." tags={[]} logo={"inner"}>
+  <form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3">
+    <div>
+      <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
+        Email
+      </label>
+      <input
+        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="email"
+        type="email"
+        placeholder="Email"
+      />
+    </div>
+    <div>
+      <label class="block mb-2 text-sm font-bold text-gray-700" for="password">
+        Password
+      </label>
+      <input
+        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        id="password"
+        type="password"
+        placeholder="******************"
+      />
+    </div>
+  </form>
+</Layout>

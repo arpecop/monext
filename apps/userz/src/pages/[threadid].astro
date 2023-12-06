@@ -1,29 +1,32 @@
 ---
- 
-import {getsimilar} from '../lib/vector'
 import Layout from "../components/Layout.astro";
-import {gquery} from '../lib/graph'
- 
- 
+import { gquery } from "../lib/graph";
+import { getsimilar } from "../lib/vector";
+
 // const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
 const { threadid } = Astro.params as { threadid: string };
 
-async function extractUniqueHashtags(inputString: string): Promise<{hashtag:string,count:number}[]> {
+async function extractUniqueHashtags(
+  inputString: string
+): Promise<{ hashtag: string; count: number }[]> {
   const hashtagRegex = /#(\w+)/g;
   const hashtags = inputString.match(hashtagRegex);
   if (!hashtags) return [];
-  const uniqueHashtags = Array.from(new Set(hashtags.map(tag =>  ({hashtag:tag.slice(1),count:10}))));
+  const uniqueHashtags = Array.from(
+    new Set(hashtags.map((tag) => ({ hashtag: tag.slice(1), count: 10 })))
+  );
   return uniqueHashtags;
-} 
+}
 function removeHashtags(inputString: string): string {
   const hashtagRegex = /#\w+/g;
-  const stringWithoutHashtags = inputString.replaceAll('\\n','\n').replace(hashtagRegex, '');
+  const stringWithoutHashtags = inputString
+    .replaceAll("\\n", "\n")
+    .replace(hashtagRegex, "");
   return stringWithoutHashtags;
 }
 
- 
-
-const respOne = await gquery(`query MyQuery($_eq:String) {
+const respOne = (await gquery(
+  `query MyQuery($_eq:String) {
     single: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "q"}}) {
       uuid
       genid
@@ -38,103 +41,136 @@ const respOne = await gquery(`query MyQuery($_eq:String) {
     }
   }
 
-`,{_eq:threadid})as {single:{uuid:string,image?:string,text:string}[],answer:{uuid:string,image?:string, text:string}[]}
- 
+`,
+  { _eq: threadid }
+)) as {
+  single: { uuid: string; image?: string; text: string }[];
+  answer: { uuid: string; image?: string; text: string }[];
+};
 
-const image = respOne.single[0]?.image
-const question = respOne.single[0]?.text
+const image = respOne.single[0]?.image;
+const question = respOne.single[0]?.text;
 
- if(!question) {
-  return Astro.redirect('/404')
- } 
- 
-const answer = respOne.answer[0].text
- 
-const simResultsOne = await getsimilar(respOne.answer[0].uuid)  
- 
- 
- 
-const simResults = simResultsOne.map(x => x.payload.id)
-const ids = [threadid,...simResults]
- 
- 
-const extended = await gquery(`query MyQuery( $_in: [String!] = "") {
+if (!question) {
+  return Astro.redirect("/404");
+}
+
+const answer = respOne.answer[0].text;
+
+const simResultsOne = await getsimilar(respOne.answer[0].uuid);
+
+const simResults = simResultsOne.map((x) => x.payload.id);
+const ids = [threadid, ...simResults];
+
+const extended = await gquery(
+  `query MyQuery( $_in: [String!] = "") {
     questions(where: {genid: {_in: $_in}}) {
       genid
       text
       type
     }
-  }
+  }`,
+  { _in: ids }
+);
 
-`,{_in:ids})
- 
- const formatter = (text:string) => {
-	 let resp = removeHashtags(text).replaceAll('@username,','').replaceAll('@username','').split('\n')
-	 return(resp)
- }
+const formatter = (text: string) => {
+  let resp = removeHashtags(text)
+    .replaceAll("@username,", "")
+    .replaceAll("@username", "")
+    .split("\n");
+  return resp;
+};
 
+const questions = extended.questions.filter(
+  ({ type }: { type: string }) => type === "q"
+);
+const answers = extended.questions.filter(
+  ({ type }: { type: string }) => type === "a"
+);
 
- 
+const thread = questions
+  .map((x, i) => ({
+    q: { text: x.text, genid: x.genid },
+    a: answers[i]?.text || "",
+  }))
+  .filter((x) => x.q.genid !== threadid);
 
-const questions = extended.questions.filter(({type}:{type:string})=>  type === 'q') 
-const answers  = extended.questions.filter(({type}:{type:string})=>  type === 'a') 
- 
+const flat = await extractUniqueHashtags(thread.flatMap((x) => x.a).join(" "));
 
- 
- const thread = questions.map((x,i) => ({
-   q:{text:x.text,genid:x.genid},
-   a:answers[i]?.text || ''
- })).filter(x => x.q.genid !== threadid)
-  
- 
- const flat = await extractUniqueHashtags(thread.flatMap(x => x.a).join(' '))
- 
- let tagzfiltered:{count:number,hashtag:string}[]
- 
- if(flat[0]) {
- const qtags = await gquery(`query MyQuery($_in: [String!] = "") {
+let tagzfiltered: { count: number; hashtag: string }[];
+
+if (flat[0]) {
+  const qtags = await gquery(
+    `query MyQuery($_in: [String!] = "") {
      qtags(where: {hashtag: {_in: $_in}}) {
        count
        hashtag
      }
    }
 
- `,{_in:flat.map(x=> x.hashtag)})
+ `,
+    { _in: flat.map((x) => x.hashtag) }
+  );
 
- tagzfiltered =  qtags.qtags.filter(x => x.count >= 10).sort((a,z) => {return(z.count -a.count)} ).slice(0,30)  
-
- } else {
-   tagzfiltered = []
- }
+  tagzfiltered = qtags.qtags
+    .filter((x) => x.count >= 10)
+    .sort((a, z) => {
+      return z.count - a.count;
+    })
+    .slice(0, 30);
+} else {
+  tagzfiltered = [];
+}
 ---
-<Layout title={question} description={''} logo={"inner"}  tags={tagzfiltered} image={image && image !== 'none' ? image : null}>	
-  {image && image !== 'none' ? ( 
-   <div class="relative">
-     <img
-      src={`https://img.userz.net/uz/${threadid}/img.jpg`}
-       width="1250"
-       height="500"
-       class="object-cover w-full h-64 lg:h-96"
-       style="aspect-ratio: 1250 / 500; object-fit: cover;"
-       alt={question}
-     />
-     <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
-       <h1 class="text-3xl   text-white text-center bg-black bg-opacity-80 rounded-lg p-2">
-         {question}
-       </h1>
-     </div>
-   </div>
-    ) :(<h1 class="text-white font-medium text-3xl text-center">{question}</h1>)} 
-    <article class="prose prose-invert  mx-auto">
-   <div class="text-white text-xl font-light">{formatter(answer).map(x=> (<p>{x}</p>))  }</div> 
-       
-       {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2> }
-          {thread.map((q) => ( <div class="space-x-3">
-                 <a class="flex items-center" href={'/'+q.q.genid}>
-                    <h2 class="pl-2 text-gray-200 underline"> {q.q.text.replace('?','')}</h2>
-                 </a>
-         { formatter(q.a).map(x => (<p>{x}</p>))}
-             </div>))}
-     </article>
- 
+
+<Layout
+  title={question}
+  description={""}
+  logo={"inner"}
+  tags={tagzfiltered}
+  image={image}
+>
+  {
+    image && image !== "none" ? (
+      <div class="relative">
+        <img
+          src={`https://img.userz.net/uz/${threadid}/img.jpg`}
+          width="1250"
+          height="500"
+          class="object-cover w-full h-64 lg:h-96"
+          style="aspect-ratio: 1250 / 500; object-fit: cover;"
+          alt={question}
+        />
+        <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
+          <h1 class="text-3xl   text-white text-center bg-black bg-opacity-80 rounded-lg p-2">
+            {question}
+          </h1>
+        </div>
+      </div>
+    ) : (
+      <h1 class="text-white font-medium text-3xl text-center">{question}</h1>
+    )
+  }
+  <article class="prose prose-invert mx-auto">
+    <div class="text-white text-xl font-light">
+      {formatter(answer).map((x) => <p>{x}</p>)}
+    </div>
+
+    {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
+    {
+      thread.map((q) => (
+        <div class="space-x-3">
+          <a class="flex items-center" href={"/" + q.q.genid}>
+            <h2 class="pl-2 text-gray-200 underline">
+              {" "}
+              {q.q.text.replace("?", "")}
+            </h2>
+          </a>
+          {formatter(q.a).map((x) => (
+            <p>{x}</p>
+          ))}
+        </div>
+      ))
+    }
+  </article>
 </Layout>

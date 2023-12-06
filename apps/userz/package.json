@@ -11,18 +11,21 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/tailwind": "6.0.0-beta.0",
     "@jsfe/core": "^0.0.5",
     "@lucia-auth/adapter-postgresql": "^2.0.1",
+    "@lucia-auth/adapter-prisma": "^3.0.2",
+    "@prisma/client": "^5.6.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/lodash": "^4.14.200",
     "@westtrade/astro-form": "1.0.2-alpha",
     "astro": "^3.6.4",
+    "edge": "link:@prisma/client/edge",
     "flowbite": "^1.8.1",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "lodash": "^4.17.21",
     "lucia": "^2.7.2",
+    "lucia-auth": "^1.8.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "textrank-node": "^0.1.9",
@@ -32,7 +35,11 @@
   },
   "devDependencies": {
     "@astrojs/cloudflare": "^7.7.1",
+    "@astrojs/tailwind": "6.0.0-beta.0",
+    "@types/node": "^20.10.3",
     "bun-types": "^1.0.7",
+    "prisma": "^5.6.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
 }

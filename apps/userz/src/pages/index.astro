@@ -1,22 +1,24 @@
 ---
+import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
-// import { neon } from '@neondatabase/serverless';
-import  chunk  from 'lodash/chunk';
-import {gquery} from '../lib/graph'
-import {daysarr}   from '../lib/days'
+import { daysarr } from "../lib/days";
+import { gquery } from "../lib/graph";
 import { getsimilar } from "../lib/vector";
- 
-type Data = {genid:string; text:string}[]
-const currentDate = new Date()
-
-
-const dayOfYear: number = Math.floor(((currentDate.getTime() - new Date(currentDate.getFullYear(), 0, 0).getTime()) / 86400000) + 1);
-const genid = daysarr[dayOfYear]
+type Data = { genid: string; text: string }[];
+const currentDate = new Date();
+const dayOfYear: number = Math.floor(
+	(currentDate.getTime() -
+		new Date(currentDate.getFullYear(), 0, 0).getTime()) /
+		86400000 +
+		1
+);
+const genid = daysarr[dayOfYear];
 console.log(genid);
-const simResultsOne = await getsimilar(genid,30)  
+const simResultsOne = await getsimilar(genid, 30);
 console.log(simResultsOne);
- 
-const data = await gquery(`
+
+const data = await gquery(
+	`
 	query MyQuery( $_in: [String!])  {
 	  questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
 		text
@@ -28,30 +30,38 @@ const data = await gquery(`
 		  hashtag
 		}
 	}
-`,{_in:simResultsOne.map(x=> x.payload.id)})
- 
- 
-const chunks = chunk(data.questions, 10) as Data[]
- 
+`,
+	{ _in: simResultsOne.map((x) => x.payload.id) }
+);
+
+const chunks = chunk(data.questions, 10) as Data[];
 ---
-<Layout title="userz dot net." tags={data.qtags}> 
-		<div class="container mx-auto">
-		<div class="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3">
-		{chunks.map((chunk) => (
-			<div>
+
+<Layout title="userz dot net." tags={data.qtags}>
+	<div class="container mx-auto">
+		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
 			{
-				chunk.map(({genid,text}) => (
-					<div class="grid">
-					<a href={'/'+genid} class="p-6  m-3  border border-emerald-600 border-4 rounded-lg shadow hover:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 relative">
-						<div class="absolute -top-1 -right-0.5 bg-emerald-600 px-2 rounded-bl-md  rounded-tr-lg text-xs text-black">{new Date().toISOString().split('T')[0]}</div>
-						<h5 class="mb-2 text-xl xs:text-2xl sm:text-3xl font-bold tracking-tight text-gray-200">	{text.replaceAll('?',' ')}</h5>
-					</a>
+				chunks.map((chunk) => (
+					<div>
+						{chunk.map(({ genid, text }) => (
+							<div class="grid">
+								<a
+									href={"/" + genid}
+									class="p-6  m-3 border-emerald-600 border-4 rounded-lg shadow hover:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 relative"
+								>
+									<div class="absolute -top-1 -right-0.5 bg-emerald-600 px-2 rounded-bl-md  rounded-tr-lg text-xs text-black">
+										{new Date().toISOString().split("T")[0]}
+									</div>
+									<h5 class="mb-2 text-xl xs:text-2xl sm:text-3xl font-bold tracking-tight text-gray-200">
+										{" "}
+										{text.replaceAll("?", " ")}
+									</h5>
+								</a>
+							</div>
+						))}
 					</div>
 				))
 			}
-			</div>
-		))}
 		</div>
-		</div>
- 
+	</div>
 </Layout>
