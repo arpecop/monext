@@ -6,15 +6,13 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   output: "server",
   adapter: cloudflare(),
-
   integrations: [tailwind()],
   vite: {
     build: {
       minify: false,
     },
     define: {
-      "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
-      "process.env.DB_URL1": JSON.stringify(process.env.DB_URL1),
+      "process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL)
     },
   },
 });
