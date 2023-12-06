@@ -19,7 +19,6 @@
     "@types/lodash": "^4.14.200",
     "@westtrade/astro-form": "1.0.2-alpha",
     "astro": "^3.6.4",
-    "edge": "link:@prisma/client/edge",
     "flowbite": "^1.8.1",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
