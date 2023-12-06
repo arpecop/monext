@@ -9,7 +9,7 @@ const client = new PrismaClient();
 const auth = lucia({
   adapter: prisma(client),
 });
-
+//dasd
 try {
   const key = await auth.createKey({
     userId: "1",
