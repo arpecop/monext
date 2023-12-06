@@ -5,23 +5,14 @@ import { lucia } from "lucia";
 import Layout from "../components/Layout.astro";
 
 const client = new PrismaClient();
-
 const auth = lucia({
-  adapter: prisma(client),
+  env: "DEV",
+  adapter: prisma(client, {
+    user: "users",
+    key: "keys",
+    session: null,
+  }),
 });
-//dasd
-try {
-  const key = await auth.createKey({
-    userId: "1",
-    providerId: "email",
-    providerUserId: "user@example.com",
-    password: "123456",
-  });
-} catch (e) {
-  console.log(e);
-
-  // unexpected database errors
-}
 ---
 
 <Layout title="userz dot net." tags={[]} logo={"inner"}>
