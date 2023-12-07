@@ -3,7 +3,7 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery } from "../lib/graph";
-import { getsimilar } from "../lib/vector";
+import { getchroma } from "../lib/vector";
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
 const dayOfYear: number = Math.floor(
@@ -13,9 +13,8 @@ const dayOfYear: number = Math.floor(
 		1
 );
 const genid = daysarr[dayOfYear];
-console.log(genid);
-const simResultsOne = await getsimilar(genid, 30);
-console.log(simResultsOne);
+
+const simResultsOne = await getchroma(genid, 30);
 
 const data = await gquery(
 	`
@@ -31,7 +30,7 @@ const data = await gquery(
 		}
 	}
 `,
-	{ _in: simResultsOne.map((x) => x.payload.id) }
+	{ _in: simResultsOne }
 );
 
 const chunks = chunk(data.questions, 10) as Data[];

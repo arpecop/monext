@@ -1,9 +1,8 @@
 ---
 import Layout from "../components/Layout.astro";
 import { gquery } from "../lib/graph";
-import { getsimilar } from "../lib/vector";
+import { getchroma } from "../lib/vector";
 
-// const sql2 = neon(import.meta.env.DB_URL2 || process.env.DB_URL2);
 const { threadid } = Astro.params as { threadid: string };
 
 async function extractUniqueHashtags(
@@ -24,9 +23,10 @@ function removeHashtags(inputString: string): string {
     .replace(hashtagRegex, "");
   return stringWithoutHashtags;
 }
+const embeddings = await getchroma(threadid, 11);
 
-const respOne = (await gquery(
-  `query MyQuery($_eq:String) {
+const respOne = await gquery(
+  `query MyQuery($_eq:String,$_in: [String!] = "") {
     single: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "q"}}) {
       uuid
       genid
@@ -39,14 +39,18 @@ const respOne = (await gquery(
       text
       image
     }
+    extended:  questions(where: {genid: {_in: $_in}}) {
+      genid
+      text
+      type
+    }
   }
 
 `,
-  { _eq: threadid }
-)) as {
-  single: { uuid: string; image?: string; text: string }[];
-  answer: { uuid: string; image?: string; text: string }[];
-};
+  { _eq: threadid, _in: embeddings }
+);
+
+const extended = respOne.extended;
 
 const image = respOne.single[0]?.image;
 const question = respOne.single[0]?.text;
@@ -57,22 +61,6 @@ if (!question) {
 
 const answer = respOne.answer[0].text;
 
-const simResultsOne = await getsimilar(respOne.answer[0].uuid);
-
-const simResults = simResultsOne.map((x) => x.payload.id);
-const ids = [threadid, ...simResults];
-
-const extended = await gquery(
-  `query MyQuery( $_in: [String!] = "") {
-    questions(where: {genid: {_in: $_in}}) {
-      genid
-      text
-      type
-    }
-  }`,
-  { _in: ids }
-);
-
 const formatter = (text: string) => {
   let resp = removeHashtags(text)
     .replaceAll("@username,", "")
@@ -80,22 +68,24 @@ const formatter = (text: string) => {
     .split("\n");
   return resp;
 };
+///dasdsad
 
-const questions = extended.questions.filter(
-  ({ type }: { type: string }) => type === "q"
-);
-const answers = extended.questions.filter(
-  ({ type }: { type: string }) => type === "a"
-);
+const questions = extended.filter(({ type }: { type: string }) => type === "q");
+const answers = extended.filter(({ type }: { type: string }) => type === "a");
 
 const thread = questions
-  .map((x, i) => ({
+  .map((x: { text: string; genid: string }, i: number) => ({
     q: { text: x.text, genid: x.genid },
     a: answers[i]?.text || "",
   }))
-  .filter((x) => x.q.genid !== threadid);
+  .filter((x: { q: { genid: string } }) => x.q.genid !== threadid) as {
+  q: { text: string; genid: string };
+  a: string;
+}[];
 
-const flat = await extractUniqueHashtags(thread.flatMap((x) => x.a).join(" "));
+const flat = await extractUniqueHashtags(
+  thread.flatMap((x: { a: any }) => x.a).join(" ")
+);
 
 let tagzfiltered: { count: number; hashtag: string }[];
 
@@ -113,8 +103,8 @@ if (flat[0]) {
   );
 
   tagzfiltered = qtags.qtags
-    .filter((x) => x.count >= 10)
-    .sort((a, z) => {
+    .filter((x: { count: number }) => x.count >= 10)
+    .sort((a: { count: number }, z: { count: number }) => {
       return z.count - a.count;
     })
     .slice(0, 30);
@@ -162,7 +152,6 @@ if (flat[0]) {
         <div class="space-x-3">
           <a class="flex items-center" href={"/" + q.q.genid}>
             <h2 class="pl-2 text-gray-200 underline">
-              {" "}
               {q.q.text.replace("?", "")}
             </h2>
           </a>
