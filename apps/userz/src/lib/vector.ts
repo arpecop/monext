@@ -24,6 +24,8 @@ export const getsimilar = async (
       method: "POST",
     }
   );
+
+
   const json = await data.json();
 
   return Promise.resolve(json.result);

@@ -1,7 +1,7 @@
 ---
 import Layout from "../components/Layout.astro";
 import { gquery } from "../lib/graph";
-import { getchroma } from "../lib/vector";
+import { getsimilar } from "../lib/vector";
 
 const { threadid } = Astro.params as { threadid: string };
 
@@ -23,7 +23,19 @@ function removeHashtags(inputString: string): string {
     .replace(hashtagRegex, "");
   return stringWithoutHashtags;
 }
-const embeddings = await getchroma(threadid, 11);
+const respreEmbed = await gquery(
+  `query MyQuery($_eq:String) {
+    prembed: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "a"}}) {
+      uuid
+    }
+   
+  }
+
+`,
+  { _eq: threadid }
+);
+
+const embeddings = await getsimilar(respreEmbed.prembed[0].uuid, 10);
 
 const respOne = await gquery(
   `query MyQuery($_eq:String,$_in: [String!] = "") {
@@ -47,7 +59,7 @@ const respOne = await gquery(
   }
 
 `,
-  { _eq: threadid, _in: embeddings }
+  { _eq: threadid, _in: embeddings.map((x) => x.payload.id) }
 );
 
 const extended = respOne.extended;
