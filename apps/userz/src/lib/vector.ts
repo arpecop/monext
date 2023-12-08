@@ -33,8 +33,9 @@ export const getchroma = async (
   limit?: number
 ): Promise<string[]> => {
   const collection = await chroma.getCollection({ name: "questions" });
+
   const d = await collection.get({
-    ids: [id], //ids
+    ids: "b96b83a4", //ids
     include: ["embeddings"],
   });
 
@@ -42,6 +43,8 @@ export const getchroma = async (
     queryEmbeddings: d.embeddings[0],
     nResults: limit || 10,
   });
+
+
 
   return Promise.resolve(queryData.documents[0]);
 };

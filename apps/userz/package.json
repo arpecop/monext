@@ -21,7 +21,7 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/lodash": "^4.14.200",
     "@westtrade/astro-form": "1.0.2-alpha",
-    "astro": "^3.6.4",
+    "astro": "^4.0.3",
     "chromadb": "^1.6.1",
     "flowbite": "^1.8.1",
     "graphql": "^16.8.1",
@@ -36,8 +36,8 @@
     "wrangler": "^2.20.1"
   },
   "devDependencies": {
-    "@astrojs/cloudflare": "^7.7.1",
-    "@astrojs/tailwind": "6.0.0-beta.0",
+    "@astrojs/cloudflare": "^8.0.0",
+    "@astrojs/tailwind": "5.0.3",
     "@types/node": "^20.10.3",
     "bun-types": "^1.0.7",
     "prisma": "^5.6.0",
