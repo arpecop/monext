@@ -24,14 +24,12 @@ function removeHashtags(inputString: string): string {
   return stringWithoutHashtags;
 }
 const respreEmbed = await gquery(
-  `query MyQuery($_eq:String) {
-    prembed: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "a"}}) {
-      uuid
-    }
-   
+  `query MyQuery(  $_eq: String = "4MKg-Q7h8PEu") {
+  q_byuuid(where: {genid: {_eq: $_eq}}) {
+    genid
+    uuid
   }
-
-`,
+}`,
   { _eq: threadid }
 );
 
