@@ -33,34 +33,35 @@ const respreEmbed = await gquery(
   { _eq: threadid }
 );
 
-const embeddings = await getsimilar(respreEmbed.prembed[0].uuid, 10);
+const embeddings = await getsimilar(respreEmbed.q_byuuid[0].uuid, 10);
 
 const respOne = await gquery(
-  `query MyQuery($_eq:String,$_in: [String!] = "") {
-    single: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "q"}}) {
-      uuid
-      genid
-      text
-      image
-    }
-    answer: questions(limit: 1, where: {genid: {_eq: $_eq},type: {_eq: "a"}}) {
-      uuid
-      genid
-      text
-      image
-    }
-    extended:  questions(where: {genid: {_in: $_in}}) {
-      genid
-      text
-      type
-    }
+  `query MyQuery($_eq: String, $_in: [String!] = "") {
+  single: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "q"}}) {
+    uuid
+    genid
+    text
+    image
   }
+  answer: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "a"}}) {
+    uuid
+    genid
+    text
+    image
+  }
+  q_q(where: {genid: {_in: $_in}}) {
+    genid
+    text
+  }
+   q_a(where: {genid: {_in: $_in}}) {
+    genid
+    text
+  }
+}
 
 `,
   { _eq: threadid, _in: embeddings.map((x) => x.payload.id) }
 );
-
-const extended = respOne.extended;
 
 const image = respOne.single[0]?.image;
 const question = respOne.single[0]?.text;
@@ -80,8 +81,8 @@ const formatter = (text: string) => {
 };
 ///dasdsad
 
-const questions = extended.filter(({ type }: { type: string }) => type === "q");
-const answers = extended.filter(({ type }: { type: string }) => type === "a");
+const questions = respOne.q_q;
+const answers = respOne.q_a;
 
 const thread = questions
   .map((x: { text: string; genid: string }, i: number) => ({
