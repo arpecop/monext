@@ -33,7 +33,11 @@ const respreEmbed = await gquery(
   { _eq: threadid }
 );
 
-const embeddings = await getsimilar(respreEmbed.q_byuuid[0].uuid, 10);
+const embeddings = await getsimilar(
+  "answers",
+  respreEmbed.q_byuuid[0].uuid,
+  10
+);
 
 const respOne = await gquery(
   `query MyQuery($_eq: String, $_in: [String!] = "") {

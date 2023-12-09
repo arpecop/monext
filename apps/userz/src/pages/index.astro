@@ -14,11 +14,14 @@ const dayOfYear: number = Math.floor(
 );
 const genid = daysarr[dayOfYear];
 
-const simResultsOne = await getsimilar(genid, 30);
+const simResultsOne = await getsimilar("answers", genid, 30, true);
+
+// const simResultsTwo = await getByVector("emoji", simResultsOne[3].vector, 3);
+
+// console.log(simResultsTwo);
 
 const data = await gquery(
-  `
-	query MyQuery( $_in: [String!])  {
+  `query MyQuery( $_in: [String!])  {
 	  questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
 		text
 		type
@@ -28,8 +31,7 @@ const data = await gquery(
 		  count
 		  hashtag
 		}
-	}
-`,
+	}`,
   { _in: simResultsOne.map((x) => x.payload.id) }
 );
 

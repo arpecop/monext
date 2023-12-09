@@ -11,6 +11,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^3.0.7",
     "@jsfe/core": "^0.0.5",
     "@lucia-auth/adapter-postgresql": "^2.0.1",
     "@lucia-auth/adapter-prisma": "^3.0.2",
@@ -20,6 +21,8 @@
     "@prisma/client": "^5.6.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/lodash": "^4.14.200",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
     "@westtrade/astro-form": "1.0.2-alpha",
     "astro": "^4.0.3",
     "chromadb": "^1.6.1",
@@ -29,6 +32,9 @@
     "lodash": "^4.17.21",
     "lucia": "^2.7.2",
     "postcss": "^8.4.31",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "satori": "^0.2.5",
     "tailwindcss": "^3.3.5",
     "textrank-node": "^0.1.9",
     "translate-emoji": "^1.0.0",
