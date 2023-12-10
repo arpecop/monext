@@ -1,5 +1,6 @@
 ---
 import Layout from "../components/Layout.astro";
+import Search from "../components/search.astro";
 import { gquery } from "../lib/graph";
 import { getsimilar } from "../lib/vector";
 
@@ -160,21 +161,22 @@ if (flat[0]) {
     <div class="text-white text-xl font-light">
       {formatter(answer).map((x) => <p>{x}</p>)}
     </div>
-
-    {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
-    {
-      thread.map((q) => (
-        <div class="space-x-3">
-          <a class="flex items-center" href={"/" + q.q.genid}>
-            <h2 class="pl-2 text-gray-200 underline">
-              {q.q.text.replace("?", "")}
-            </h2>
-          </a>
-          {formatter(q.a).map((x) => (
-            <p>{x}</p>
-          ))}
-        </div>
-      ))
-    }
   </article>
+  <Search />
+
+  {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
+  {
+    thread.map((q) => (
+      <article class="prose prose-invert mx-auto">
+        <a class="flex items-center" href={"/" + q.q.genid}>
+          <h2 class="pl-2 text-gray-200 underline">
+            {q.q.text.replace("?", "")}
+          </h2>
+        </a>
+        {formatter(q.a).map((x) => (
+          <p>{x}</p>
+        ))}
+      </article>
+    ))
+  }
 </Layout>
