@@ -14,7 +14,7 @@ export default defineConfig({
       minify: false
     },
     define: {
-      "process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL)
+      "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2)
     }
   }
 });
