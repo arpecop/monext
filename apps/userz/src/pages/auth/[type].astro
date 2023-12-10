@@ -1,7 +1,7 @@
 ---
 import { lucia } from "lucia";
 
-import Layout from "../components/Layout.astro";
+import Layout from "../../components/Layout.astro";
 
 import { postgres as postgresAdapter } from "@lucia-auth/adapter-postgresql";
 import { neon } from "@neondatabase/serverless";
@@ -30,8 +30,6 @@ const auth = lucia({
 if (Astro.request.method === "POST") {
   const data = await Astro.request.formData();
   try {
-    console.log(data, "data");
-
     const username = data.get("username");
     const email = data.get("email") as string;
     const password = data.get("password") as string;
@@ -114,7 +112,7 @@ if (Astro.request.method === "POST") {
     />
   </div>
 
-  <div>
+  <div class="mt-4">
     <button
       class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
       type="submit"
