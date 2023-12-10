@@ -1,117 +1,118 @@
 ---
-import { prisma } from "@lucia-auth/adapter-prisma";
 import { lucia } from "lucia";
 
 import Layout from "../components/Layout.astro";
 
-import { PrismaClient } from "@prisma/client";
-
-import { d1 } from "@lucia-auth/adapter-sqlite";
-
-export const initializeLucia = (db: D1Database) => {
-  const auth = lucia({
-    adapter: d1(db, {
-      user: "user",
-      key: "user_key",
-      session: "user_session",
-    }),
-  });
-  return auth;
-};
-
-export type Auth = ReturnType<typeof initializeLucia>;
-
-const client = new PrismaClient();
-
+import { postgres as postgresAdapter } from "@lucia-auth/adapter-postgresql";
+import { astro } from "lucia/middleware";
+import postgres from "postgres";
+const sql = postgres(
+  "postgresql://rudixrudix:MzNP0Vn4FlHC@ep-late-hill-89493737-pooler.eu-central-1.aws.neon.tech:5432/neondb?sslmode=require"
+);
+let errormsg = null;
 const auth = lucia({
-  adapter: prisma(client, {
+  adapter: postgresAdapter(sql, {
     user: "auth_user",
     key: "user_key",
     session: "user_session",
   }),
-  env: "PROD",
+  middleware: astro(),
+  env: "DEV",
 });
 
 if (Astro.request.method === "POST") {
+  const data = await Astro.request.formData();
   try {
-    const data = await Astro.request.formData();
-    const username = data.get("email");
-    const email = data.get("email");
-    const password = data.get("password");
+    console.log(data, "data");
+
+    const username = data.get("username");
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
     await auth.createUser({
-      userId: "userz",
+      userId: username as string,
       key: null,
+      attributes: { username: "" }, // Add the 'username' property with an empty string as the value
     });
     const key = await auth.createKey({
-      userId: "userz",
+      userId: username as string,
       providerId: "email",
-      providerUserId: "user@example1.com",
-      password: "123456",
+      providerUserId: email,
+      password,
     });
-    // Do something with the data
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
+    errormsg = (error as Error).message;
   }
 }
-
-// try {
-//   const { userId } = await auth.authenticate({
-//     providerId: "email",
-//     providerUserId: email,
-//     password,
-//   });
-
-//   // successful authentication
-// } catch (e) {
-//   console.log(e);
-
-// }
 ---
 
 <Layout title="userz dot net." tags={[]} logo={"inner"}>
+  {errormsg && <p>{errormsg}</p>}
   <form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3" method="POST">
-    <div>
-      <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
-        Username
-      </label>
+    <label for="input-group-1" class="block mb-2 text-sm font-medium text-white"
+      >@username</label
+    >
+    <div class="relative mb-6">
+      <div
+        class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
+      >
+        <svg
+          class="w-4 h-4 text-gray-500 dark:text-gray-400"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"
+          ></path>
+        </svg>
+      </div>
       <input
-        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-        id="username"
         type="text"
-        placeholder="username"
+        id="input-group-1"
+        name="username"
+        class="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-black"
+        placeholder="elonmusk"
       />
     </div>
-    <div>
-      <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
-        Email
-      </label>
+
+    <label for="input-group-1" class="block mb-2 text-sm font-medium text-white"
+      >Your Email</label
+    >
+    <div class="relative mb-6">
+      <div
+        class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
+      >
+        <svg
+          class="w-4 h-4 text-gray-500 dark:text-gray-400"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 16"
+        >
+          <path
+            d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z"
+          ></path>
+          <path
+            d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z"
+          ></path>
+        </svg>
+      </div>
       <input
-        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-        id="email"
-        type="email"
-        placeholder="Email"
-        value="dasd@dsd.co"
+        type="text"
+        id="input-group-1"
+        name="email"
+        class="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-black"
+        placeholder="name@gmail.com"
       />
     </div>
-    <div>
-      <label class="block mb-2 text-sm font-bold text-gray-700" for="password">
-        Password
-      </label>
-      <input
-        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-        id="password"
-        type="password"
-        placeholder="******************"
-      />
-    </div>
+
     <div>
       <button
         class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
         type="submit"
       >
-        Sign Up 1
+        Sign Up
       </button>
     </div>
   </form>
