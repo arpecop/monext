@@ -35,6 +35,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "satori": "^0.2.5",
+    "satori-html": "^0.3.2",
     "tailwindcss": "^3.3.5",
     "textrank-node": "^0.1.9",
     "translate-emoji": "^1.0.0",
