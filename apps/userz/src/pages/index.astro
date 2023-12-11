@@ -22,9 +22,12 @@ const simResultsOne = await getsimilar("answers", genid, 30, true);
 
 const data = await gquery(
   `query MyQuery( $_in: [String!])  {
-	  questions(where: {genid: {_in: $_in}, type: {_eq: "q"}}) {
+	  questions: q_q(where: {genid: {_in: $_in}}) {
 		text
-		type
+		genid
+	  }
+    answers: q_a(where: {genid: {_in: $_in}}) {
+		text
 		genid
 	  }
 	  qtags(order_by: {count: desc}, limit: 40) {
@@ -34,17 +37,19 @@ const data = await gquery(
 	}`,
   { _in: simResultsOne.map((x) => x.payload.id) }
 );
+const { questions, answers, qtags } = data;
 
-const chunks = chunk(data.questions, 10) as Data[];
+const chunks = chunk(questions, 10) as Data[];
+const chunksa = chunk(answers, 10) as Data[];
 ---
 
 <Layout title="userz dot net." tags={data.qtags}>
   <div class="max-w-screen-xl px-4 py-3 mx-auto">
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {
-        chunks.map((chunk) => (
+        chunks.map((chunk, i) => (
           <div>
-            {chunk.map(({ genid, text }) => (
+            {chunk.map(({ genid, text }, i1) => (
               <div class="grid">
                 <a
                   href={"/" + genid}
@@ -57,6 +62,7 @@ const chunks = chunk(data.questions, 10) as Data[];
                     {" "}
                     {text.replaceAll("?", " ")}
                   </h5>
+                  {chunksa[i][i1].text.slice(0, 150)} ...
                 </a>
               </div>
             ))}
