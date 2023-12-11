@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 
 const Search: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-
   };
   // handle submit
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -16,8 +14,6 @@ const Search: React.FC = () => {
 
 
   return (
-
-
     <div
       id="marketing-banner"
       tabIndex={-1}

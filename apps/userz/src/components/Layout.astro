@@ -84,43 +84,36 @@ const { title, description, logo, tags, topic, image } = Astro.props;
         </div>
       </nav>
 
-      <div class="px-4 py-3 mx-auto">
-        <div class="flex items-center">
-          <ul class="flex space-x-1 text-md overflow-auto snap-x">
-            {
-              tags &&
-                tags
-                  .filter(
-                    (t: { hashtag: string; count: number }) =>
-                      t.hashtag.length > 2
+      <div class="flex items-center">
+        <ul class="flex space-x-1 text-md overflow-auto snap-x w-screen">
+          {
+            tags &&
+              tags
+                .filter(
+                  (t: { hashtag: string; count: number }) =>
+                    t.hashtag.length > 2
+                )
+                .map(
+                  ({ hashtag, count }: { hashtag: string; count?: number }) => (
+                    <li>
+                      <a
+                        href={count === 1 ? "#" : "/t/" + hashtag}
+                        class="text-black   px-3 mx-1 mb-3 bg-emerald-600 rounded-2xl lowercase font-black flex text-md snap-center"
+                      >
+                        <>
+                          <span class="material-symbols-outlined  -ml-2 ">
+                            tag
+                          </span>
+                          <span>{hashtag} </span>
+                        </>
+                      </a>
+                    </li>
                   )
-                  .map(
-                    ({
-                      hashtag,
-                      count,
-                    }: {
-                      hashtag: string;
-                      count?: number;
-                    }) => (
-                      <li>
-                        <a
-                          href={count === 1 ? "#" : "/t/" + hashtag}
-                          class="text-black   px-3 mx-1 mb-3 bg-emerald-600 rounded-2xl lowercase font-black flex text-md snap-center"
-                        >
-                          <>
-                            <span class="material-symbols-outlined  -ml-2 ">
-                              tag
-                            </span>
-                            <span>{hashtag} </span>
-                          </>
-                        </a>
-                      </li>
-                    )
-                  )
-            }
-          </ul>
-        </div>
+                )
+          }
+        </ul>
       </div>
+
       <div class="grow">
         <slot />
       </div>
