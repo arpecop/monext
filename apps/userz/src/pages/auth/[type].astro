@@ -1,5 +1,5 @@
 ---
-import Input from "../../components/Input.astro";
+import Input from "../../components/Input.tsx";
 import Layout from "../../components/Layout.astro";
 
 import { neon } from "@neondatabase/serverless";
@@ -61,38 +61,37 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<Layout title="userz dot net." tags={[]} logo={"inner"}>
-  {errormsg && <p>{errormsg}</p>}
-  <form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3" method="POST">
-    <Input
-      label="@username"
-      type="text"
-      name="username"
-      placeholder="elonmusk"
-      icon="badge"
-    />
-    <Input
-      label="Password"
-      type="password"
-      name="password"
-      placeholder="password"
-      icon="vpn_key"
-    />
-    <Input
-      label="Your Email"
-      type="email"
-      name="email"
-      placeholder="me@gmail.com"
-      icon="email"
-    />
+<Layout title="userz dot net." tags={[]} logo={"inner"} />
+{errormsg && <p>{errormsg}</p>}
+<form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3" method="POST">
+  <Input
+    label="@username"
+    type="text"
+    name="username"
+    placeholder="elonmusk"
+    icon="badge"
+  />
+  <Input
+    label="Password"
+    type="password"
+    name="password"
+    placeholder="password"
+    icon="vpn_key"
+  />
+  <Input
+    label="Your Email"
+    type="email"
+    name="email"
+    placeholder="me@gmail.com"
+    icon="email"
+  />
 
-    <div class="pt-6">
-      <button
-        class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
-        type="submit"
-      >
-        Sign Up
-      </button>
-    </div>
-  </form>
-</Layout>
+  <div class="pt-6">
+    <button
+      class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+      type="submit"
+    >
+      Sign Up
+    </button>
+  </div>
+</form>

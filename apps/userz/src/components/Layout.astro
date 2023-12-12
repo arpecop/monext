@@ -1,5 +1,6 @@
 ---
 import "../../base.css";
+import Auth from "./Auth";
 export interface Props {
   title: string;
   description?: string;
@@ -74,7 +75,8 @@ const { title, description, logo, tags, topic, image } = Astro.props;
           </a>
           <div class="flex items-center absolute right-4">
             <a
-              href="/auth/login"
+              data-modal-target="timeline-modal"
+              data-modal-toggle="timeline-modal"
               class="text-md text-emerald-600 hover:underline font-black"
               ><span class="material-symbols-outlined absolute -ml-6 -mt-0.5"
                 >badge</span
@@ -83,7 +85,16 @@ const { title, description, logo, tags, topic, image } = Astro.props;
           </div>
         </div>
       </nav>
-
+      <div
+        id="timeline-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full backdrop-blur-md bg-black/30"
+      >
+        <div class="relative p-4 w-full max-w-md max-h-full">
+          <Auth client:load section="signin" />
+        </div>
+      </div>
       <div class="flex items-center">
         <ul class="flex space-x-1 text-md overflow-auto snap-x w-screen">
           {

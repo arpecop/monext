@@ -17,7 +17,7 @@ const Search: React.FC = () => {
     <div
       id="marketing-banner"
       tabIndex={-1}
-      className="backdrop-blur-md bg-black/30 sticky z-50 flex flex-col md:flex-row justify-between py-4 top-0"
+      className="backdrop-blur-md bg-black/30 sticky z-20 flex flex-col md:flex-row justify-between py-4 top-0"
     >
       <div className="flex mb-3 me-4 flex-row grow items-center">
         <a
@@ -41,9 +41,9 @@ const Search: React.FC = () => {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
               </svg>
             </div>
@@ -79,9 +79,9 @@ const Search: React.FC = () => {
           >
             <path
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"></path>
           </svg>
           <span className="sr-only">Close banner</span>
