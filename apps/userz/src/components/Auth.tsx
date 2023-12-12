@@ -16,6 +16,9 @@ const AuthForm: React.FC = ({ title, children }: { title: string; children?: Rea
 
 const Auth: React.FC<AuthProps> = () => {
   const [section, setSection] = useState<AuthSection>('signin');
+  // error state
+  const [error, setError] = useState<string | null>(null);
+
 
   // onSubmit handler
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -28,6 +31,18 @@ const Auth: React.FC<AuthProps> = () => {
       formData[element.name] = element.value;
     }
     console.log(formData);
+    // fecch api '/api/auth' with form data
+    const response = fetch('/api/auth', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+    console.log(response);
+    //
+
+
 
 
     alert('Submitting Form')
@@ -56,6 +71,14 @@ const Auth: React.FC<AuthProps> = () => {
             name="password"
             placeholder="********"
             icon="lock"
+          />
+          <Input
+            label=""
+            type="hidden"
+            name="type"
+            placeholder=""
+            icon=""
+            value="signin"
           />
 
           <button

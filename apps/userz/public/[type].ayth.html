@@ -1,0 +1,78 @@
+---
+import Input from "../src/components/Input.jsx";
+import Layout from "../src/components/Layout.astro.jsx";
+
+import { neon } from "@neondatabase/serverless";
+import { auth } from "../src/lib/lucia.js";
+const { type } = Astro.params as { type: string };
+
+const jdata: {
+readonly login: { readonly title: "Log In"; readonly action: "login" };
+readonly signup: { readonly title: "Sign Up"; readonly action: "sigup" };
+} = {
+login: {
+title: "Log In",
+action: "login",
+},
+signup: {
+title: "Sign Up",
+action: "sigup",
+},
+};
+
+let data;
+if (type === "login") {
+data = jdata.login;
+} else if (type === "signup") {
+data = jdata.signup;
+}
+
+const sql1 = neon(process.env.DB_URL2 || "");
+const sql = {
+...sql1,
+unsafe: async (query: string, ...params: any[]) => {
+const result = await sql1(query, ...params);
+return (result as any).rows;
+},
+};
+
+let errormsg = null;
+
+if (Astro.request.method === "POST") {
+const data = await Astro.request.formData();
+try {
+const username = data.get("username");
+const email = data.get("email") as string;
+const password = data.get("password") as string;
+await auth.createUser({
+userId: username as string,
+key: null,
+attributes: { username: "" }, // Add the 'username' property with an empty string as the value
+});
+const key = await auth.createKey({
+userId: username as string,
+providerId: "email",
+providerUserId: email,
+password,
+});
+} catch (error) {
+errormsg = (error as Error).message;
+}
+}
+---
+
+<Layout title="userz dot net." tags={[]} logo={"inner"} />
+{errormsg && <p>{errormsg}</p>}
+<form class="w-full max-w-xs mx-auto mt-20 space-y-3 mb-3" method="POST">
+  <Input label="@username" type="text" name="username" placeholder="elonmusk" icon="badge" />
+  <Input label="Password" type="password" name="password" placeholder="password" icon="vpn_key" />
+  <Input label="Your Email" type="email" name="email" placeholder="me@gmail.com" icon="email" />
+
+  <div class="pt-6">
+    <button
+      class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+      type="submit">
+      Sign Up
+    </button>
+  </div>
+</form>
