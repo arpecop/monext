@@ -3,24 +3,31 @@ import { auth } from "../../lib/lucia";
 export const POST: APIRoute = async ({ request }) => {
   const data = await request.formData();
   let errormsg = null;
+  let payload = null;
   const action = data.get("action");
 
   const username = data.get("username") as string;
   const email = data.get("email") as string;
   const password = data.get("password") as string;
 
+
   switch (action) {
     case "signin":
       try {
-        await auth.useKey(
+        console.log(username, password);
+
+        const key = await auth.useKey(
           "username",
           username,
           password
         );
-        // const session = await auth.createSession({
-        //   userId: key.userId,
-        //   attributes: {}
-        // });
+        console.log(key);
+
+        const session = await auth.createSession({
+          userId: key.userId,
+          attributes: {}
+        });
+        payload = session;
 
 
       } catch (error) {
@@ -31,17 +38,25 @@ export const POST: APIRoute = async ({ request }) => {
       break;
     case "signup":
       try {
-        await auth.createUser({
-          userId: username as string,
-          key: null,
-          attributes: { username: "" },
+
+        // const key = await auth.createKey({
+        //   userId: username,
+        //   providerId: "username",
+        //   providerUserId: username,
+        //   password
+        // });
+        const user = await auth.createUser({
+          key: {
+            providerId: "username",
+            providerUserId: username.toLowerCase(),
+            password
+          },
+          attributes: {
+
+
+          }
         });
-        const key = await auth.createKey({
-          userId: username as string,
-          providerId: "email",
-          providerUserId: email,
-          password,
-        });
+
       } catch (error) {
         console.log(error);
         errormsg = (error as Error).message;
@@ -71,6 +86,7 @@ export const POST: APIRoute = async ({ request }) => {
     JSON.stringify({
       message: "Success!",
       success: true,
+      payload,
     }),
     { status: 200 }
   );

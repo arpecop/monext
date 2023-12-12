@@ -2,10 +2,12 @@ import { prisma } from "@lucia-auth/adapter-prisma";
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import { lucia } from "lucia";
+import { astro } from "lucia/middleware";
+
 
 const client = new PrismaClient().$extends(withAccelerate())
 
-//dasd
+
 
 
 export const auth = lucia({
@@ -14,7 +16,12 @@ export const auth = lucia({
     key: "user_key",
     session: "user_session",
   }),
-  // middleware: astro(),
-  env: "DEV",
+  getUserAttributes: (databaseUser) => {
+    return {
+      username: databaseUser.username,
+    };
+  },
+  middleware: astro(),
+  env: "PROD",
 });
 

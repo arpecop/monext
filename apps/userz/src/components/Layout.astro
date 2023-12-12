@@ -1,6 +1,7 @@
 ---
 import "../../base.css";
 import Auth from "./Auth";
+
 export interface Props {
   title: string;
   description?: string;
@@ -10,6 +11,7 @@ export interface Props {
   tags?: { hashtag: string; count: number }[];
 }
 const { title, description, logo, tags, topic, image } = Astro.props;
+const session = await Astro.locals.auth.validate();
 ---
 
 <!DOCTYPE html>

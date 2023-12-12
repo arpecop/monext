@@ -66,6 +66,7 @@ const Auth: React.FC<AuthProps> = () => {
     const data = await response.json();
     console.log(data);
 
+
     if (!data.success) {
       setError(data.message);
     } else {
@@ -151,7 +152,7 @@ const Auth: React.FC<AuthProps> = () => {
           <input
             type="hidden"
             name="action"
-            value="signin"
+            value="signup"
           />
 
           <button
