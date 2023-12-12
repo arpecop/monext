@@ -1,5 +1,5 @@
 import { prisma } from "@lucia-auth/adapter-prisma";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import { lucia } from "lucia";
 
