@@ -11,9 +11,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   switch (action) {
     case "signin":
-
-
-
       try {
         await auth.useKey(
           "username",
@@ -46,6 +43,7 @@ export const POST: APIRoute = async ({ request }) => {
           password,
         });
       } catch (error) {
+        console.log(error);
         errormsg = (error as Error).message;
       }
       break;

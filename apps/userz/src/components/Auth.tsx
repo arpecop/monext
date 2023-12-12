@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input } from './Input';
 
 type AuthSection = 'signin' | 'signup' | 'forgot' | 'codeconfirm' | 'changepassword';
@@ -8,14 +8,33 @@ interface AuthProps {
 }
 
 
+// error wrapper
+
+const Error: React.FC<{ message: string }> = ({ message }) => (
+  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <strong className="font-bold">Error!</strong>
+    <span className="block sm:inline">{message}</span>
+  </div>
+);
 
 const Auth: React.FC<AuthProps> = () => {
   const [section, setSection] = useState<AuthSection>('signin');
   // error state
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
 
-  // onSubmit handler
+    if (error) {
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
+    }
+  }, [error]);
+  // switch error state to null when the section changes
+  useEffect(() => {
+    setError(null);
+  }, [section]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // iterate over form elements and get their values , only input elements
@@ -47,8 +66,12 @@ const Auth: React.FC<AuthProps> = () => {
     const data = await response.json();
     console.log(data);
 
+    if (!data.success) {
+      setError(data.message);
+    } else {
+      setError(null);
+    }
 
-    // alert('Submitting Form')
 
   };
 
@@ -59,6 +82,7 @@ const Auth: React.FC<AuthProps> = () => {
       return (
 
         <form className="w-full max-w-xs mx-auto  space-y-3 mb-3" onSubmit={handleSubmit}>
+          {error && <Error message={error} />}
           <h1>Sign In</h1>
           <Input
             label="@username"
@@ -100,6 +124,7 @@ const Auth: React.FC<AuthProps> = () => {
     case 'signup':
       return (
         <form className="w-full max-w-xs mx-auto  space-y-3 mb-3" onSubmit={handleSubmit}>
+          {error && <Error message={error} />}
           <h1>Sign Up</h1>
           <Input
             label="@username"
@@ -115,6 +140,13 @@ const Auth: React.FC<AuthProps> = () => {
             name="password"
             placeholder="********"
             icon="lock"
+          />
+          <Input
+            label="Your Email"
+            type="email"
+            name="email"
+            placeholder="email@gmail.com"
+            icon="email"
           />
           <input
             type="hidden"
