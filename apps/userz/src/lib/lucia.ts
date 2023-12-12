@@ -3,7 +3,7 @@ import { lucia } from "lucia";
 
 import { postgres as postgresAdapter } from "@lucia-auth/adapter-postgresql";
 import { neon } from "@neondatabase/serverless";
-import { astro } from "lucia/middleware";
+// import { astro } from "lucia/middleware";
 
 const sql1 = neon(process.env.DB_URL2 || "");
 const sql = {
@@ -21,6 +21,7 @@ export const auth = lucia({
     key: "user_key",
     session: "user_session",
   }),
-  middleware: astro(),
+  // middleware: astro(),
   env: "DEV",
 });
+
