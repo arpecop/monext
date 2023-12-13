@@ -39,12 +39,7 @@ export const POST: APIRoute = async ({ request }) => {
     case "signup":
       try {
 
-        // const key = await auth.createKey({
-        //   userId: username,
-        //   providerId: "username",
-        //   providerUserId: username,
-        //   password
-        // });
+
         const user = await auth.createUser({
           key: {
             providerId: "username",
