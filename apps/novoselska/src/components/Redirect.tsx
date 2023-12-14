@@ -12,7 +12,7 @@ export default function Redirect() {
       localStorage.setItem("avatar", user.picture);
       navigate("/");
     } else {
-      navigate("/login/");
+      navigate("/");
     }
   }
   useEffect(() => {

@@ -1,19 +1,85 @@
 ---
 import SignIn from '../components/SignIn';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<main
-  transition:animate="slide"
-  class="flex flex-col gap-5 overflow-hidden pt-5"
->
-  <div class="flex grow flex-col items-center gap-3 overflow-y-auto px-5 pb-5">
-    <div class="flex w-full max-w-3xl grow flex-col gap-3">
-      <div class="m-auto flex flex-col gap-10">
-        <div class="px-10 text-center">
-          <h2 class="mb-3">There is nothing here</h2>
-          <SignIn client:only="react" />
+<Layout title="Доктор Новоселска , Добрич, клиничен психиатър">
+  <main class="flex flex-col items-center justify-between pb-40 pt-20">
+    <div class="absolute top-5 w-full justify-between px-5 flex">
+      <h1 class="text-lg text-gray-800 font-extrabold">
+        д-р М. Новоселска <div class="font-thin text-xs">
+          клиничен психиатър
+        </div>
+      </h1>
+      <img src="/logo.png" class="logo w-12 h-full" />
+    </div>
+    <div
+      class="flex w-full items-center justify-center border-b border-gray-200 py-8 bg-gray-100"
+    >
+      <div
+        class="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
+      >
+        <div class="p-1.5 text-white">
+          <img src="/avatar.jpg" class="w-14 rounded-full" />
+        </div>
+
+        <div class="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
+          <div class="text-xs text-slate-500">Medeia</div>
+          Здравейте, това е виртуалният асистент на доктор Новоселска Аз съм изкуствен
+          интелект, който е трениран на базата на дългогодишната практика на доктор
+          Новоселска, за да ви помогна с някои основни въпроси и проблеми. Аз не
+          съм реален човек и не мога да заместя професионалната помощ на доктор Новоселска.
+          Ако имате нужда от консултация с нея, можете да се свържете с нея на телефон
+          0888 266 745 или на имейл medeia@dr-novoselska.com. Аз съм тук, за да ви
+          слушам и да ви подкрепям. 😊
         </div>
       </div>
     </div>
-  </div>
-</main>
+    <SignIn client:only="react" />
+    <!-- <GoogleLogin client:load loginUrl={url.href} /> -->
+    <div
+      class="flex w-full items-center justify-center border-b border-gray-200 py-8 bg-white"
+    >
+      <div
+        class="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
+      >
+        <div class="p-1.5 text-white">dddd1</div><div
+          class="prose mt-1 w-full break-words prose-p:leading-relaxed"
+        >
+          <div class="text-xs text-slate-500">Потребител</div>
+          <p></p>
+        </div>
+      </div>
+    </div>
+    <div
+      class="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0"
+    >
+      <form
+        class="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4"
+      >
+        <textarea
+          tabindex="0"
+          required=""
+          rows="1"
+          disabled="true"
+          autofocus=""
+          placeholder="Send a message"
+          spellcheck="false"
+          class="w-full pr-10 focus:outline-none"
+          style="height: 24px !important;"></textarea><button
+          class="absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="none"
+            class="h-4 w-4 text-white"
+            stroke-width="2"
+            ><path
+              d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"
+              fill="currentColor"></path></svg
+          ></button
+        >
+      </form>
+    </div>
+  </main>
+</Layout>
