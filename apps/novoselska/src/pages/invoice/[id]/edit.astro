@@ -1,0 +1,42 @@
+---
+import InvoiceForm from "@/components/InvoiceForm";
+import { Button } from "@/components/ui/button";
+import { invoices } from "@/db/schema";
+import EditLayout from "@/layouts/EditLayout.astro";
+import { parseInvoice } from "@/lib/utils";
+import { and, eq } from "drizzle-orm";
+
+const { id } = Astro.params;
+
+const userID = Astro.locals.user.id;
+
+const data = await Astro.locals.db.query.invoices.findFirst({
+	where: and(eq(invoices.userID, userID), eq(invoices.id, id!)),
+});
+
+if (!data) {
+	return Astro.redirect("/?error=404");
+}
+
+const invoice = parseInvoice(data);
+
+export const prerender = false;
+---
+
+<EditLayout id={id!}>
+	<InvoiceForm invoice={invoice} client:only="react" />
+	<footer
+		class="sticky bottom-0 hidden items-center justify-between rounded-sm bg-background p-4 xl:flex"
+	>
+		<Button
+			id="cancel-edit-button"
+			className="p-6 font-bold"
+			variant="destructive"
+		>
+			Cancel
+		</Button>
+		<Button type="submit" form="invoice-form" className="p-6 font-bold">
+			Save Changes
+		</Button>
+	</footer>
+</EditLayout>

@@ -1,0 +1,48 @@
+---
+import { ChevronLeft } from "lucide-react";
+import Metadata from "@/layouts/Metadata.astro";
+import { Button } from "@/components/ui/button";
+---
+
+<Metadata>
+	<main
+		transition:animate="slide"
+		class="flex flex-col gap-5 overflow-hidden pt-5"
+	>
+		<div
+			class="mx-auto flex w-full max-w-3xl flex-col items-start px-5 lg:px-0"
+		>
+			<a rel="prefetch" href="javascript:history.back()" class="-ml-2">
+				<span class="flex py-5 pr-5">
+					<ChevronLeft className="stroke-primary pb-1" />
+					 Go back
+				</span>
+			</a>
+			<h2>New Invoice</h2>
+		</div>
+		<div class="mb-5 flex grow justify-center overflow-y-auto px-5">
+			<div class="flex max-w-3xl grow flex-col gap-3">
+				<slot />
+			</div>
+		</div>
+	</main>
+	<footer
+		class="flex items-center justify-between bg-background p-4 xl:hidden"
+	>
+		<Button className="p-6 font-bold" variant="destructive">
+			<a rel="prefetch" href="javascript:history.back()">Discard</a>
+		</Button>
+		<Button
+			type="submit"
+			form="invoice-form"
+			className="p-6 font-bold"
+			variant="secondary"
+			id="draft-btn"
+		>
+			Save as Draft
+		</Button>
+		<Button type="submit" form="invoice-form" className="p-6 font-bold">
+			Save & Send
+		</Button>
+	</footer>
+</Metadata>

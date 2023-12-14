@@ -1,0 +1,46 @@
+---
+import { ChevronLeft } from "lucide-react";
+import Metadata from "@/layouts/Metadata.astro";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/DeleteDialog";
+import MarkAsPaidBtn from "@/components/MarkAsPaidBtn";
+
+type Props = {
+	id: string;
+	paid: boolean;
+};
+
+const { id, paid } = Astro.props;
+---
+
+<Metadata>
+	<main
+		transition:animate="slide"
+		class="flex flex-col gap-5 overflow-hidden pt-5"
+	>
+		<div
+			class="mx-auto flex w-full max-w-3xl items-center justify-between px-5 lg:px-0"
+		>
+			<a rel="prefetch" href="javascript:history.back()" class="-ml-2">
+				<span class="flex py-5 pr-5">
+					<ChevronLeft className="stroke-primary pb-1" />
+					 Go back
+				</span>
+			</a>
+		</div>
+		<div class="mb-5 flex grow justify-center overflow-y-auto px-5">
+			<div class="flex max-w-3xl grow flex-col gap-3">
+				<slot />
+			</div>
+		</div>
+	</main>
+	<footer
+		class="flex items-center justify-center gap-4 bg-background py-4 md:hidden"
+	>
+		<a rel="prefetch" href={`/invoice/${id}/edit/`}>
+			<Button className="p-6 font-bold" variant="secondary">Edit</Button>
+		</a>
+		<DeleteDialog id={id} client:only="react" />
+		<MarkAsPaidBtn client:only="react" id={id} paid={paid} />
+	</footer>
+</Metadata>
