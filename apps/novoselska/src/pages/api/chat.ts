@@ -4,7 +4,10 @@ import type { APIContext } from "astro";
 
 export async function POST({ request }: APIContext) {
   const jsonData = await request.json();
-  const { mesage } = jsonData;
+
+
+  const { message } = jsonData;
+
 
   const url = "https://api.cloudflare.com/client/v4/accounts/d453356c9cc405872f59af5de88d1375/ai/run/@cf/mistral/mistral-7b-instruct-v0.1";
   const options = {
@@ -14,7 +17,7 @@ export async function POST({ request }: APIContext) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      "prompt": mesage,
+      "prompt": message,
       "stream": true
     })
   };
@@ -34,7 +37,7 @@ export async function POST({ request }: APIContext) {
 
           const chunk = decoder.decode(value);
 
-          console.log({ chunk });
+          // console.log({ chunk });
           fetch('https://socket.kloun.lol/yourChannelId1', {
             method: 'POST',
             headers: {
