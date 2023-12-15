@@ -33,7 +33,7 @@ jobs:
           cd ../../
           rm -rf ./package.json
           mv ./pack.json ./package.json
-          rm -rf ./apps ./packages ./.github
+          rm -rf ./apps ./packages ./.github ./node_modules
       - name: 🚀 Deploy
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

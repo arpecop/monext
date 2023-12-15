@@ -104,8 +104,6 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
               </div>
             </div>
           </div>
-
-
         ))}
       </div >
       <div ref={messagesEndRef} />
