@@ -6,8 +6,8 @@ import { googleAuth } from "../../../../lib/lucia";
 
 export async function POST({ request }: APIContext) {
 
-  const jsonData = await request.json();
-  const { cookie } = jsonData;
+  // const jsonData = await request.json();
+  // const { cookie } = jsonData;
 
   const [url, state] = await googleAuth.getAuthorizationUrl();
   console.log(url);
@@ -15,7 +15,7 @@ export async function POST({ request }: APIContext) {
 
   const stateCookie = serializeCookie("google_oauth_state", state, {
     httpOnly: true,
-    secure: process.env.LOGNAME ? false : true,
+    secure: process.env.LOGNAME === 'rudix' ? false : true,
     path: "/",
     maxAge: 60 * 60,
     sameSite: "strict",

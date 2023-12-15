@@ -20,6 +20,7 @@ jobs:
           DB_URL2: ${{ secrets.DB_URL2 }}
           DB_URL: ${{ secrets.DB_URL }}
           DB_URL1: ${{ secrets.DB_URL1 }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         run: |
           echo $APP
           printenv

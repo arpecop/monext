@@ -25,8 +25,8 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
     socket.connect();
 
     // on socket message received, add it to the messages array
-    socket.on('message', (message1: string) => {
-      const { response } = JSON.parse(message1);
+    socket.on('message', (msg: string) => {
+      const { response } = JSON.parse(msg);
       const message = response;
       setMessages((prevMessages: Message[]) => {
         console.log(prevMessages);
@@ -109,7 +109,7 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message: lastMessage.message, channelid }),
       }).then((response) => {
         response.json().then(() => {
           // setMessages([...messages, { message: data.message, system: true }]);
