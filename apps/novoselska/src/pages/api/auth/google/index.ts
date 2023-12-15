@@ -10,6 +10,8 @@ export async function POST({ request }: APIContext) {
   const { cookie } = jsonData;
 
   const [url, state] = await googleAuth.getAuthorizationUrl();
+  console.log(url);
+
 
   const stateCookie = serializeCookie("google_oauth_state", state, {
     httpOnly: true,

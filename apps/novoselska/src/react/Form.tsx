@@ -1,13 +1,64 @@
 import React, { useEffect, useRef, useState } from 'react';
+import io from 'socket.io-client';
 import SignIn from './SignIn';
-
+type Message = {
+  message: string;
+  system: boolean;
+};
 function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<{ message: string; system: boolean }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const strUser = localStorage.getItem('user') || '{}';
   const [user, setUser] = useState(JSON.parse(strUser));
   const [responseReceived, setResponseReceived] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const channelid = 'yourChannelId1';
+  const socket = io('https://socket.kloun.lol', {
+    query: { channelid }
+  });
+
+  useEffect(() => {
+    // Disconnect the socket
+    socket.disconnect();
+
+    // Connect the socket again
+    socket.connect();
+
+    // on socket message received, add it to the messages array
+    socket.on('message', (message1: string) => {
+      const { response } = JSON.parse(message1);
+      const message = response;
+      setMessages((prevMessages: Message[]) => {
+        const lastMessage = prevMessages[prevMessages.length - 1];
+        if (lastMessage && lastMessage.system) {
+          // Create a new message object with the updated message
+          const updatedLastMessage = { ...lastMessage, message: lastMessage.message + message };
+          // Replace the last message with the updated one
+          return [...prevMessages.slice(0, -1), updatedLastMessage];
+
+        } else {
+          const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
+          if (systemMessageIndex !== -1) {
+            // Add null check for prevMessages[systemMessageIndex]
+            const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: prevMessages[systemMessageIndex].message + message } : null;
+            // Replace the system message with the updated one
+            return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)];
+          } else {
+            return [...prevMessages, { message, system: true }];
+          }
+        }
+      });
+      scrollToBottom();
+    });
+
+    // Cleanup function
+    return () => {
+      // Disconnect the socket when the component is unmounted
+      socket.disconnect();
+    };
+  }, []);
+
+
 
   window.addEventListener('storage', function (event) {
     if (event.key === 'user') {
@@ -29,7 +80,7 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -42,17 +93,29 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
   };
 
   useEffect(() => {
-    // is last message is from the system
+
     const lastMessage = messages[messages.length - 1];
     console.log(lastMessage);
 
 
     if (lastMessage && !lastMessage.system) {
-      setTimeout(() => {
-        setMessages([...messages, { message: 'system response', system: true }]);
-        setResponseReceived(true);
-        scrollToBottom();
-      }, 1000);
+      // create dummy last   message  that is from the system
+      setMessages([...messages, { message: '', system: true }]);
+
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      }).then((response) => {
+        response.json().then(() => {
+          // setMessages([...messages, { message: data.message, system: true }]);
+          setResponseReceived(true);
+          scrollToBottom();
+        });
+      }
+      );
     }
   }, [messages]);
 

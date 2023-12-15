@@ -13,7 +13,8 @@ export default defineConfig({
     },
     define: {
       "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
-      "process.env.GSECRET": JSON.stringify(process.env.GSECRET)
+      "process.env.GSECRET": JSON.stringify(process.env.GSECRET),
+      "process.env.CLOUDFLARE_TOKEN": JSON.stringify(process.env.CLOUDFLARE_TOKEN)
     }
   }
 });
