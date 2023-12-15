@@ -40,7 +40,7 @@ jobs:
           git config --global user.name "Rudix"
           git checkout --orphan "$APP"
           git add --all
-          git add -A .next out node_modules -f
+          git add -A .next out  -f
           git commit  --allow-empty -n -m  "Add build directory"
       - name: 🥊 Push changes !
         uses: ad-m/github-push-action@master
