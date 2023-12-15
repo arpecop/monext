@@ -1,7 +1,4 @@
 import type { APIContext } from "astro";
-
-
-
 export async function POST({ request }: APIContext) {
   const jsonData = await request.json();
 
@@ -60,6 +57,11 @@ export async function POST({ request }: APIContext) {
       },
     });
   } catch (err) {
-    console.error('error:' + err);
+
+    return new Response(JSON.stringify(err), {
+      headers: {
+        "content-type": "application/json; charset=UTF-8",
+      },
+    });
   }
 };
