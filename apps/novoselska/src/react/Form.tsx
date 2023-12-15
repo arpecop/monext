@@ -29,6 +29,8 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
       const { response } = JSON.parse(message1);
       const message = response;
       setMessages((prevMessages: Message[]) => {
+        console.log(prevMessages);
+
         const lastMessage = prevMessages[prevMessages.length - 1];
         if (lastMessage && lastMessage.system) {
           // Create a new message object with the updated message
@@ -40,7 +42,7 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
           const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
           if (systemMessageIndex !== -1) {
             // Add null check for prevMessages[systemMessageIndex]
-            const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: prevMessages[systemMessageIndex].message + message } : null;
+            const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: (prevMessages[systemMessageIndex]?.message || '') + message } : null;
             // Replace the system message with the updated one
             return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)];
           } else {
