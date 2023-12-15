@@ -104,15 +104,14 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
       // create dummy last   message  that is from the system
       setMessages([...messages, { message: '', system: true }]);
 
-      fetch('/api/chat', {
-        method: 'POST',
+      fetch('/api/chat?message=' + lastMessage.message, {
+
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: lastMessage.message, channelid }),
       }).then((response) => {
         response.json().then(() => {
-          // setMessages([...messages, { message: data.message, system: true }]);
+
           setResponseReceived(true);
           scrollToBottom();
         });
