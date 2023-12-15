@@ -14,7 +14,7 @@ export async function POST({ request }: APIContext) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      "prompt": message,
+      "prompt": 'ти си виртуален асистент на  говори само Български. оттоваряш само на въпроси в сферата на: психиатрия , психично здраве и емоционална хармонния. Отговори на този въпрос : ' + message,
       "stream": true
     })
   };
