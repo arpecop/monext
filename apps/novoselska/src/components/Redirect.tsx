@@ -1,4 +1,4 @@
-import { navigate } from "astro/transitions/router";
+
 import React, { useEffect } from 'react';
 
 export default function Redirect() {
@@ -8,11 +8,13 @@ export default function Redirect() {
     const res = await fetch(`/api/auth/google/callback?${params}`);
 
     if (res.ok) {
+
       const user = await res.json();
-      localStorage.setItem("avatar", user.picture);
-      navigate("/");
+      localStorage.setItem("user", JSON.stringify(user));
+      window.close();
+
     } else {
-      navigate("/");
+      throw new Error();
     }
   }
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function Redirect() {
 
   return (
     <div className="row-span-full mx-auto flex flex-col items-center justify-center">
-      dasdas
+
     </div>
   );
 }

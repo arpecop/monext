@@ -9,15 +9,11 @@ import { astro } from "lucia/middleware";
 
 const client = new PrismaClient().$extends(withAccelerate())
 
-
-
-
 export const auth = lucia({
   adapter: prisma(client, {
     user: "auth_user",
     key: "user_key",
     session: "user_session",
-
   }),
   getUserAttributes: (data) => {
     return {
@@ -30,9 +26,6 @@ export const auth = lucia({
   middleware: astro(),
   env: "PROD",
 });
-
-
-
 
 
 export const googleAuth = google(auth, {

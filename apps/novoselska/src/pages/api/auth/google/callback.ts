@@ -1,61 +1,20 @@
 import { OAuthRequestError } from "@lucia-auth/oauth";
 import type { APIRoute } from "astro";
-import { parseCookie } from "lucia/utils";
-import { auth, googleAuth } from "../../../../lib/lucia";
+import { googleAuth } from "../../../../lib/lucia";
 
-export const prerender = false;
-
-export const GET: APIRoute = async ({ request, url }) => {
-  const cookie = request.headers.get("cookie") || "";
-  const state = url.searchParams.get("state");
-  const code = url.searchParams.get("code");
-
-  const cookies = parseCookie(cookie);
-  const storedState = cookies.google_oauth_state;
-
-  if (!state || !storedState || storedState !== state || !code) {
-    return new Response("Unauthorized", {
-      status: 401,
-      statusText: "Unauthorized",
-    });
-  }
-
+export const GET: APIRoute = async ({ url }) => {
+  const code = url.searchParams.get("code") as string;
   try {
-    const { getExistingUser, googleUser, createUser } =
-      await googleAuth.validateCallback(code);
-
-    const getUser = async () => {
-      const existingUser = await getExistingUser();
-      if (existingUser) return existingUser;
-
-      const user = await createUser({
-        attributes: {
-          name: googleUser.name,
-          email: googleUser.email || null,
-          picture: googleUser.picture,
-        },
-      });
-
-      return user;
-    };
-
-    const user = await getUser();
-    const session = await auth.createSession({
-      userId: user.userId,
-      attributes: {},
-    });
-    const sessionCookie = auth.createSessionCookie(session);
+    const { googleUser } = await googleAuth.validateCallback(code);
+    console.log(googleUser);
 
     return new Response(
       JSON.stringify({
-        id: user.userId,
+        id: googleUser.sub,
         picture: googleUser.picture,
-      }),
-      {
-        headers: {
-          "Set-Cookie": sessionCookie.serialize(),
-        },
-      }
+        name: googleUser.name,
+        date: new Date().toISOString(),
+      })
     );
   } catch (err) {
     if (err instanceof OAuthRequestError) {

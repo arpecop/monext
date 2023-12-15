@@ -1,6 +1,12 @@
 ---
-import SignIn from '../components/SignIn';
 import Layout from '../layouts/Layout.astro';
+import { googleAuth } from '../lib/lucia.ts';
+import Form from '../react/Form';
+const cookie = Astro.cookies.get('google_oauth_state') as {
+  value: string;
+};
+const { clientId, redirectUri } = googleAuth.config;
+const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email`;
 ---
 
 <Layout title="Доктор Новоселска , Добрич, клиничен психиатър">
@@ -35,9 +41,8 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
     </div>
-    <SignIn client:only="react" />
 
-    <div
+    <!-- <div
       class="flex w-full items-center justify-center border-b border-gray-200 py-8 bg-white"
     >
       <div
@@ -48,36 +53,7 @@ import Layout from '../layouts/Layout.astro';
           <p></p>
         </div>
       </div>
-    </div>
-    <div
-      class="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0"
-    >
-      <form
-        class="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4"
-      >
-        <textarea
-          tabindex="0"
-          required=""
-          rows="1"
-          disabled="true"
-          autofocus=""
-          placeholder="Send a message"
-          spellcheck="false"
-          class="w-full pr-10 focus:outline-none"
-          style="height: 24px !important;"></textarea><button
-          class="absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"
-          ><svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="none"
-            class="h-4 w-4 text-white"
-            stroke-width="2"
-            ><path
-              d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"
-              fill="currentColor"></path></svg
-          ></button
-        >
-      </form>
-    </div>
+    </div> -->
+    <Form client:only="react" cookie={cookie} url={signInUrl} />
   </main>
 </Layout>
