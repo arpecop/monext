@@ -1,6 +1,6 @@
 import { OAuthRequestError } from "@lucia-auth/oauth";
 import { googleAuth } from "../../../../lib/lucia";
-
+export const prerender = false
 export async function GET({ url }) {
   const code = url.searchParams.get("code") as string;
   try {
