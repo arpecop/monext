@@ -1,7 +1,11 @@
 import type { APIContext } from "astro";
 export const prerender = false
-export async function GET({ params }: APIContext) {
-  const { message } = params;
+
+
+export async function POST({ request }: APIContext) {
+  // get the message from the request body
+  const jsonData = await request.json();
+  const { message } = jsonData;
 
   const url = "https://api.cloudflare.com/client/v4/accounts/d453356c9cc405872f59af5de88d1375/ai/run/@cf/mistral/mistral-7b-instruct-v0.1";
   const options = {
