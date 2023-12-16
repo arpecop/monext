@@ -51,47 +51,48 @@ export async function POST({ request }: APIContext) {
     })
   };
 
-  try {
-    const response = await fetch(url, options);
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-    let combinedResponse = '';
+
+  const response = await fetch(url, options);
+  const reader = response.body?.getReader();
+  const decoder = new TextDecoder();
+  let combinedResponse = '';
+
+  const stream = async () => {
+    return new Promise((resolve) => {
+      new ReadableStream({
+        async start(controller) {
+          while (true) {
+            const { done, value } = await (reader as ReadableStreamDefaultReader).read();
+            if (done) {
+              console.log('Stream complete');
+              resolve(42);
+              break;
+            }
+
+            const chunk = decoder.decode(value).replace('data: {\"response\":\"', '').replace('\"}\n\n', '').replace('data: [DONE]', '');
+            combinedResponse += chunk;
 
 
-    new ReadableStream({
-      async start(controller) {
-        while (true) {
-          const { done, value } = await (reader as ReadableStreamDefaultReader).read();
-          if (done) {
-            break;
+
+
+            await executeMyMutation(channelid, chunk);
+            controller.enqueue(chunk);
+
+
           }
 
-          const chunk = decoder.decode(value).replace('data: {\"response\":\"', '').replace('\"}\n\n', '').replace('data: [DONE]', '');
-          controller.enqueue(chunk);
-          combinedResponse += chunk;
-
-
-          await executeMyMutation(channelid, chunk);
-
-
+          controller.close();
         }
-
-        controller.close();
-      }
-    });
-
-
-    return new Response(JSON.stringify({ response: combinedResponse }), {
-      headers: {
-        "content-type": "application/json; charset=UTF-8",
-      },
-    });
-
-  } catch (err) {
-    return new Response(JSON.stringify(err), {
-      headers: {
-        "content-type": "application/json; charset=UTF-8",
-      },
-    });
+      });
+    })
   }
+  await stream();
+
+  return new Response(JSON.stringify({ response: combinedResponse }), {
+    headers: {
+      "content-type": "application/json; charset=UTF-8",
+    },
+  });
+
+
 };
