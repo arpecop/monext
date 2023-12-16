@@ -1,10 +1,6 @@
 import { gql } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
-
-
-
-
 type Message = {
   message: string;
   system: boolean;
@@ -12,7 +8,6 @@ type Message = {
 function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [workmsg, setWorkmsg] = useState<string[]>([]);
   const [channelid, setChannel] = useState('');
   const strUser = localStorage.getItem('user') || '{}';
   const [user, setUser] = useState(JSON.parse(strUser));
