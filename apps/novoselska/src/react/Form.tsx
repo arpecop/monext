@@ -129,13 +129,13 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
             required
             rows={1}
             autoFocus
-            placeholder="Send a message"
+            placeholder="Изпрати съобщение"
             spellCheck="false"
             className="w-full pr-10 focus:outline-none"
             value={message}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyPress}
-            disabled={!responseReceived}
+            disabled={!responseReceived || !user.id}
           />
           <button
             className="absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"
