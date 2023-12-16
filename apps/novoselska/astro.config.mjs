@@ -4,8 +4,11 @@ import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  output: 'hybrid',
-  adapter: cloudflare(),
+  output: 'server',
+  adapter: cloudflare({
+    wasmModuleImports: true,
+    imageService: "passthrough"
+  }),
   integrations: [tailwind(), react()],
   vite: {
     build: {
