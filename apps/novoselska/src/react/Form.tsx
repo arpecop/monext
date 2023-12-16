@@ -33,38 +33,20 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   `;
 
 
-  function workchat(message: string) {
-    setMessages((prevMessages: Message[]) => {
 
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      if (lastMessage && lastMessage.system) {
-        // Create a new message object with the updated message
-        const updatedLastMessage = { ...lastMessage, message: lastMessage.message + message };
-        // Replace the last message with the updated one
-        return [...prevMessages.slice(0, -1), updatedLastMessage];
-
-      } else {
-        const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
-        if (systemMessageIndex !== -1) {
-          // Add null check for prevMessages[systemMessageIndex]
-          const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: (prevMessages[systemMessageIndex]?.message || '') + message } : null;
-          // Replace the system message with the updated one
-          return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)] as Message[];
-        } else {
-          return [...prevMessages, { message, system: true }] as Message[];
-        }
-      }
-    });
-
-    scrollToBottom();
-  }
 
   useEffect(() => {
     client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
       next(data) {
         console.log(data.data.work_chat);
-        const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse();
-        console.log(mutatedlast);
+        const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse().join('');
+
+        const lastMessage = messages[messages.length - 1];
+        console.log(lastMessage);
+
+        setMessages([...messages, { message: mutatedlast, system: true }]);
+        scrollToBottom();
+
 
       },
       error(err) { console.error('err', err) },
@@ -89,9 +71,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   const handleSendMessage = () => {
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
-      setMessage('');
       setResponseReceived(false);
-      scrollToBottom();
     }
   };
 
@@ -103,36 +83,30 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
   };
 
   useEffect(() => {
-
-    const lastMessage = messages[messages.length - 1];
-    console.log(lastMessage);
-
-
-    if (lastMessage && !lastMessage.system) {
-      // create dummy last   message  that is from the system
-      setMessages([...messages, { message: '', system: true }]);
-
+    const msg = message;
+    setMessage('')
+    setMessages([...messages, { message: 'dummy', system: true }]);
+    if (!responseReceived) {
       fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: lastMessage.message, channelid })
+        body: JSON.stringify({ message: msg, channelid })
       }).then((response) => {
         response.json().then(() => {
           setResponseReceived(true);
           scrollToBottom();
         });
-      }
-      );
+      });
     }
-  }, [messages]);
+  }, [responseReceived]);
 
   return (
     <>
