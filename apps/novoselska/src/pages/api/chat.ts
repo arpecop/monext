@@ -1,12 +1,7 @@
 import type { APIContext } from "astro";
 export const prerender = false
 export async function GET({ params }: APIContext) {
-
-
-
-
   const { message } = params;
-
 
   const url = "https://api.cloudflare.com/client/v4/accounts/d453356c9cc405872f59af5de88d1375/ai/run/@cf/mistral/mistral-7b-instruct-v0.1";
   const options = {
@@ -25,6 +20,7 @@ export async function GET({ params }: APIContext) {
     const response = await fetch(url, options);
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
+    let combinedResponse = '';
 
     const stream = new ReadableStream({
       async start(controller) {
@@ -35,17 +31,17 @@ export async function GET({ params }: APIContext) {
           }
 
           const chunk = decoder.decode(value);
+          combinedResponse += chunk;
 
-          // console.log({ chunk });
           fetch('https://socket.kloun.lol/yourChannelId1', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ message: chunk.replace('data: ', '').replaceAll('\n', '').replace('[DONE]', '{\"response\":\"\"}') }),
-          })
-          controller.enqueue(chunk);
+          });
 
+          controller.enqueue(chunk);
         }
 
         controller.close();
@@ -53,13 +49,13 @@ export async function GET({ params }: APIContext) {
     });
 
 
-    return new Response(JSON.stringify({ done: 'ok' }), {
+    return new Response(JSON.stringify({ response: combinedResponse }), {
       headers: {
         "content-type": "application/json; charset=UTF-8",
       },
     });
-  } catch (err) {
 
+  } catch (err) {
     return new Response(JSON.stringify(err), {
       headers: {
         "content-type": "application/json; charset=UTF-8",
