@@ -1,8 +1,9 @@
 import { OAuthRequestError } from "@lucia-auth/oauth";
+import type { APIRoute } from 'astro';
 import { googleAuth } from "../../../../lib/lucia";
 export const prerender = false
-export async function GET({ url }) {
-  const code = url.searchParams.get("code") as string;
+export async function GET({ url }: APIRoute) {
+  const code = url.searchParams.get("code");
 
 
   try {
