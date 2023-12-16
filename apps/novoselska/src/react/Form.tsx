@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
 import client from '../lib/client';
 
 
@@ -13,89 +12,72 @@ type Message = {
 function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [workmsg, setWorkmsg] = useState<string[]>([]);
+  const [channelid, setChannel] = useState('');
   const strUser = localStorage.getItem('user') || '{}';
   const [user, setUser] = useState(JSON.parse(strUser));
   const [responseReceived, setResponseReceived] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const channelid = 'yourChannelId1';
-  const socket = io('https://socket.kloun.lol', {
-    query: { channelid }
-  });
+
+
 
   const MY_QUERY = gql`
-    subscription MyQuery($channelid: String = "") {
-      work_chat(where: {channel: {_eq: $channelid}}) {
-        channel
-        chunk
-        id
-      }
+  subscription MyQuery($channelid: String = "") {
+    work_chat(limit: 250, where: {channel: {_eq: $channelid}}, order_by: {id: desc}) {
+      channel
+      chunk
+      id
     }
+  }
+  
   `;
 
-  // Define the value for the _id variable
 
+  function workchat(message: string) {
+    setMessages((prevMessages: Message[]) => {
 
-  // execute the subscription with the _id variable
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      if (lastMessage && lastMessage.system) {
+        // Create a new message object with the updated message
+        const updatedLastMessage = { ...lastMessage, message: lastMessage.message + message };
+        // Replace the last message with the updated one
+        return [...prevMessages.slice(0, -1), updatedLastMessage];
+
+      } else {
+        const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
+        if (systemMessageIndex !== -1) {
+          // Add null check for prevMessages[systemMessageIndex]
+          const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: (prevMessages[systemMessageIndex]?.message || '') + message } : null;
+          // Replace the system message with the updated one
+          return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)] as Message[];
+        } else {
+          return [...prevMessages, { message, system: true }] as Message[];
+        }
+      }
+    });
+
+    scrollToBottom();
+  }
+
   client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
     next(data) {
       console.log(data.data.work_chat);
-
+      // setWorkmsg(data.data.work_chat.map((msg: any) => msg.chunk));
     },
     error(err) { console.error('err', err) },
     complete() { console.log('complete') },
   })
 
-
   useEffect(() => {
+    console.log(workmsg);
 
-    // Disconnect the socket
-    socket.disconnect();
-
-    // Connect the socket again
-    socket.connect();
-
-    // on socket message received, add it to the messages array
-    socket.on('message', (msg: string) => {
-      const { response } = JSON.parse(msg);
-      const message = response;
-      setMessages((prevMessages: Message[]) => {
-
-        const lastMessage = prevMessages[prevMessages.length - 1];
-        if (lastMessage && lastMessage.system) {
-          // Create a new message object with the updated message
-          const updatedLastMessage = { ...lastMessage, message: lastMessage.message + message };
-          // Replace the last message with the updated one
-          return [...prevMessages.slice(0, -1), updatedLastMessage];
-
-        } else {
-          const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
-          if (systemMessageIndex !== -1) {
-            // Add null check for prevMessages[systemMessageIndex]
-            const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: (prevMessages[systemMessageIndex]?.message || '') + message } : null;
-            // Replace the system message with the updated one
-            return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)] as Message[];
-          } else {
-            return [...prevMessages, { message, system: true }] as Message[];
-          }
-        }
-      });
-
-      scrollToBottom();
-
-    });
-
-    // Cleanup function
-    return () => {
-      // Disconnect the socket when the component is unmounted
-      socket.disconnect();
-    };
-  }, []);
-
-
+  }, [workmsg]);
 
   window.addEventListener('storage', function (event) {
     if (event.key === 'user') {
-      setUser(JSON.parse(event.newValue ?? '{}'));
+      const userdata = JSON.parse(event.newValue ?? '{}')
+      setChannel(userdata.id);
+      setUser(userdata);
     }
   });
 
@@ -140,7 +122,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: lastMessage.message })
+        body: JSON.stringify({ message: lastMessage.message, channelid })
       }).then((response) => {
         response.json().then(() => {
           setResponseReceived(true);

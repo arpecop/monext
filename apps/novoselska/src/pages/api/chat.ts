@@ -1,8 +1,8 @@
 import type { APIContext } from "astro";
-import { io } from "socket.io-client";
+
 export const prerender = false
 
-async function fetchGraphQL(operationsDoc, operationName, variables) {
+async function fetchGraphQL(operationsDoc: string, operationName: string, variables: { channel: string; chunk: string; }) {
   const result = await fetch(
     "https://hasura.kloun.lol/v1/graphql",
     {
@@ -25,7 +25,7 @@ const operationsDoc = `
     }
   }
 `;
-function executeMyMutation(channel, chunk) {
+function executeMyMutation(channel: string, chunk: string) {
   return fetchGraphQL(
     operationsDoc,
     "MyMutation",
@@ -36,7 +36,7 @@ function executeMyMutation(channel, chunk) {
 export async function POST({ request }: APIContext) {
   // get the message from the request body
   const jsonData = await request.json();
-  const { message } = jsonData;
+  const { message, channelid } = jsonData;
 
   const url = "https://api.cloudflare.com/client/v4/accounts/d453356c9cc405872f59af5de88d1375/ai/run/@cf/mistral/mistral-7b-instruct-v0.1";
   const options = {
@@ -56,8 +56,7 @@ export async function POST({ request }: APIContext) {
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
     let combinedResponse = '';
-    const socket = io('https://socket.kloun.lol/yourChannelId1');
-    console.log('socket', socket);
+
 
     new ReadableStream({
       async start(controller) {
@@ -72,7 +71,7 @@ export async function POST({ request }: APIContext) {
           combinedResponse += chunk;
 
 
-          await executeMyMutation('yourChannelId1', chunk);
+          await executeMyMutation(channelid, chunk);
 
 
         }
