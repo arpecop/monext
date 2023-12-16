@@ -1,6 +1,37 @@
 import type { APIContext } from "astro";
+import { io } from "socket.io-client";
 export const prerender = false
 
+async function fetchGraphQL(operationsDoc, operationName, variables) {
+  const result = await fetch(
+    "https://hasura.kloun.lol/v1/graphql",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables: variables,
+        operationName: operationName
+      })
+    }
+  );
+
+  return await result.json();
+}
+
+const operationsDoc = `
+  mutation MyMutation($channel: String = "", $chunk: String = "") {
+    insert_work_chat_one(object: {channel: $channel, chunk: $chunk}) {
+      id
+    }
+  }
+`;
+function executeMyMutation(channel, chunk) {
+  return fetchGraphQL(
+    operationsDoc,
+    "MyMutation",
+    { "channel": channel, "chunk": chunk }
+  );
+}
 
 export async function POST({ request }: APIContext) {
   // get the message from the request body
@@ -25,8 +56,10 @@ export async function POST({ request }: APIContext) {
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
     let combinedResponse = '';
+    const socket = io('https://socket.kloun.lol/yourChannelId1');
+    console.log('socket', socket);
 
-    const stream = new ReadableStream({
+    new ReadableStream({
       async start(controller) {
         while (true) {
           const { done, value } = await (reader as ReadableStreamDefaultReader).read();
@@ -35,17 +68,13 @@ export async function POST({ request }: APIContext) {
           }
 
           const chunk = decoder.decode(value);
+          controller.enqueue(chunk);
           combinedResponse += chunk;
 
-          fetch('https://socket.kloun.lol/yourChannelId1', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: chunk.replace('data: ', '').replaceAll('\n', '').replace('[DONE]', '{\"response\":\"\"}') }),
-          });
 
-          controller.enqueue(chunk);
+          await executeMyMutation('yourChannelId1', chunk);
+
+
         }
 
         controller.close();

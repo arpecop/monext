@@ -1,10 +1,16 @@
+import { gql } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
+import client from '../lib/client';
+
+
+
+
 type Message = {
   message: string;
   system: boolean;
 };
-function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
+function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const strUser = localStorage.getItem('user') || '{}';
@@ -16,7 +22,32 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
     query: { channelid }
   });
 
+  const MY_QUERY = gql`
+    subscription MyQuery($channelid: String = "") {
+      work_chat(where: {channel: {_eq: $channelid}}) {
+        channel
+        chunk
+        id
+      }
+    }
+  `;
+
+  // Define the value for the _id variable
+
+
+  // execute the subscription with the _id variable
+  client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
+    next(data) {
+      console.log(data.data.work_chat);
+
+    },
+    error(err) { console.error('err', err) },
+    complete() { console.log('complete') },
+  })
+
+
   useEffect(() => {
+
     // Disconnect the socket
     socket.disconnect();
 
