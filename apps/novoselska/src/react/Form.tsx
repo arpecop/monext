@@ -59,19 +59,20 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
     scrollToBottom();
   }
 
-  client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
-    next(data) {
-      console.log(data.data.work_chat);
-      // setWorkmsg(data.data.work_chat.map((msg: any) => msg.chunk));
-    },
-    error(err) { console.error('err', err) },
-    complete() { console.log('complete') },
-  })
-
   useEffect(() => {
-    console.log(workmsg);
+    client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
+      next(data) {
+        console.log(data.data.work_chat);
+        const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse();
+        console.log(mutatedlast);
 
-  }, [workmsg]);
+      },
+      error(err) { console.error('err', err) },
+      complete() { console.log('complete') },
+    })
+  }, []);
+
+
 
   window.addEventListener('storage', function (event) {
     if (event.key === 'user') {

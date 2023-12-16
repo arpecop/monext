@@ -66,7 +66,7 @@ export async function POST({ request }: APIContext) {
             break;
           }
 
-          const chunk = decoder.decode(value);
+          const chunk = decoder.decode(value).replace('data: {\"response\":\"', '').replace('\"}\n\n', '').replace('data: [DONE]', '');
           controller.enqueue(chunk);
           combinedResponse += chunk;
 
