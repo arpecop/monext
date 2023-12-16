@@ -1,13 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { googleAuth } from '../lib/lucia.ts';
 import Form from '../react/Form';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
 };
-const clientId = googleAuth.clientId;
-const redirectUri = googleAuth.redirectUri;
-const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email`;
+
+const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450551021-vu1amcbd0ls2gokvssqqh5k1gdq3s55q.apps.googleusercontent.com&redirect_uri=${
+  process.env.LOGNAME
+    ? 'http://localhost:4321/auth/google/'
+    : 'https://dr-novoselska.com/auth/google/'
+}&response_type=code&scope=email%20profile`;
+
+console.log(signInUrl);
 ---
 
 <Layout title="Доктор Новоселска , Добрич, клиничен психиатър">

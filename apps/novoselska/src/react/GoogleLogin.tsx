@@ -1,17 +1,14 @@
 import React, { useEffect } from 'react';
 
 export default function GoogleLogin({ loginUrl }: { loginUrl: string }) {
-  async function redirect() {
-    const params = new URLSearchParams(location.search);
-    const res = await fetch(`/api/auth?${params}`);
-    const data = await res.json();
-
-    console.log(data);
-
-
-  }
   useEffect(() => {
-    redirect();
+    const script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/platform.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   return (
