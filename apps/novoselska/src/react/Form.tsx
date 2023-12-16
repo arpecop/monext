@@ -150,7 +150,6 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
       </div>
       <div className='mb-12 bg-black w-full'>
         {messages.map((msg, index) => (
-
           <div
             key={index}
             className={msg.system ? "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white"}
