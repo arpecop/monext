@@ -162,7 +162,7 @@ function Form({ cookie, url }: { url: string; cookie: { value: string } }) {
               </div>
 
               <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
-                <div className="text-xs text-slate-500">{msg.system ? "Medeia" : "Ти"}</div>
+                <div className="text-xs text-slate-500">{msg.system ? "Medeia" : user.name}</div>
                 {msg.message}
               </div>
             </div>
