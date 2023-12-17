@@ -2,7 +2,7 @@ import type { APIContext } from "astro";
 
 export const prerender = false
 
-async function fetchGraphQL(operationsDoc: string, operationName: string, variables: { channel: string; chunk: string; }) {
+async function fetchGraphQL(operationsDoc: string, operationName: string, variables: { channel: string; chunk: string; messID: string; }) {
   const result = await fetch(
     "https://hasura.kloun.lol/v1/graphql",
     {
@@ -19,24 +19,26 @@ async function fetchGraphQL(operationsDoc: string, operationName: string, variab
 }
 
 const operationsDoc = `
-  mutation MyMutation($channel: String = "", $chunk: String = "") {
-    insert_work_chat_one(object: {channel: $channel, chunk: $chunk}) {
+  mutation MyMutation($channel: String = "", $chunk: String = "", $messID: String = "") {
+    insert_work_chat_one(object: {channel: $channel, chunk: $chunk, messID: $messID}) {
       id
     }
   }
 `;
-function executeMyMutation(channel: string, chunk: string) {
+function executeMyMutation(channel: string, chunk: string, messID: string) {
   return fetchGraphQL(
     operationsDoc,
     "MyMutation",
-    { "channel": channel, "chunk": chunk }
+    { "channel": channel, "chunk": chunk, "messID": messID }
   );
 }
 
 export async function POST({ request }: APIContext) {
   // get the message from the request body
   const jsonData = await request.json();
-  const { message, channelid } = jsonData;
+  const { message, channelid, messID } = jsonData;
+  console.log(message, channelid, messID);
+
 
   const url = "https://api.cloudflare.com/client/v4/accounts/d453356c9cc405872f59af5de88d1375/ai/run/@cf/mistral/mistral-7b-instruct-v0.1";
   const options = {
@@ -75,7 +77,7 @@ export async function POST({ request }: APIContext) {
 
 
 
-            await executeMyMutation(channelid, chunk);
+            await executeMyMutation(channelid, chunk, messID);
             controller.enqueue(chunk);
 
 

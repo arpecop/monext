@@ -13,30 +13,36 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [user, setUser] = useState(JSON.parse(strUser));
   const [responseReceived, setResponseReceived] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messID = new Date().toISOString();
 
 
-
-  const MY_QUERY = gql`
-  subscription MyQuery($channelid: String = "") {
-    work_chat(limit: 250, where: {channel: {_eq: $channelid}}, order_by: {id: desc}) {
+  const MY_QUERY = gql` subscription MyQuery($channelid: String = "", $messID: String = "") {
+    work_chat(limit: 250, where: {channel: {_eq: $channelid}, messID: {_eq: $messID}}, order_by: {id: desc}) {
       channel
       chunk
       id
     }
-  }
-  
-  `;
+  }`;
 
 
 
 
   useEffect(() => {
-    client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
+    const user_data = localStorage.getItem('user') || '{}';
+
+    const user = JSON.parse(user_data);
+    setUser(user);
+    setChannel(user.id);
+
+
+    client.subscribe({ query: MY_QUERY, variables: { channelid: user.id || 'none', messID } }).subscribe({
       next(data) {
         console.log(data.data.work_chat);
+
+
         const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse().join('');
 
-        const lastMessage = messages[messages.length - 1];
+        const lastMessage = messages[messages.length];
         console.log(lastMessage);
 
         setMessages([...messages, { message: mutatedlast, system: true }]);
@@ -84,16 +90,16 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   useEffect(() => {
-    const msg = message;
     setMessage('')
     setMessages([...messages, { message: 'dummy', system: true }]);
+    scrollToBottom();
     if (!responseReceived) {
       fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: msg, channelid })
+        body: JSON.stringify({ message, channelid, messID })
       }).then((response) => {
         response.json().then(() => {
           setResponseReceived(true);
@@ -131,32 +137,33 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
           </button>
         </form>
       </div>
-      <div className='mb-12 bg-black w-full'>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={msg.system ? "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white"}
-          >
-            <div
-              className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
-            >
-              <div className="p-1.5 text-white">
-                <img src={msg.system ? "/avatar.jpg" : user.picture} className="w-14 rounded-full" />
-              </div>
 
-              <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
-                <div className="text-xs text-slate-500">{msg.system ? "Medeia" : user.name}</div>
-                {msg.message}
-              </div>
+      {messages.map((msg, index) => (
+        <div
+          key={index}
+          className={msg.system ? "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white"}
+        >
+          <div
+            className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
+          >
+            <div className="p-1.5 text-white">
+              <img src={msg.system ? "/avatar.jpg" : user.picture} className="w-14 rounded-full" />
+            </div>
+
+            <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
+              <div className="text-xs text-slate-500">{msg.system ? "Medeia" : user.name}</div>
+              {msg.message}
             </div>
           </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+        </div>
+      ))}
+
+
+      <div ref={messagesEndRef} className="flex w-full   border-gray-200 py-2 bg-gray-100 h-20" />
     </>
   );
 }
-// dd
+
 
 
 
