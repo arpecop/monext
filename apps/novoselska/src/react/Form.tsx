@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
-import client from '../lib/client';
+import { io } from 'socket.io-client';
+
 type Message = {
   message: string;
   system: boolean;
@@ -8,60 +8,68 @@ type Message = {
 function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [channelid, setChannel] = useState('');
+  const [numRows, setNumRows] = useState(1);
+
   const strUser = localStorage.getItem('user') || '{}';
   const [user, setUser] = useState(JSON.parse(strUser));
   const [responseReceived, setResponseReceived] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messID = new Date().toISOString();
-
-
-  const MY_QUERY = gql` subscription MyQuery($channelid: String = "", $messID: String = "") {
-    work_chat(limit: 250, where: {channel: {_eq: $channelid}, messID: {_eq: $messID}}, order_by: {id: desc}) {
-      channel
-      chunk
-      id
-    }
-  }`;
-
+  const channelid = 'yourChannelId1';
+  const socket = io('https://socket.kloun.lol', {
+    query: { channelid }
+  });
 
 
 
   useEffect(() => {
-    const user_data = localStorage.getItem('user') || '{}';
 
-    const user = JSON.parse(user_data);
-    setUser(user);
-    setChannel(user.id);
+    // Disconnect the socket
+    socket.disconnect();
 
+    // Connect the socket again
+    socket.connect();
 
-    client.subscribe({ query: MY_QUERY, variables: { channelid: user.id || 'none', messID } }).subscribe({
-      next(data) {
-        console.log(data.data.work_chat);
+    // on socket message received, add it to the messages array
+    socket.on('message', (message: string) => {
 
+      setMessages((prevMessages: Message[]) => {
 
-        const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse().join('');
+        const lastMessage = prevMessages[prevMessages.length - 1];
+        if (lastMessage && lastMessage.system) {
+          // Create a new message object with the updated message
+          const updatedLastMessage = { ...lastMessage, message: lastMessage.message + message };
+          // Replace the last message with the updated one
+          return [...prevMessages.slice(0, -1), updatedLastMessage];
 
-        const lastMessage = messages[messages.length];
-        console.log(lastMessage);
+        } else {
+          const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
+          if (systemMessageIndex !== -1) {
+            // Add null check for prevMessages[systemMessageIndex]
+            const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: (prevMessages[systemMessageIndex]?.message || '') + message } : null;
+            // Replace the system message with the updated one
+            return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)] as Message[];
+          } else {
+            return [...prevMessages, { message, system: true }] as Message[];
+          }
+        }
+      });
 
-        setMessages([...messages, { message: mutatedlast, system: true }]);
-        scrollToBottom();
+      scrollToBottom();
 
+    });
 
-      },
-      error(err) { console.error('err', err) },
-      complete() { console.log('complete') },
-    })
+    // Cleanup function
+    return () => {
+      // Disconnect the socket when the component is unmounted
+      socket.disconnect();
+    };
   }, []);
 
 
 
   window.addEventListener('storage', function (event) {
     if (event.key === 'user') {
-      const userdata = JSON.parse(event.newValue ?? '{}')
-      setChannel(userdata.id);
-      setUser(userdata);
+      setUser(JSON.parse(event.newValue ?? '{}'));
     }
   });
 
@@ -70,13 +78,22 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const handleSendMessage = () => {
+
+
+
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
+      setMessage('');
       setResponseReceived(false);
+      scrollToBottom();
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+
+    if (e.key === 'Enter' && e.shiftKey) {
+      setNumRows(numRows + 1);
+    }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -84,30 +101,36 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const scrollToBottom = () => {
-
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
-    setMessage('')
-    setMessages([...messages, { message: 'dummy', system: true }]);
-    scrollToBottom();
-    if (!responseReceived) {
-      fetch('/api/chat', {
+
+    const lastMessage = messages[messages.length - 1];
+    console.log(lastMessage);
+
+
+    if (lastMessage && !lastMessage.system) {
+      // create dummy last   message  that is from the system
+      setMessages([...messages, { message: '', system: true }]);
+
+      fetch('https://socket.kloun.lol/chatnovo/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message, channelid, messID })
+        body: JSON.stringify({ message: lastMessage.message, channelid })
       }).then((response) => {
         response.json().then(() => {
           setResponseReceived(true);
           scrollToBottom();
         });
-      });
+      }
+      );
     }
-  }, [responseReceived]);
+  }, [messages]);
 
   return (
     <>
@@ -116,7 +139,8 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
         <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4">
           <textarea
             required
-            rows={1}
+            maxLength={250}
+            rows={numRows}
             autoFocus
             placeholder="Изпрати съобщение"
             spellCheck="false"
@@ -127,7 +151,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
             disabled={!responseReceived || !user.id}
           />
           <button
-            className="absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"
+            className={numRows > 3 ? "absolute inset-y-0 right-8 bottom-0 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600" : "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"}
             onClick={handleSendMessage}
             disabled={!responseReceived}
           >
@@ -195,3 +219,5 @@ function GoogleLogin({ loginUrl }: { loginUrl: string }) {
 }
 
 export default Form;
+
+
