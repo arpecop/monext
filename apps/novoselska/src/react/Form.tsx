@@ -24,7 +24,8 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [numRows, setNumRows] = useState(1);
-  const [lineheight, setLineheight] = useState(0);
+  const [minheight, setMinheight] = useState(26);
+
   const preRef = useRef(null);
 
 
@@ -36,6 +37,18 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
 
 
   useEffect(() => {
+    async function seesionGet() {
+      const response = await fetch('/api/auth/jwt', {
+        method: 'GET',
+        credentials: 'include', // Include cookies in the request
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      const data = await response.json();
+      console.log('Received token:', data.token);
+    }
+    seesionGet()
 
 
     client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
@@ -84,7 +97,10 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 
     if (e.key === 'Enter' && e.shiftKey) {
-      setNumRows(numRows + 1);
+      // count  message lines
+      const newlines = message.split('\n').length;
+
+      setMinheight(newlines * 26 + 26);
     }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -129,7 +145,10 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
 
     }
     if (preRef.current) {
-      console.log((preRef.current as HTMLPreElement).scrollHeight);
+      const lh = (preRef.current as HTMLPreElement).scrollHeight;
+      const lines = Math.round(lh / 26);
+      setNumRows(lines === 0 ? 1 : lines);
+      console.log(lh, lines);
     }
   }, [message]);
 
@@ -137,9 +156,13 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
     <>
       {!user.id && <GoogleLogin loginUrl={url} />}
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0">
-        <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4">
-          <pre ref={preRef} className="absolute top-0 left-0   text-gray-400 px-2 py-1 bg-gray-100 rounded-md"
-          >&nbsp; {lineheight} {message}</pre>
+        <div className="absolute w-full z-0"
+        >
+          <pre ref={preRef} className="text-gray-400 px-2 py-1 rounded-md max-w-screen-md whitespace-pre-wrap break-words" style={{ minHeight: minheight }}
+          >{message}</pre>
+        </div>
+        <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10">
+
           <textarea
             required
             maxLength={250}
@@ -153,6 +176,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
             onKeyDown={handleKeyPress}
             disabled={!responseReceived || !user.id}
           />
+
           <button
             className={numRows > 3 ? "absolute inset-y-0 right-8 bottom-0 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600" : "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"}
             onClick={handleSendMessage}
@@ -163,6 +187,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
             </svg>
           </button>
         </form>
+
       </div>
 
       {messages.map((msg, index) => (
