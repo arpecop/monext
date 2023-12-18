@@ -1,13 +1,13 @@
-import pkg from '@apollo/client';
+
 import type { APIRoute } from 'astro';
 import { SignJWT } from 'jose'; // Import the SignJWT class from the 'jose/jwt' package
 import { serializeCookie } from "lucia/utils";
 import clientssr from "../../../lib/clientssr";
 
-const { gql } = pkg;
 
 
-const CREATE_MESSAGE_MUTATION = gql`
+
+const CREATE_MESSAGE_MUTATION = `
 mutation MyMutation($object: chat_u_insert_input = {}) {
   insert_chat_u_one(object: $object) {
     id
@@ -47,19 +47,9 @@ export async function GET(req: APIRoute) {
     .sign(key);
 
 
-  clientssr(token)
-    .mutate({
-      mutation: CREATE_MESSAGE_MUTATION,
-      variables: {
-        "object": { "id": "test" }
-      },
-    })
-    .then((result) => {
-      console.log(result.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  const t = await clientssr(CREATE_MESSAGE_MUTATION, { "object": { "id": "test" } }, token);
+  console.log(t);
+
   const stateCookie = serializeCookie("token", token, {
     httpOnly: true,
     secure: process.env.LOGNAME === 'rudix' ? false : true,
