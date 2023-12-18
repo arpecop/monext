@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { getToken } from "next-auth/jwt";
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
 type Message = {
@@ -15,9 +14,6 @@ subscription MyQuery($channelid: String = "") {
   }
 }
 `;
-
-console.log(getToken);
-
 
 
 function Form({ url }: { url: string; cookie?: { value: string } }) {
@@ -48,7 +44,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
       const data = await response.json();
       console.log('Received token:', data.token);
     }
-    seesionGet()
+    // seesionGet()
 
 
     client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
