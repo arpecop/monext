@@ -1,69 +1,57 @@
+import { gql } from '@apollo/client';
+import { getToken } from "next-auth/jwt";
 import React, { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
-
+import client from '../lib/client';
 type Message = {
   message: string;
   system: boolean;
 };
+const MY_QUERY = gql`
+subscription MyQuery($channelid: String = "") {
+  work_chat(limit: 250, where: {channel: {_eq: $channelid}}, order_by: {id: desc}) {
+    channel
+    chunk
+    id
+  }
+}
+`;
+
+console.log(getToken);
+
+
+
 function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [numRows, setNumRows] = useState(1);
+  const [lineheight, setLineheight] = useState(0);
+  const preRef = useRef(null);
+
 
   const strUser = localStorage.getItem('user') || '{}';
   const [user, setUser] = useState(JSON.parse(strUser));
   const [responseReceived, setResponseReceived] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const channelid = 'yourChannelId1';
-  const socket = io('https://socket.kloun.lol', {
-    query: { channelid }
-  });
-
 
 
   useEffect(() => {
 
-    // Disconnect the socket
-    socket.disconnect();
 
-    // Connect the socket again
-    socket.connect();
-
-    // on socket message received, add it to the messages array
-    socket.on('message', (message: string) => {
-
-      setMessages((prevMessages: Message[]) => {
-
-        const lastMessage = prevMessages[prevMessages.length - 1];
-        if (lastMessage && lastMessage.system) {
-          // Create a new message object with the updated message
-          const updatedLastMessage = { ...lastMessage, message: lastMessage.message + message };
-          // Replace the last message with the updated one
-          return [...prevMessages.slice(0, -1), updatedLastMessage];
-
-        } else {
-          const systemMessageIndex = prevMessages.findIndex((msg) => msg.system);
-          if (systemMessageIndex !== -1) {
-            // Add null check for prevMessages[systemMessageIndex]
-            const updatedSystemMessage = prevMessages[systemMessageIndex] ? { ...prevMessages[systemMessageIndex], message: (prevMessages[systemMessageIndex]?.message || '') + message } : null;
-            // Replace the system message with the updated one
-            return [...prevMessages.slice(0, systemMessageIndex), updatedSystemMessage, ...prevMessages.slice(systemMessageIndex + 1)] as Message[];
-          } else {
-            return [...prevMessages, { message, system: true }] as Message[];
-          }
-        }
-      });
-
-      scrollToBottom();
-
-    });
-
-    // Cleanup function
-    return () => {
-      // Disconnect the socket when the component is unmounted
-      socket.disconnect();
-    };
+    client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
+      next(data) {
+        console.log(data.data.work_chat);
+        const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse().join('');
+        const lastMessage = messages[messages.length - 1];
+        console.log(lastMessage);
+        setMessages([...messages, { message: mutatedlast, system: true }]);
+        scrollToBottom();
+      },
+      error(err) { console.error('err', err) },
+      complete() { console.log('complete') },
+    })
   }, []);
+
 
 
 
@@ -78,8 +66,12 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const handleSendMessage = () => {
-
-
+    useEffect(() => {
+      if (preRef.current) {
+        const lh = (preRef.current as HTMLPreElement).scrollHeight;
+        setLineheight(lh);
+      }
+    }, []);
 
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
@@ -132,11 +124,22 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (messages.length > 3 && preRef.current) {
+
+    }
+    if (preRef.current) {
+      console.log((preRef.current as HTMLPreElement).scrollHeight);
+    }
+  }, [message]);
+
   return (
     <>
       {!user.id && <GoogleLogin loginUrl={url} />}
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0">
         <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4">
+          <pre ref={preRef} className="absolute top-0 left-0   text-gray-400 px-2 py-1 bg-gray-100 rounded-md"
+          >&nbsp; {lineheight} {message}</pre>
           <textarea
             required
             maxLength={250}

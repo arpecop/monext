@@ -1,100 +1,73 @@
+import { gql } from '@apollo/client';
 import type { APIContext } from "astro";
+import OpenAI from "openai";
+import client from '../../lib/client';
 
-export const prerender = false
-
-async function fetchGraphQL(operationsDoc: string, operationName: string, variables: { channel: string; chunk: string; messID: string; }) {
-  const result = await fetch(
-    "https://hasura.kloun.lol/v1/graphql",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        query: operationsDoc,
-        variables: variables,
-        operationName: operationName
-      })
-    }
-  );
-
-  return await result.json();
-}
-
-const operationsDoc = `
-  mutation MyMutation($channel: String = "", $chunk: String = "", $messID: String = "") {
-    insert_work_chat_one(object: {channel: $channel, chunk: $chunk, messID: $messID}) {
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY as string, // This is the default and can be omitted
+});
+const CREATE_MESSAGE_MUTATION = gql`
+  mutation CreateMessage($channelid: String!, $message: String!) {
+    insert_work_chat_one(object: { channel: $channelid, chunk: $message }) {
       id
+      channel
+      chunk
     }
   }
-`;
-function executeMyMutation(channel: string, chunk: string, messID: string) {
-  return fetchGraphQL(
-    operationsDoc,
-    "MyMutation",
-    { "channel": channel, "chunk": chunk, "messID": messID }
-  );
-}
+ `
+
 
 export async function POST({ request }: APIContext) {
   // get the message from the request body
   const jsonData = await request.json();
-  const { message, channelid, messID } = jsonData;
-  console.log(message, channelid, messID);
+  const { message, channelid } = jsonData;
+  // const thread = await openai.beta.threads.create();
+
+  const thread = { id: 'thread_L9y72a4cdm36ccfC7T7C35H5' }
+
+  // const run1 = await openai.beta.threads.runs.create(thread.id, {
+  //   assistant_id: "asst_A2dzi4nuvS24zXBhqNuHon03",
+  // });
 
 
-  const url = "https://api.cloudflare.com/client/v4/accounts/d453356c9cc405872f59af5de88d1375/ai/run/@cf/mistral/mistral-7b-instruct-v0.1";
-  const options = {
-    method: 'POST',
-    headers: {
-      "Authorization": `Bearer ${process.env.CLOUDFLARE_TOKEN}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      "prompt": 'ти си виртуален асистент  който  говори само Български. оттоваряш само на въпроси в сферата на: психиатрия , психично здраве и емоционална хармонния. Отговори на този въпрос : ' + message,
-      "stream": true
-    })
-  };
-
-
-  const response = await fetch(url, options);
-  const reader = response.body?.getReader();
-  const decoder = new TextDecoder();
-  let combinedResponse = '';
-
-  const stream = async () => {
-    return new Promise((resolve) => {
-      new ReadableStream({
-        async start(controller) {
-          while (true) {
-            const { done, value } = await (reader as ReadableStreamDefaultReader).read();
-            if (done) {
-              console.log('Stream complete');
-              resolve(42);
-              break;
-            }
-
-            const chunk = decoder.decode(value).replace('data: {\"response\":\"', '').replace('\"}\n\n', '').replace('data: [DONE]', '');
-            combinedResponse += chunk;
-
-
-
-
-            await executeMyMutation(channelid, chunk, messID);
-            controller.enqueue(chunk);
-
-
-          }
-
-          controller.close();
-        }
-      });
-    })
-  }
-  await stream();
-
-  return new Response(JSON.stringify({ response: combinedResponse }), {
-    headers: {
-      "content-type": "application/json; charset=UTF-8",
+  const response = await client.mutate({
+    mutation: CREATE_MESSAGE_MUTATION,
+    variables: {
+      channelid,
+      message,
     },
   });
 
 
-};
+
+  const run1 = await openai.beta.threads.messages.create(thread.id, {
+    content: "Кой си ти ? ",
+    role: 'user'
+  });
+  const createRun = await openai.beta.threads.runs.create(thread.id, {
+    assistant_id: 'asst_A2dzi4nuvS24zXBhqNuHon03',
+  })
+  const [run, { data: messages }] = await Promise.all([
+    openai.beta.threads.runs.retrieve(thread.id, createRun.id),
+    openai.beta.threads.messages.list(thread.id),
+  ])
+
+
+  let runx = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
+
+  // check every 2 seconds if the run is completed
+  while (runx.status !== "completed") {
+    await new Promise((r) => setTimeout(r, 1000));
+    runx = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
+    const messages = await openai.beta.threads.messages.list(thread.id);
+    console.log(JSON.stringify(messages.data.reverse()), thread.id);
+  }
+
+  return new Response(JSON.stringify({}), {
+    headers: {
+      "content-type": "application/json;charset=UTF-8",
+    },
+  });
+
+
+}  
