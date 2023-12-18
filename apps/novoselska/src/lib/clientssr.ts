@@ -1,17 +1,15 @@
 import pkg from '@apollo/client';
-const { ApolloClient, HttpLink, InMemoryCache } = pkg;
+const { ApolloClient, createHttpLink, InMemoryCache } = pkg;
 
-const httpLink = (token: string) =>
-  new HttpLink({
+const clientssr = (token: string) => new ApolloClient({
+  ssrMode: true,
+  link: createHttpLink({
     uri: `https://hasura.kloun.lol/v1/graphql`,
+    credentials: 'same-origin',
     headers: {
       Authorization: `Bearer ${token}`, // Add auth header
     },
-  });
-
-
-const clientssr = (token: string) => new ApolloClient({
-  link: httpLink(token),
+  }),
   cache: new InMemoryCache(),
 });
 

@@ -21,6 +21,7 @@
     "@lucia-auth/oauth": "^3.5.0",
     "@prisma/client": "^5.7.0",
     "@prisma/extension-accelerate": "^0.6.2",
+    "apollo-client": "^2.6.10",
     "astro": "^4.0.5",
     "auth-astro": "^4.0.1",
     "graphql-ws": "^5.14.2",

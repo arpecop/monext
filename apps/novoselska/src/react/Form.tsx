@@ -79,12 +79,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const handleSendMessage = () => {
-    useEffect(() => {
-      if (preRef.current) {
-        const lh = (preRef.current as HTMLPreElement).scrollHeight;
-        setLineheight(lh);
-      }
-    }, []);
+
 
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
