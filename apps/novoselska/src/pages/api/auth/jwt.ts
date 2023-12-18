@@ -4,9 +4,6 @@ import { SignJWT } from 'jose'; // Import the SignJWT class from the 'jose/jwt' 
 import { serializeCookie } from "lucia/utils";
 import clientssr from "../../../lib/clientssr";
 
-
-
-
 const CREATE_MESSAGE_MUTATION = `
 mutation MyMutation($object: chat_u_insert_input = {}) {
   insert_chat_u_one(object: $object) {
@@ -18,7 +15,7 @@ mutation MyMutation($object: chat_u_insert_input = {}) {
 
 
 export async function GET(req: APIRoute) {
-  const secret = "1347cc301b614b6b264527e494148268";
+  const secret = process.env.SECRET;
   const encoder = new TextEncoder();
   const data = encoder.encode(secret);
 
@@ -30,7 +27,7 @@ export async function GET(req: APIRoute) {
     ["sign"]
   );
 
-  const userId = "test"; // replace with actual user id
+  const userId = "test2"; // replace with actual user id
   const defaultRole = "public"; // replace with actual default role
   const allowedRoles = ["public"]; // replace with actual allowed roles
 
@@ -47,7 +44,7 @@ export async function GET(req: APIRoute) {
     .sign(key);
 
 
-  const t = await clientssr(CREATE_MESSAGE_MUTATION, { "object": { "id": "test" } }, token);
+  const t = await clientssr(CREATE_MESSAGE_MUTATION, { "object": { "id": "test2" } }, token);
   console.log(t);
 
   const stateCookie = serializeCookie("token", token, {

@@ -19,6 +19,7 @@ export default defineConfig({
       "process.env.GSECRET": JSON.stringify(process.env.GSECRET),
       "process.env.CLOUDFLARE_TOKEN": JSON.stringify(process.env.CLOUDFLARE_TOKEN),
       "process.env.OPENAI_API_KEY": JSON.stringify(process.env.OPENAI_API_KEY),
+      "process.env.SECRET": JSON.stringify(process.env.SECRET),
     }
   }
 });
