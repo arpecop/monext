@@ -30,6 +30,16 @@ const { title } = Astro.props;
     <!-- preload fonts -->
   </head>
   <body>
-    <slot />
+    <main class="flex flex-col items-center justify-between pt-20">
+      <div class="absolute top-5 w-full justify-between px-5 flex">
+        <h1 class="text-lg text-gray-800 font-extrabold">
+          д-р М. Новоселска <div class="font-thin text-xs">
+            клиничен психиатър
+          </div>
+        </h1>
+        <img src="/logo.png" class="logo w-12 h-full" />
+      </div>
+      <slot />
+    </main>
   </body>
 </html>

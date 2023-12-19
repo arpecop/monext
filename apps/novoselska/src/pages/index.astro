@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { topics } from '../lib/topics';
 import Form from '../react/Form';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
@@ -13,38 +14,37 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
 ---
 
 <Layout title="Доктор Новоселска , Добрич, клиничен психиатър">
-  <main class="flex flex-col items-center justify-between pt-20">
-    <div class="absolute top-5 w-full justify-between px-5 flex">
-      <h1 class="text-lg text-gray-800 font-extrabold">
-        д-р М. Новоселска <div class="font-thin text-xs">
-          клиничен психиатър
-        </div>
-      </h1>
-      <img src="/logo.png" class="logo w-12 h-full" />
-    </div>
-    <div
-      class="flex w-full items-center justify-center border-y border-gray-200 pb-8 bg-gray-100"
-    >
-      <div
-        class="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
-      >
-        <div class="p-1.5 text-white">
-          <img src="/avatar.jpg" class="w-14 rounded-full" />
-        </div>
+  <div
+    class="flex w-full items-center justify-center border-y border-gray-200 pb-8 bg-gray-100"
+  >
+    <div class="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0">
+      <div class="p-1.5 text-white">
+        <img src="/avatar.jpg" class="w-14 rounded-full" />
+      </div>
 
-        <div class="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
-          <div class="text-xs text-slate-500">Medeia</div>
-          Здравейте, това е виртуалният асистент на доктор Новоселска Аз съм изкуствен
-          интелект, който е трениран на базата на дългогодишната практика на доктор
-          Новоселска, за да ви помогна с някои основни въпроси и проблеми. Аз не
-          съм реален човек и не мога да заместя професионалната помощ на доктор Новоселска.
-          Ако имате нужда от консултация с нея, можете да се свържете с нея на телефон
-          0888 266 745 или на имейл medeia@dr-novoselska.com. Аз съм тук, за да ви
-          слушам и да ви подкрепям.😊
-        </div>
+      <div class="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
+        <div class="text-xs text-slate-500">Medeia</div>
+        Здравейте, това е виртуалният асистент на доктор Новоселска Аз съм изкуствен
+        интелект, който е трениран на базата на дългогодишната практика на доктор
+        Новоселска, за да ви помогна с някои основни въпроси и проблеми. Аз не съм
+        реален човек и не мога да заместя професионалната помощ на доктор Новоселска.
+        Ако имате нужда от консултация с нея, можете да се свържете с нея на телефон
+        0888 266 745 или на имейл medeia@dr-novoselska.com. Аз съм тук, за да ви
+        слушам и да ви подкрепям.😊
       </div>
     </div>
+  </div>
+  <div class="gap-1 flex flex-wrap">
+    {
+      topics.map((topic) => (
+        <button class="bg-gray-500 hover:bg-gray-700 text-white   py-1 px-2 rounded-lg text-sm">
+          {topic}
+        </button>
+      ))
+    }
+  </div>
 
-    <Form client:only="react" cookie={cookie} url={signInUrl} />
-  </main>
+  <Form client:only="react" cookie={cookie} url={signInUrl} />
 </Layout>
+
+<Form client:only="react" cookie={cookie} url={signInUrl} />

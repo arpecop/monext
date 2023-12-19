@@ -6,67 +6,34 @@ type Message = {
   system: boolean;
 };
 const MY_QUERY = gql`
-subscription MyQuery($channelid: String = "") {
-  work_chat(limit: 250, where: {channel: {_eq: $channelid}}, order_by: {id: desc}) {
-    channel
+subscription MyQuery($userid: String = "") {
+  chat_history(limit: 250, where: {  userid: {_eq: $userid}}, order_by: {id: desc}) {
     chunk
     id
+    threadid
   }
 }
 `;
 
 
 function Form({ url }: { url: string; cookie?: { value: string } }) {
+  const strUser = localStorage.getItem('user') || '{}';
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [numRows, setNumRows] = useState(1);
   const [minheight, setMinheight] = useState(26);
+  const [user, setUser] = useState(JSON.parse(strUser));
+  const [responseReceived, setResponseReceived] = useState(false);
+  const [threadid, setThreadId] = useState(null);
 
   const preRef = useRef(null);
 
 
-  const strUser = localStorage.getItem('user') || '{}';
-  const [user, setUser] = useState(JSON.parse(strUser));
-  const [responseReceived, setResponseReceived] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const channelid = 'yourChannelId1';
-
-
-  useEffect(() => {
-    async function seesionGet() {
-      const response = await fetch('/api/auth/jwt', {
-        method: 'GET',
-        credentials: 'include', // Include cookies in the request
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-      const data = await response.json();
-      console.log('Received token:', data.token);
-    }
-    // seesionGet()
-
-
-    client.subscribe({ query: MY_QUERY, variables: { channelid } }).subscribe({
-      next(data) {
-        console.log(data.data.work_chat);
-        const mutatedlast = data.data.work_chat.map((msg: any) => msg.chunk).reverse().join('');
-        const lastMessage = messages[messages.length - 1];
-        console.log(lastMessage);
-        setMessages([...messages, { message: mutatedlast, system: true }]);
-        scrollToBottom();
-      },
-      error(err) { console.error('err', err) },
-      complete() { console.log('complete') },
-    })
-  }, []);
-
-
-
-
   window.addEventListener('storage', function (event) {
     if (event.key === 'user') {
       setUser(JSON.parse(event.newValue ?? '{}'));
+      setResponseReceived(true);
     }
   });
 
@@ -75,22 +42,19 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const handleSendMessage = () => {
-
-
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
       setMessage('');
       setResponseReceived(false);
       scrollToBottom();
+    } else {
+      console.log('not ready');
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-
     if (e.key === 'Enter' && e.shiftKey) {
-      // count  message lines
       const newlines = message.split('\n').length;
-
       setMinheight(newlines * 26 + 26);
     }
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -105,22 +69,38 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
     }
   };
 
+
   useEffect(() => {
+    setResponseReceived(true);
+    client.subscribe({ query: MY_QUERY, variables: { userid: user.id } }).subscribe({
+      next(data) {
+        const { chat_history } = data.data;
 
+        if (chat_history.length === 0) {
+          return;
+        }
+        const lastMessage = chat_history[0];
+        setThreadId(lastMessage.threadid);
+
+
+        scrollToBottom();
+      },
+      error(err) { console.error('err', err) },
+      complete() { console.log('complete') },
+    })
+  }, [user.id]);
+
+
+  useEffect(() => {
     const lastMessage = messages[messages.length - 1];
-    console.log(lastMessage);
-
-
     if (lastMessage && !lastMessage.system) {
-      // create dummy last   message  that is from the system
       setMessages([...messages, { message: '', system: true }]);
-
-      fetch('https://socket.kloun.lol/chatnovo/', {
+      fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: lastMessage.message, channelid })
+        body: JSON.stringify({ message: lastMessage.message, userid: user.id, threadid })
       }).then((response) => {
         response.json().then(() => {
           setResponseReceived(true);
@@ -132,9 +112,6 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   }, [messages]);
 
   useEffect(() => {
-    if (messages.length > 3 && preRef.current) {
-
-    }
     if (preRef.current) {
       const lh = (preRef.current as HTMLPreElement).scrollHeight;
       const lines = Math.round(lh / 26);
@@ -200,24 +177,15 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
           </div>
         </div>
       ))}
-
-
-      <div ref={messagesEndRef} className="flex w-full   border-gray-200 py-2 bg-gray-100 h-20" />
+      <div ref={messagesEndRef} className="flex w-full     h-20" />
     </>
   );
 }
 
-
-
-
 function GoogleLogin({ loginUrl }: { loginUrl: string }) {
-  const handleLoginClick = () => {
-    window.open(loginUrl, '_blank', 'width=500,height=600');
-  };
   return (
     <a
-      href="#"
-      onClick={handleLoginClick}
+      href={loginUrl}
       className="py-2 pr-4 rounded-md -mt-5 flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden"
     >
       <div className="bg-blue-500 hover:bg-blue-600   flex absolute left-0 top-0 h-10 px-1.5   items-center rounded-l-md">

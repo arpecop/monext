@@ -1,74 +1,78 @@
-import { gql } from '@apollo/client';
 import type { APIContext } from "astro";
 import OpenAI from "openai";
-import client from '../../lib/client';
+import client from '../../lib/clientssr';
 // https://web.descript.com/drives/d55c9db5-9956-4b41-aa88-99bc8ea76d92/join?invite_link_token=Yh6SSfQyya2NazRIDtuDNP
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY as string, // This is the default and can be omitted
+  apiKey: process.env.OPENAI_API_KEY as string,
 });
-const CREATE_MESSAGE_MUTATION = gql`
-  mutation CreateMessage($channelid: String!, $message: String!) {
-    insert_work_chat_one(object: { channel: $channelid, chunk: $message }) {
-      id
-      channel
-      chunk
-    }
+const CREATE_MESSAGE = `
+mutation MyMutation($object: chat_history_insert_input = {}) {
+  insert_chat_history_one(object: $object) {
+    id
   }
+}
  `
 
 
 export async function POST({ request }: APIContext) {
-  // get the message from the request body
   const jsonData = await request.json();
-  const { message, channelid } = jsonData;
+  const { message, userid, threadid } = jsonData;
 
-  const response = await client.mutate({
-    mutation: CREATE_MESSAGE_MUTATION,
-    variables: {
-      channelid,
-      message,
-    },
-  });
-
-  // const thread = await openai.beta.threads.create();
-
-  const thread = { id: 'thread_L9y72a4cdm36ccfC7T7C35H5' }
-
-  // const run1 = await openai.beta.threads.runs.create(thread.id, {
-  //   assistant_id: "asst_A2dzi4nuvS24zXBhqNuHon03",
-  // });
-
-
-
-  // work in progress
-  await openai.beta.threads.messages.create(thread.id, {
-    content: "Кой си ти ? ",
-    role: 'user'
-  });
-  const createRun = await openai.beta.threads.runs.create(thread.id, {
-    assistant_id: 'asst_A2dzi4nuvS24zXBhqNuHon03',
-  })
-  const [run, { data: messages }] = await Promise.all([
-    openai.beta.threads.runs.retrieve(thread.id, createRun.id),
-    openai.beta.threads.messages.list(thread.id),
-  ])
-
-
-  let runx = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
-
-  // check every 2 seconds if the run is completed
-  while (runx.status !== "completed") {
-    await new Promise((r) => setTimeout(r, 1000));
-    runx = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
-    const messages = await openai.beta.threads.messages.list(thread.id);
-    console.log(JSON.stringify(messages.data.reverse()), thread.id);
+  function sleep(seconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
+  const isThread = 'thread_NyR0u3TPYngxzmubUCQeS16Q';
+
+  const [assistant, thread] = await Promise.all([
+    openai.beta.assistants.retrieve("asst_QKnm963fMmdJeLFKd2bfnIls"),
+    !isThread ? openai.beta.threads.create({
+      messages: [
+        {
+          role: "user",
+          content:
+            message,
+        }
+      ],
+    }) : openai.beta.threads.messages.create(isThread,
+      {
+        role: "user",
+        content:
+          message,
+      }
+    ),
+  ]);
+  console.log(thread);
+
+  const threadID = isThread || thread.id;
+
+  let run = await openai.beta.threads.runs.create(
+    threadID,
+    { assistant_id: assistant.id },
+  );
+  while (run.status === "queued" || run.status === "in_progress") {
+    await sleep(0.5);
+    run = await openai.beta.threads.runs.retrieve(threadID, run.id);
+    console.log(run.started_at, run.status);
+  }
+  // get thread messages by id
+  const messages = await openai.beta.threads.messages.list(threadID);
+  const machineMessage = messages.data[messages.data.length - 1];
+  console.log(JSON.stringify(messages.data.reverse(), null, 2));
+  const x = await client(CREATE_MESSAGE,
+    {
+      object: {
+        userid,
+        'chunk': machineMessage?.content?.text.value,
+        'thread.id': machineMessage?.thread_id,
+        threadid,
+      }
+    }
+  );
+  console.log(x);
 
   return new Response(JSON.stringify({}), {
     headers: {
       "content-type": "application/json;charset=UTF-8",
     },
   });
-
-
 }  
