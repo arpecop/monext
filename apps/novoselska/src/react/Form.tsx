@@ -81,7 +81,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
           return;
         }
         const lastMessage = chat_history[0];
-        setMessages([...messages, { message: lastMessage.chunk, system: true }]);
+        setMessages((prevMessages) => [...prevMessages, { message: lastMessage.chunk, system: true }]);
 
         setThreadId(lastMessage.threadid);
         scrollToBottom();
