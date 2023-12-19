@@ -7,7 +7,7 @@ type Message = {
 };
 const MY_QUERY = gql`
 subscription MyQuery($userid: String = "") {
-  chat_history(limit: 250, where: {  userid: {_eq: $userid}}, order_by: {id: desc}) {
+  chat_history(limit: 1, where: {  userid: {_eq: $userid}}, order_by: {id: desc}) {
     chunk
     id
     threadid
@@ -75,10 +75,14 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
     client.subscribe({ query: MY_QUERY, variables: { userid: user.id } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
+        console.log(chat_history);
+
         if (chat_history.length === 0) {
           return;
         }
         const lastMessage = chat_history[0];
+        setMessages([...messages, { message: lastMessage.chunk, system: true }]);
+
         setThreadId(lastMessage.threadid);
         scrollToBottom();
       },
