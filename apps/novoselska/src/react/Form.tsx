@@ -93,8 +93,9 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
 
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
+
     if (lastMessage && !lastMessage.system) {
-      setMessages([...messages, { message: '', system: true }]);
+      scrollToBottom();
       fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -116,14 +117,14 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
       const lh = (preRef.current as HTMLPreElement).scrollHeight;
       const lines = Math.round(lh / 26);
       setNumRows(lines === 0 ? 1 : lines);
-      console.log(lh, lines);
+
     }
   }, [message]);
 
   return (
-    <>
+    <div className='flex flex-col w-full grow'>
       {!user.id && <GoogleLogin loginUrl={url} />}
-      <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0">
+      <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0 grow-0">
         <div className="absolute w-full z-0"
         >
           <pre ref={preRef} className="text-gray-400 px-2 py-1 rounded-md max-w-screen-md whitespace-pre-wrap break-words text-transparent" style={{ minHeight: minheight }}
@@ -161,7 +162,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={msg.system ? "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white"}
+          className={msg.system ? "grow-0 flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white grow-0"}
         >
           <div
             className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
@@ -177,8 +178,10 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
           </div>
         </div>
       ))}
-      <div ref={messagesEndRef} className="flex w-full     h-20" />
-    </>
+
+      <div className='grow' />
+      <div id="bottom" ref={messagesEndRef} className="flex w-full h-20 bg-black grow-0" />
+    </div>
   );
 }
 

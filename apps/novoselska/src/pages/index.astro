@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { topics } from '../lib/topics';
 import Form from '../react/Form';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
@@ -15,7 +14,7 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
 
 <Layout title="Доктор Новоселска , Добрич, клиничен психиатър">
   <div
-    class="flex w-full items-center justify-center border-y border-gray-200 pb-8 bg-gray-100"
+    class="items-center justify-center border-y border-gray-200 pb-8 bg-gray-100 grow-0"
   >
     <div class="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0">
       <div class="p-1.5 text-white">
@@ -34,7 +33,7 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
       </div>
     </div>
   </div>
-  <div class="gap-1 flex flex-wrap">
+  <!-- <div class="gap-1 flex flex-wrap">
     {
       topics.map((topic) => (
         <button class="bg-gray-500 hover:bg-gray-700 text-white   py-1 px-2 rounded-lg text-sm">
@@ -42,9 +41,7 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
         </button>
       ))
     }
-  </div>
+  </div> -->
 
   <Form client:only="react" cookie={cookie} url={signInUrl} />
 </Layout>
-
-<Form client:only="react" cookie={cookie} url={signInUrl} />
