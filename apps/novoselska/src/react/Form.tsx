@@ -25,6 +25,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   const [user, setUser] = useState(JSON.parse(strUser));
   const [responseReceived, setResponseReceived] = useState(false);
   const [threadid, setThreadId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const preRef = useRef(null);
 
@@ -42,8 +43,10 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   };
 
   const handleSendMessage = () => {
+
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
+      setLoading(false);
       setMessage('');
       setResponseReceived(false);
       scrollToBottom();
@@ -58,6 +61,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
       setMinheight(newlines * 26 + 26);
     }
     if (e.key === 'Enter' && !e.shiftKey) {
+      setLoading(true);
       e.preventDefault();
       handleSendMessage();
     }
@@ -84,7 +88,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
         setMessages((prevMessages) => [...prevMessages, { message: lastMessage.chunk, system: true }]);
 
         setThreadId(lastMessage.threadid);
-        scrollToBottom();
+
       },
       error(err) { console.error('err', err) },
       complete() { console.log('complete') },
@@ -120,11 +124,17 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
 
     }
   }, [message]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div className='flex flex-col w-full grow'>
       {!user.id && <GoogleLogin loginUrl={url} />}
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0 grow-0">
+        {loading && <div className='absolute flex justify-center left-4 -mt-12'>
+          <img src='/type.gif' alt="" className='h-10' />
+        </div>}
         <div className="absolute w-full z-0"
         >
           <pre ref={preRef} className="text-gray-400 px-2 py-1 rounded-md max-w-screen-md whitespace-pre-wrap break-words text-transparent" style={{ minHeight: minheight }}
@@ -145,7 +155,6 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
             onKeyDown={handleKeyPress}
             disabled={!responseReceived || !user.id}
           />
-
           <button
             className={numRows > 3 ? "absolute inset-y-0 right-8 bottom-0 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600" : "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"}
             onClick={handleSendMessage}
@@ -156,9 +165,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
             </svg>
           </button>
         </form>
-
       </div>
-
       {messages.map((msg, index) => (
         <div
           key={index}
@@ -178,9 +185,8 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
           </div>
         </div>
       ))}
-
       <div className='grow' />
-      <div id="bottom" ref={messagesEndRef} className="flex w-full h-20 bg-black grow-0" />
+      <div id="bottom" ref={messagesEndRef} className="flex w-full h-20  grow-0" />
     </div>
   );
 }
