@@ -75,21 +75,17 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
     client.subscribe({ query: MY_QUERY, variables: { userid: user.id } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
-
         if (chat_history.length === 0) {
           return;
         }
         const lastMessage = chat_history[0];
         setThreadId(lastMessage.threadid);
-
-
         scrollToBottom();
       },
       error(err) { console.error('err', err) },
       complete() { console.log('complete') },
     })
   }, [user.id]);
-
 
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];

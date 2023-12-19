@@ -1,7 +1,6 @@
 import type { APIContext } from "astro";
 import OpenAI from "openai";
 import client from '../../lib/clientssr';
-// https://web.descript.com/drives/d55c9db5-9956-4b41-aa88-99bc8ea76d92/join?invite_link_token=Yh6SSfQyya2NazRIDtuDNP
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY as string,
 });
@@ -21,7 +20,7 @@ export async function POST({ request }: APIContext) {
   function sleep(seconds: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
-  const isThread = 'thread_NyR0u3TPYngxzmubUCQeS16Q';
+  const isThread = threadid;
 
   const [assistant, thread] = await Promise.all([
     openai.beta.assistants.retrieve("asst_QKnm963fMmdJeLFKd2bfnIls"),
@@ -56,19 +55,23 @@ export async function POST({ request }: APIContext) {
   }
   // get thread messages by id
   const messages = await openai.beta.threads.messages.list(threadID);
-  const machineMessage = messages.data[messages.data.length - 1];
-  console.log(JSON.stringify(messages.data.reverse(), null, 2));
-  const x = await client(CREATE_MESSAGE,
+  const machineMessage = messages.data.reverse()[messages.data.length - 1];
+
+  let chunk: string | undefined;
+  if (machineMessage?.content[0]?.type === 'text') {
+    chunk = machineMessage?.content[0]?.text.value;
+  }
+
+  await client(CREATE_MESSAGE,
     {
       object: {
         userid,
-        'chunk': machineMessage?.content?.text.value,
-        'thread.id': machineMessage?.thread_id,
-        threadid,
+        'chunk': chunk,
+        'threadid': machineMessage?.thread_id,
+
       }
     }
   );
-  console.log(x);
 
   return new Response(JSON.stringify({}), {
     headers: {
