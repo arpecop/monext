@@ -1,6 +1,9 @@
 import { gql } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
+import { topics } from '~/lib/topics';
 import client from '../lib/client';
+
+
 type Message = {
   message: string;
   system: boolean;
@@ -16,7 +19,7 @@ subscription MyQuery($userid: String = "") {
 `;
 
 
-function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: string } }) {
+function Form({ url, topic }: { topic: number, url: string; cookie?: { value: string } }) {
   const strUser = localStorage.getItem('user') || '{}';
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -46,7 +49,7 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
 
     if (responseReceived) {
       setMessages([...messages, { message, system: false }]);
-      setLoading(false);
+
       setMessage('');
       setResponseReceived(false);
       scrollToBottom();
@@ -61,7 +64,7 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
       setMinheight(newlines * 26 + 26);
     }
     if (e.key === 'Enter' && !e.shiftKey) {
-      setLoading(true);
+
       e.preventDefault();
       handleSendMessage();
     }
@@ -75,11 +78,12 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
 
 
   useEffect(() => {
+    console.log(topics);
     setResponseReceived(true);
+
     client.subscribe({ query: MY_QUERY, variables: { userid: user.id } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
-        console.log(chat_history);
 
         if (chat_history.length === 0) {
           return;
@@ -98,6 +102,7 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
 
+
     if (lastMessage && !lastMessage.system) {
       scrollToBottom();
       fetch('/api/chat', {
@@ -110,10 +115,12 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
         response.json().then(() => {
           setResponseReceived(true);
           scrollToBottom();
+          setLoading(false);
         });
       }
       );
     }
+    setLoading(true);
   }, [messages]);
 
   useEffect(() => {
@@ -121,12 +128,13 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
       const lh = (preRef.current as HTMLPreElement).scrollHeight;
       const lines = Math.round(lh / 26);
       setNumRows(lines === 0 ? 1 : lines);
-
     }
   }, [message]);
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+
 
   return (
     <div className='flex flex-col w-full grow justify-center items-center'>
@@ -147,7 +155,7 @@ function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: s
             maxLength={250}
             rows={numRows}
             autoFocus
-            placeholder="Изпрати съобщение"
+            placeholder={!user.id ? 'Влезте с Google, за да започнете да пишете' : 'Напишете съобщение'}
             spellCheck="false"
             className="w-full pr-10 focus:outline-none"
             value={message}

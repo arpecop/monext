@@ -1,6 +1,7 @@
 import type { APIContext } from "astro";
 import OpenAI from "openai";
 import client from '../../lib/clientssr';
+import { topics } from '../../lib/topics';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY as string,
 });
@@ -15,11 +16,18 @@ mutation MyMutation($object: chat_history_insert_input = {}) {
 
 export async function POST({ request }: APIContext) {
   const jsonData = await request.json();
-  const { message, userid, threadid } = jsonData;
+  const { message, userid, threadid, topic } = jsonData;
+  const topicd = topics.find(predicate => predicate.id === topic)
+  const instructions = topic === 1000 ? "" : '  Отговаряш само на въпроси в сферата на: "' + topicd?.topic + '". ' + topicd?.data.instruct as string;
+
+
   function sleep(seconds: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
   const isThread = threadid;
+  await openai.beta.assistants.update("asst_QKnm963fMmdJeLFKd2bfnIls", {
+    instructions: topics[0]?.data.instruct + ' ' + instructions as string,
+  })
   const [assistant, thread] = await Promise.all([
     openai.beta.assistants.retrieve("asst_QKnm963fMmdJeLFKd2bfnIls"),
     !isThread ? openai.beta.threads.create({
@@ -38,7 +46,7 @@ export async function POST({ request }: APIContext) {
         }
       ),
   ]);
-  console.log(thread);
+  console.log(assistant, thread);
 
   const threadID = isThread || thread.id;
 
@@ -59,14 +67,21 @@ export async function POST({ request }: APIContext) {
   if (machineMessage?.content[0]?.type === 'text') {
     chunk = machineMessage?.content[0]?.text.value;
   }
-
+  await client(CREATE_MESSAGE,
+    {
+      object: {
+        userid,
+        'chunk': message,
+        'threadid': machineMessage?.thread_id,
+      }
+    }
+  );
   await client(CREATE_MESSAGE,
     {
       object: {
         userid,
         'chunk': chunk,
         'threadid': machineMessage?.thread_id,
-
       }
     }
   );

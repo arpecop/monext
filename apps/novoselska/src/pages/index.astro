@@ -53,6 +53,6 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
       }
     </div>
   </div>
-</Layout>
 
-<Form client:only="react" cookie={cookie} url={signInUrl} />
+  <Form client:only="react" cookie={cookie} url={signInUrl} topic={1000} />
+</Layout>
