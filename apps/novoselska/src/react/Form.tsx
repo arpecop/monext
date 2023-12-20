@@ -196,7 +196,7 @@ function GoogleLogin({ loginUrl }: { loginUrl: string }) {
 
     <a
       href={loginUrl}
-      className="py-2 pr-4 rounded-md -mt-5 flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden w-1/3 max-w-xs"
+      className="py-2 pr-4 rounded-md  flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden w-1/3 max-w-xs"
     >
       <div className="bg-blue-500 hover:bg-blue-600   flex absolute left-0 top-0 h-10 px-1.5   items-center rounded-l-md">
         <svg
