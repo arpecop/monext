@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
+import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
-
 
 type Message = {
   message: string;
@@ -22,6 +22,7 @@ subscription MyQuery($userid: String = "") {
 function Form({ url, topic }: { topic: number, url: string; cookie?: { value: string } }) {
   const strUser = localStorage.getItem('user') || '{}';
   const [message, setMessage] = useState('');
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [numRows, setNumRows] = useState(1);
   const [minheight, setMinheight] = useState(26);
@@ -41,9 +42,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
     }
   });
 
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
-  };
+
 
   const handleSendMessage = () => {
     setMessage('');
@@ -68,17 +67,26 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
     });
   };
 
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+
     if (e.key === 'Enter' && e.shiftKey) {
-      const newlines = message.split('\n').length;
-      setMinheight(newlines * 26 + 26);
+
+
     }
     if (e.key === 'Enter' && !e.shiftKey) {
-
       e.preventDefault();
       handleSendMessage();
     }
-  };
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      // const newlines = message.split('\n').length;
+      // setMinheight(Math.max(newlines * 26 + 26, 26)); // Ensure  
+      // setMessage(message);
+    }
+
+
+  }
+
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -110,14 +118,20 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
     })
   }, [user.id]);
 
-
-
-  useEffect(() => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    calculateLines();
+  };
+  const calculateLines = debounce(() => {
     if (preRef.current) {
       const lh = (preRef.current as HTMLPreElement).scrollHeight;
-      const lines = Math.round(lh / 26);
-      setNumRows(lines === 0 ? 1 : lines);
+      const lines = Math.min(Math.max(message.split('\n').length, Math.round(lh / 26)), 7);
+      setNumRows(lines);
     }
+  }, 300);
+
+  useEffect(() => {
+    calculateLines();
   }, [message]);
 
   return (
@@ -130,7 +144,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
         <div className="absolute w-full z-0"
         >
           <pre ref={preRef} className="text-gray-400 px-2 py-1 rounded-md max-w-screen-md whitespace-pre-wrap break-words text-transparent" style={{ minHeight: minheight }}
-          >{message}</pre>
+          >{message}.</pre>
         </div>
         <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10" method='post' onSubmit={(e) => {
           e.preventDefault();
