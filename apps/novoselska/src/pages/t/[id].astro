@@ -1,8 +1,7 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import { topics } from '~/lib/topics';
+import Layout from '../../layouts/Layout.astro';
 
-import Form from '~/react/Form';
+import Form from '../../react/Form';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
 };
@@ -33,21 +32,6 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
         0888 266 745 или на имейл medeia@dr-novoselska.com. Аз съм тук, за да ви
         слушам и да ви подкрепям.😊
       </div>
-    </div>
-  </div>
-
-  <div class="flex flex-col flex-wrap justify-center gap-1">
-    <div class="flex flex-wrap">
-      {
-        topics.map(({ topic, slug }) => (
-          <a
-            class="bg-gray-700 max-w-24 hover:bg-gray-800 text-white py-0.5 px-2 rounded-lg text-xs    my-0.5 ml-1"
-            href={'/t/' + slug}
-          >
-            {topic}
-          </a>
-        ))
-      }
     </div>
   </div>
 </Layout>
