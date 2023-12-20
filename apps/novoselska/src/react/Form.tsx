@@ -16,7 +16,7 @@ subscription MyQuery($userid: String = "") {
 `;
 
 
-function Form({ url }: { url: string; cookie?: { value: string } }) {
+function Form({ url, topic }: { topic?: number, url: string; cookie?: { value: string } }) {
   const strUser = localStorage.getItem('user') || '{}';
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -105,7 +105,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: lastMessage.message, userid: user.id, threadid })
+        body: JSON.stringify({ message: lastMessage.message, userid: user.id, threadid, topic })
       }).then((response) => {
         response.json().then(() => {
           setResponseReceived(true);
@@ -177,7 +177,6 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
             <div className="p-1.5 text-white">
               <img src={msg.system ? "/avatar.jpg" : user.picture} className="w-14 rounded-full" />
             </div>
-
             <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
               <div className="text-xs text-slate-500">{msg.system ? "Medeia" : user.name}</div>
               {msg.message}
@@ -193,7 +192,6 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
 
 function GoogleLogin({ loginUrl }: { loginUrl: string }) {
   return (
-
     <a
       href={loginUrl}
       className="py-2 pr-4 rounded-md  flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden w-1/3 max-w-xs"

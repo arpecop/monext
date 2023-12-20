@@ -1,19 +1,25 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+import { topics } from '../../lib/topics';
 import Form from '../../react/Form';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
 };
+const { id } = Astro.params as { id: string };
 
 const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450551021-vu1amcbd0ls2gokvssqqh5k1gdq3s55q.apps.googleusercontent.com&redirect_uri=${
   process.env.LOGNAME
     ? 'http://localhost:4321/auth/google/'
     : 'https://dr-novoselska.com/auth/google/'
 }&response_type=code&scope=email%20profile`;
+const topic = topics.find((t) => t.slug === id);
 ---
 
-<Layout title="Доктор Новоселска , Добрич, клиничен психиатър">
+<Layout
+  title={topic?.data?.info?.substring(0, 50) ||
+    'Доктор Новоселска , Добрич, клиничен психиатър'}
+>
   <div class="grow-0 flex w-full items-center justify-center py-2 pt-3">
     <div
       class="flex items-start space-x-4 p-5 sm:px-0 max-w-screen-md bg-white rounded-lg shadow-lg border border-gray-200"
@@ -24,16 +30,11 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
 
       <div class="prose mt-1 w-full break-words pr-6">
         <div class="text-xs text-slate-500">Medeia</div>
-        Здравейте, това е виртуалният асистент на доктор Новоселска Аз съм изкуствен
-        интелект, който е трениран на базата на дългогодишната практика на доктор
-        Новоселска, за да ви помогна с някои основни въпроси и проблеми. Аз не съм
-        реален човек и не мога да заместя професионалната помощ на доктор Новоселска.
-        Ако имате нужда от консултация с нея, можете да се свържете с нея на телефон
-        0888 266 745 или на имейл medeia@dr-novoselska.com. Аз съм тук, за да ви
-        слушам и да ви подкрепям.😊
+        <div>
+          {topic?.data?.info?.split('\n').map((p) => <p>{p}</p>)}
+        </div>
       </div>
     </div>
   </div>
+  <Form client:only="react" cookie={cookie} url={signInUrl} topic={topic?.id} />
 </Layout>
-
-<Form client:only="react" cookie={cookie} url={signInUrl} />
