@@ -29,12 +29,19 @@ const topic = topics.find((t) => t.slug === id);
       </div>
 
       <div class="prose mt-1 w-full break-words pr-6">
-        <div class="text-xs text-slate-500">Medeia</div>
-        <div>
-          {topic?.data?.info?.split('\n').map((p) => <p>{p}</p>)}
+        <div class="text-xs text-slate-500">
+          Medeia
+          <div>
+            {topic?.data?.info?.split('\n').map((p) => <p>{p}</p>)}
+          </div>
         </div>
       </div>
     </div>
+    <Form
+      client:only="react"
+      cookie={cookie}
+      url={signInUrl}
+      topic={topic?.id || 100}
+    />
   </div>
-  <Form client:only="react" cookie={cookie} url={signInUrl} topic={topic?.id} />
 </Layout>
