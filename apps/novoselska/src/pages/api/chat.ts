@@ -17,6 +17,8 @@ mutation MyMutation($object: chat_history_insert_input = {}) {
 export async function POST({ request }: APIContext) {
   const jsonData = await request.json();
   const { message, userid, threadid, topic } = jsonData;
+  console.log(jsonData);
+
   const topicd = topics.find(predicate => predicate.id === topic)
   const instructions = topic === 1000 ? "" : '  Отговаряш само на въпроси в сферата на: "' + topicd?.topic + '". ' + topicd?.data.instruct as string;
 
@@ -46,7 +48,7 @@ export async function POST({ request }: APIContext) {
         }
       ),
   ]);
-  console.log(assistant, thread);
+
 
   const threadID = isThread || thread.id;
 
@@ -60,6 +62,8 @@ export async function POST({ request }: APIContext) {
     console.log(run.started_at, run.status);
   }
   // get thread messages by id
+
+
   const messages = await openai.beta.threads.messages.list(threadID);
   const machineMessage = messages.data.reverse()[messages.data.length - 1];
 
@@ -71,8 +75,9 @@ export async function POST({ request }: APIContext) {
     {
       object: {
         userid,
-        'chunk': message,
+        'message': message,
         'threadid': machineMessage?.thread_id,
+        msgid: 'user',
       }
     }
   );
@@ -80,8 +85,9 @@ export async function POST({ request }: APIContext) {
     {
       object: {
         userid,
-        'chunk': chunk,
+        'message': chunk,
         'threadid': machineMessage?.thread_id,
+        msgid: 'system',
       }
     }
   );

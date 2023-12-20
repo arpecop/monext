@@ -1,19 +1,19 @@
 import { gql } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
-import { topics } from '~/lib/topics';
 import client from '../lib/client';
 
 
 type Message = {
   message: string;
-  system: boolean;
+  msgid: string;
 };
 const MY_QUERY = gql`
 subscription MyQuery($userid: String = "") {
-  chat_history(limit: 1, where: {  userid: {_eq: $userid}}, order_by: {id: desc}) {
-    chunk
+  chat_history(limit: 30, where: {  userid: {_eq: $userid}}, order_by: {id: asc}) {
+    message
     id
     threadid
+    msgid
   }
 }
 `;
@@ -46,16 +46,26 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
   };
 
   const handleSendMessage = () => {
+    setMessage('');
+    setMinheight(26);
+    setNumRows(1);
+    setLoading(true);
+    setMessages((prevMessages) => [...prevMessages, { message, msgid: 'user' }]);
 
-    if (responseReceived) {
-      setMessages([...messages, { message, system: false }]);
 
-      setMessage('');
-      setResponseReceived(false);
-      scrollToBottom();
-    } else {
-      console.log('not ready');
-    }
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message, userid: user.id, threadid, topic })
+    }).then((response) => {
+      response.json().then(() => {
+        setResponseReceived(true);
+
+        setLoading(false);
+      });
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -75,53 +85,32 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
-    console.log(topics);
     setResponseReceived(true);
-
     client.subscribe({ query: MY_QUERY, variables: { userid: user.id } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
+        console.log(chat_history);
 
         if (chat_history.length === 0) {
           return;
         }
         const lastMessage = chat_history[0];
-        setMessages((prevMessages) => [...prevMessages, { message: lastMessage.chunk, system: true }]);
+        // setMessages((prevMessages) => [...prevMessages, { message: lastMessage.chunk, system: true }]);
 
+        setMessages(chat_history)
         setThreadId(lastMessage.threadid);
-
       },
       error(err) { console.error('err', err) },
       complete() { console.log('complete') },
     })
   }, [user.id]);
 
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
 
-
-    if (lastMessage && !lastMessage.system) {
-      scrollToBottom();
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message: lastMessage.message, userid: user.id, threadid, topic })
-      }).then((response) => {
-        response.json().then(() => {
-          setResponseReceived(true);
-          scrollToBottom();
-          setLoading(false);
-        });
-      }
-      );
-    }
-    setLoading(true);
-  }, [messages]);
 
   useEffect(() => {
     if (preRef.current) {
@@ -130,11 +119,6 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
       setNumRows(lines === 0 ? 1 : lines);
     }
   }, [message]);
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-
 
   return (
     <div className='flex flex-col w-full grow justify-center items-center'>
@@ -148,7 +132,10 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
           <pre ref={preRef} className="text-gray-400 px-2 py-1 rounded-md max-w-screen-md whitespace-pre-wrap break-words text-transparent" style={{ minHeight: minheight }}
           >{message}</pre>
         </div>
-        <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10">
+        <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10" method='post' onSubmit={(e) => {
+          e.preventDefault();
+          handleSendMessage();
+        }}>
 
           <textarea
             required
@@ -177,16 +164,16 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={msg.system ? "grow-0 flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white grow-0"}
+          className={msg.msgid === 'system' ? "grow-0 flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white grow-0"}
         >
           <div
             className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
           >
             <div className="p-1.5 text-white">
-              <img src={msg.system ? "/avatar.jpg" : user.picture} className="w-14 rounded-full" />
+              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user.picture} className="w-14 rounded-full" />
             </div>
             <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
-              <div className="text-xs text-slate-500">{msg.system ? "Medeia" : user.name}</div>
+              <div className="text-xs text-slate-500">{msg.msgid === 'system' ? "Medeia" : user.name}</div>
               {msg.message}
             </div>
           </div>
