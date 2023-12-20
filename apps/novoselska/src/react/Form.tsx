@@ -129,7 +129,7 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
   }, [messages]);
 
   return (
-    <div className='flex flex-col w-full grow'>
+    <div className='flex flex-col w-full grow justify-center items-center'>
       {!user.id && <GoogleLogin loginUrl={url} />}
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0 grow-0">
         {loading && <div className='absolute flex justify-center left-4 -mt-12'>
@@ -193,9 +193,10 @@ function Form({ url }: { url: string; cookie?: { value: string } }) {
 
 function GoogleLogin({ loginUrl }: { loginUrl: string }) {
   return (
+
     <a
       href={loginUrl}
-      className="py-2 pr-4 rounded-md -mt-5 flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden"
+      className="py-2 pr-4 rounded-md -mt-5 flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden w-1/3 max-w-xs"
     >
       <div className="bg-blue-500 hover:bg-blue-600   flex absolute left-0 top-0 h-10 px-1.5   items-center rounded-l-md">
         <svg

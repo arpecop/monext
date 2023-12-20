@@ -16,29 +16,27 @@ mutation MyMutation($object: chat_history_insert_input = {}) {
 export async function POST({ request }: APIContext) {
   const jsonData = await request.json();
   const { message, userid, threadid } = jsonData;
-
   function sleep(seconds: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
   const isThread = threadid;
-
   const [assistant, thread] = await Promise.all([
     openai.beta.assistants.retrieve("asst_QKnm963fMmdJeLFKd2bfnIls"),
     !isThread ? openai.beta.threads.create({
       messages: [
         {
           role: "user",
-          content:
-            message,
+          content: message,
         }
       ],
-    }) : openai.beta.threads.messages.create(isThread,
-      {
-        role: "user",
-        content:
-          message,
-      }
-    ),
+    })
+      :
+      openai.beta.threads.messages.create(isThread,
+        {
+          role: "user",
+          content: message,
+        }
+      ),
   ]);
   console.log(thread);
 
