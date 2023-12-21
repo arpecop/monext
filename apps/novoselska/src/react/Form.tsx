@@ -165,16 +165,17 @@ function Form({ topic }: { topic: number, url: string; cookie?: { value: string 
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={msg.msgid === 'system' ? "grow-0 flex w-full items-center justify-center border-b border-gray-200 py-2 bg-gray-100" : "flex w-full items-center justify-center border-b border-gray-200 py-2 bg-white grow-0"}
+          className="grow-0 flex w-full items-center justify-center border-b border-gray-200 py-2"
+          style={{ minHeight: 60, backgroundColor: msg.msgid === 'system' ? '#f5f5f5' : 'white' }}
         >
           <div
-            className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
+            className="flex   w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
           >
-            <div className="p-1.5 text-white">
-              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.picture} className="w-14 rounded-full" />
+            <div className="relative">
+              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.picture} className="w-8 sm:w-14 rounded-full" />
+              <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white"></div>
             </div>
-            <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
-              <div className="text-xs text-slate-500">{msg.msgid === 'system' ? "Medeia" : user?.name}</div>
+            <div className="prose mt-1 w-full  prose-p:leading-relaxed">
               {msg.message}
             </div>
           </div>
