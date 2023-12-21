@@ -17,8 +17,6 @@ subscription MyQuery($userid: String = "", $channel: Int = 1000) {
   }
 }
 `;
-
-
 function Form({ url, topic }: { topic: number, url: string; cookie?: { value: string } }) {
   const strUser = localStorage.getItem('user') || '{}';
   const [message, setMessage] = useState('');
@@ -73,22 +71,10 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
 
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-
-    if (e.key === 'Enter' && e.shiftKey) {
-
-
-    }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
-    if (e.key === 'Backspace' || e.key === 'Delete') {
-      // const newlines = message.split('\n').length;
-      // setMinheight(Math.max(newlines * 26 + 26, 26)); // Ensure  
-      // setMessage(message);
-    }
-
-
   }
 
 
@@ -150,11 +136,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
           <pre ref={preRef} className="text-gray-400 px-2 py-1 rounded-md max-w-screen-md whitespace-pre-wrap break-words text-transparent" style={{ minHeight: minheight }}
           >{message}.</pre>
         </div>
-        <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10" method='post' onSubmit={(e) => {
-          e.preventDefault();
-          handleSendMessage();
-        }}>
-
+        <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10" method='post' onSubmit={handleSendMessage}>
           <textarea
             required
             maxLength={250}

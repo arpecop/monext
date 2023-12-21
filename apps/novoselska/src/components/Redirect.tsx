@@ -10,8 +10,10 @@ export default function Redirect() {
 
       if (res.ok) {
         const user = await res.json();
-        localStorage.setItem("user", JSON.stringify(user));
-        window.location.href = "https://dr-novoselska.com/"; // Redirect to homepage
+
+        const referer = document.referrer; // Get the previous referer URL
+        localStorage.setItem("user", JSON.stringify({ ...user, token: params.get('token'), referer }));
+        window.location.href = referer; // Redirect to the previous referer URL
       } else {
         throw new Error();
       }
