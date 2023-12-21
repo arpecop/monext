@@ -17,7 +17,7 @@ export default function Redirect() {
         localStorage.setItem("user", JSON.stringify(user));
         window.location.href = decodeURIComponent(cookieValue || "")
       } else {
-        window.location.href = decodeURIComponent(cookieValue || "")
+
         throw new Error();
       }
     }
