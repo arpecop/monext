@@ -8,8 +8,8 @@ type Message = {
   msgid: string;
 };
 const MY_QUERY = gql`
-subscription MyQuery($userid: String = "") {
-  chat_history(limit: 30, where: {  userid: {_eq: $userid}}, order_by: {id: asc}) {
+subscription MyQuery($userid: String = "", $channel: Int = 1000) {
+  chat_history(limit: 30, where: {userid: {_eq: $userid}, channel: {_eq: $channel}}, order_by: {id: asc}) {
     message
     id
     threadid
