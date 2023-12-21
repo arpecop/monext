@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
+import { useLocalStorage } from '../lib/useStorage';
 
 type Message = {
   message: string;
@@ -17,14 +18,13 @@ subscription MyQuery($userid: String = "", $channel: Int = 1000) {
   }
 }
 `;
-function Form({ url, topic }: { topic: number, url: string; cookie?: { value: string } }) {
-  const strUser = localStorage.getItem('user') || '{}';
+function Form({ topic }: { topic: number, url: string; cookie?: { value: string } }) {
+  const [user] = useLocalStorage("user", { id: '1', name: 'Medeia', picture: '/avatar.jpg' })
   const [message, setMessage] = useState('');
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [numRows, setNumRows] = useState(1);
   const [minheight, setMinheight] = useState(26);
-  const [user, setUser] = useState(JSON.parse(strUser));
+
   const [responseReceived, setResponseReceived] = useState(false);
   const [threadid, setThreadId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,7 +35,8 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
   const messagesEndRef = useRef<HTMLDivElement>(null);
   window.addEventListener('storage', function (event) {
     if (event.key === 'user') {
-      setUser(JSON.parse(event.newValue ?? '{}'));
+
+      // setUser(JSON.parse(event.newValue ?? '{}'));
       setResponseReceived(true);
     }
   });
@@ -55,7 +56,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message, userid: user.id, threadid, topic })
+      body: JSON.stringify({ message, userid: user?.id, threadid, topic })
     }).then((response) => {
       response.json().then((json) => {
         console.log(json);
@@ -89,7 +90,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
 
   useEffect(() => {
     setResponseReceived(true);
-    client.subscribe({ query: MY_QUERY, variables: { userid: user.id } }).subscribe({
+    client.subscribe({ query: MY_QUERY, variables: { userid: user?.id } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
         console.log(chat_history);
@@ -106,7 +107,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
       error(err) { console.error('err', err) },
       complete() { console.log('complete') },
     })
-  }, [user.id]);
+  }, [user?.id]);
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -126,7 +127,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
 
   return (
     <div className='flex flex-col w-full grow justify-center items-center'>
-      {!user.id && <GoogleLogin loginUrl={url} />}
+
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0 grow-0">
         {loading && <div className='absolute flex justify-center left-4 -mt-12'>
           <img src='/type.gif' alt="" className='h-10' />
@@ -142,13 +143,13 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
             maxLength={250}
             rows={numRows}
             autoFocus
-            placeholder={!user.id ? 'Влезте с Google, за да започнете да пишете' : 'Напишете съобщение'}
+            placeholder={!user?.id ? 'Влезте с Google, за да започнете да пишете' : 'Напишете съобщение'}
             spellCheck="false"
             className="w-full pr-10 focus:outline-none"
             value={message}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyPress}
-            disabled={!responseReceived || !user.id}
+            disabled={!responseReceived || !user?.id}
           />
           <button
             className={numRows > 3 ? "absolute inset-y-0 right-8 bottom-0 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600" : "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"}
@@ -170,10 +171,10 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
             className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
           >
             <div className="p-1.5 text-white">
-              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user.picture} className="w-14 rounded-full" />
+              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.picture} className="w-14 rounded-full" />
             </div>
             <div className="prose mt-1 w-full break-words prose-p:leading-relaxed pr-6">
-              <div className="text-xs text-slate-500">{msg.msgid === 'system' ? "Medeia" : user.name}</div>
+              <div className="text-xs text-slate-500">{msg.msgid === 'system' ? "Medeia" : user?.name}</div>
               {msg.message}
             </div>
           </div>
@@ -185,28 +186,7 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
   );
 }
 
-function GoogleLogin({ loginUrl }: { loginUrl: string }) {
-  return (
-    <a
-      href={loginUrl}
-      className="py-2 pr-4 rounded-md  flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden w-1/3 max-w-xs"
-    >
-      <div className="bg-blue-500 hover:bg-blue-600   flex absolute left-0 top-0 h-10 px-1.5   items-center rounded-l-md">
-        <svg
-          fill="#FFFFFF"
-          viewBox="0 0 1024 1024"
-          xmlns="http://www.w3.org/2000/svg"
-          className="icon w-6 h-6"
-        >
-          <path
-            d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm167 633.6C638.4 735 583 757 516.9 757c-95.7 0-178.5-54.9-218.8-134.9C281.5 589 272 551.6 272 512s9.5-77 26.1-110.1c40.3-80.1 123.1-135 218.8-135 66 0 121.4 24.3 163.9 63.8L610.6 401c-25.4-24.3-57.7-36.6-93.6-36.6-63.8 0-117.8 43.1-137.1 101-4.9 14.7-7.7 30.4-7.7 46.6s2.8 31.9 7.7 46.6c19.3 57.9 73.3 101 137 101 33 0 61-8.7 82.9-23.4 26-17.4 43.2-43.3 48.9-74H516.9v-94.8h230.7c2.9 16.1 4.4 32.8 4.4 50.1 0 74.7-26.7 137.4-73 180.1z"
-          ></path>
-        </svg>
-      </div>
-      Продължи с Google
-    </a>
-  );
-}
+
 
 export default Form;
 

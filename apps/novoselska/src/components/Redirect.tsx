@@ -1,7 +1,11 @@
 
 import React, { useEffect } from 'react';
+import { useCookieStorage } from '~/lib/useStorage';
+
 
 export default function Redirect() {
+  const [cookieValue] = useCookieStorage("ref");
+  console.log(decodeURIComponent(cookieValue || ""));
   useEffect(() => {
     async function redirect() {
       const params = new URLSearchParams(location.search);
@@ -10,11 +14,10 @@ export default function Redirect() {
 
       if (res.ok) {
         const user = await res.json();
-
-        const referer = document.referrer; // Get the previous referer URL
-        localStorage.setItem("user", JSON.stringify({ ...user, token: params.get('token'), referer }));
-        window.location.href = referer; // Redirect to the previous referer URL
+        localStorage.setItem("user", JSON.stringify(user));
+        window.location.href = decodeURIComponent(cookieValue || "")
       } else {
+        window.location.href = decodeURIComponent(cookieValue || "")
         throw new Error();
       }
     }

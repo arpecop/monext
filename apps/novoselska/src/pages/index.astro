@@ -3,6 +3,7 @@ import Layout from '~/layouts/Layout.astro';
 import { topics } from '~/lib/topics';
 
 import Form from '~/react/Form';
+import GoogleLogin from '~/react/GoogleLogin';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
 };
@@ -36,22 +37,24 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
     </div>
   </div>
 
-  <div class="flex flex-col flex-wrap justify-center gap-1">
+  <div class="flex flex-col flex-wrap justify-center gap-1 relative">
     <div class="flex flex-wrap">
       {
         topics.map(
           ({ topic, slug }) =>
             slug !== 'general' && (
               <a
-                class="bg-gray-700 hover:bg-gray-800 text-white py-0.5 px-2 rounded-lg text-xs    my-0.5 ml-1"
+                class="bg-gray-100  border   py-0.5 px-2 rounded-lg text-md    my-0.5 ml-1 font-thin "
                 href={'/t/' + slug}
               >
-                {topic}
+                <span class="drop-shadow-sm">{topic}</span>
               </a>
             )
         )
       }
     </div>
+
+    <GoogleLogin client:only="react" loginUrl={signInUrl} />
   </div>
 
   <Form client:only="react" cookie={cookie} url={signInUrl} topic={1000} />
