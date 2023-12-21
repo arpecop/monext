@@ -24,7 +24,7 @@ export async function POST({ request }: APIContext) {
   console.log(jsonData);
   if (message.length < 4) {
     await sleep(3);
-    return new Response(JSON.stringify({ error: 'Съобщението е твърде крратко' }), {
+    return new Response(JSON.stringify({ error: 'Съобщението е твърде кратко' }), {
       headers: {
         "content-type": "application/json;charset=UTF-8",
       },

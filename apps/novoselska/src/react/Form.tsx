@@ -59,10 +59,14 @@ function Form({ url, topic }: { topic: number, url: string; cookie?: { value: st
       },
       body: JSON.stringify({ message, userid: user.id, threadid, topic })
     }).then((response) => {
-      response.json().then(() => {
-        setResponseReceived(true);
+      response.json().then((json) => {
+        console.log(json);
 
+        setResponseReceived(true);
         setLoading(false);
+        if (json.error) {
+          setMessages((prevMessages) => [...prevMessages, { message: json.error, msgid: 'system' }]);
+        }
       });
     });
   };
