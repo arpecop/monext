@@ -741,3 +741,7 @@ export const people: People[] = [
     img: "https://api.multiavatar.com/Zornitsa",
   },
 ];
+
+
+
+
