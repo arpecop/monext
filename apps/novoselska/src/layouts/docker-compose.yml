@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:16
+    ports:
+      - 5432:5432
+    volumes:
+      - /data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=maximus
+      - POSTGRES_USER=rudix
+      - POSTGRES_DB=rudix
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  graphql-engine:
+    image: hasura/graphql-engine:latest
+    ports:
+      - 80:8080
+    restart: always
+    environment:
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://rudix:maximus@postgres:5432/rudix
+      PG_DATABASE_URL: postgres://rudix:maximus@postgres:5432/rudix
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "public"
+      HASURA_GRAPHQL_ADMIN_SECRET: maximus
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256", "key":"1347cc301b614b6b264527e494148268","issuer":"hasura-auth"}'
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    restart: always
+    ports:
+      - 6333:6333
+      - 6334:6334
+    volumes:
+      - /data/qdrant:/qdrant/storage:z
+    mem_limit: 3048m

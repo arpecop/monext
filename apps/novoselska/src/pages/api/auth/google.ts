@@ -1,8 +1,7 @@
 import type { APIRoute } from 'astro';
 import { SignJWT } from 'jose';
 import { serializeCookie } from 'lucia/utils';
-import clientssr from '~/lib/clientssr';
-import { googleAuth } from "../../../../lib/lucia";
+import { googleAuth } from "../../../lib/lucia";
 export const prerender = false
 const CREATE_USER_MUTATION = `
 mutation MyMutation($object: chat_u_insert_input = {}) {
@@ -16,8 +15,12 @@ mutation MyMutation($object: chat_u_insert_input = {}) {
 
 export async function GET({ url }: APIRoute & { url: URL }) {
   const code = url.searchParams.get("code") || "";
-
+  if (!code) {
+    return new Response("No code provided", { status: 400 });
+  }
   const { googleUser } = await googleAuth.validateCallback(code);
+  console.log(googleUser);
+
 
   const secret = process.env.SECRET;
   const encoder = new TextEncoder();
@@ -52,15 +55,15 @@ export async function GET({ url }: APIRoute & { url: URL }) {
   });
 
 
-  await clientssr(CREATE_USER_MUTATION,
-    {
-      object: {
-        id: googleUser.sub.toString(),
-        data: googleUser,
-        uid: token
-      }
-    }
-  );
+  // await clientssr(CREATE_USER_MUTATION,
+  //   {
+  //     object: {
+  //       id: googleUser.sub.toString(),
+  //       data: googleUser,
+  //       uid: token
+  //     }
+  //   }
+  // );
 
   return new Response(
     JSON.stringify({

@@ -139,7 +139,7 @@ function Form({ topic }: { topic: number, url: string; cookie?: { value: string 
         </div>
         <form className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 z-10" method='post' onSubmit={handleSendMessage}>
           <textarea
-            required
+            name="message"
             maxLength={250}
             rows={numRows}
             autoFocus

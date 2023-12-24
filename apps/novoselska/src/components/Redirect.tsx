@@ -9,7 +9,7 @@ export default function Redirect() {
     async function redirect() {
       const params = new URLSearchParams(location.search);
 
-      const res = await fetch(`/api/auth/google/callback?${params}`);
+      const res = await fetch(`/api/auth/google?${params}`);
 
       if (res.ok) {
         const user = await res.json();
