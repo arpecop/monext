@@ -9,7 +9,7 @@ export default function SignIn({ cookie, url }: { url: string; cookie?: { value:
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/auth/google", {
+        const res = await fetch("/api/auth/callback", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

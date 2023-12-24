@@ -1,6 +1,6 @@
 ---
 import Form from '~/react/Form';
-import GoogleLogin from '~/react/GoogleLogin';
+import GoogleLogin from '~/react/SSOLogin';
 import Layout from '../../layouts/Layout.astro';
 import { topics } from '../../lib/topics';
 const cookie = Astro.cookies.get('google_oauth_state') as {
@@ -47,3 +47,4 @@ Astro.cookies.set('ref', ref, { path: '/' });
   </div>
   <Form client:only="react" cookie={cookie} url={signInUrl} topic={1000} />
 </Layout>
+~/react/SSOLogin

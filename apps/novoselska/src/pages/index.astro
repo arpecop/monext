@@ -3,7 +3,7 @@ import Layout from '~/layouts/Layout.astro';
 import { topics } from '~/lib/topics';
 
 import Form from '~/react/Form';
-import GoogleLogin from '~/react/GoogleLogin';
+import GoogleLogin from '~/react/SSOLogin';
 const cookie = Astro.cookies.get('google_oauth_state') as {
   value: string;
 };
@@ -59,3 +59,4 @@ const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450
 
   <Form client:only="react" cookie={cookie} url={signInUrl} topic={1000} />
 </Layout>
+~/react/SSOLogin

@@ -3,15 +3,8 @@ import { SignJWT } from 'jose';
 import { serializeCookie } from 'lucia/utils';
 import { googleAuth } from "../../../lib/lucia";
 export const prerender = false
-const CREATE_USER_MUTATION = `
-mutation MyMutation($object: chat_u_insert_input = {}) {
-  insert_chat_u_one(object: $object) {
-    id
-    data
-  }
-}
 
- `
+
 
 export async function GET({ url }: APIRoute & { url: URL }) {
   const code = url.searchParams.get("code") || "";
@@ -19,8 +12,6 @@ export async function GET({ url }: APIRoute & { url: URL }) {
     return new Response("No code provided", { status: 400 });
   }
   const { googleUser } = await googleAuth.validateCallback(code);
-  console.log(googleUser);
-
 
   const secret = process.env.SECRET;
   const encoder = new TextEncoder();
@@ -55,15 +46,7 @@ export async function GET({ url }: APIRoute & { url: URL }) {
   });
 
 
-  // await clientssr(CREATE_USER_MUTATION,
-  //   {
-  //     object: {
-  //       id: googleUser.sub.toString(),
-  //       data: googleUser,
-  //       uid: token
-  //     }
-  //   }
-  // );
+
 
   return new Response(
     JSON.stringify({

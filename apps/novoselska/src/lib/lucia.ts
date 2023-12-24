@@ -1,7 +1,7 @@
 // src/lib/lucia.ts
 
 import { prisma } from "@lucia-auth/adapter-prisma";
-import { google } from '@lucia-auth/oauth/providers';
+import { facebook, google } from '@lucia-auth/oauth/providers';
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import { lucia } from "lucia";
@@ -35,6 +35,13 @@ export const googleAuth = google(auth, {
   redirectUri: process.env.LOGNAME
     ? 'http://localhost:4321/auth/google/'
     : 'https://dr-novoselska.com/auth/google/',
+});
+export const facebookAuth = facebook(auth, {
+  clientId: 'YOUR_FACEBOOK_CLIENT_ID',
+  clientSecret: process.env.FSECRET || 'FSECRET',
+  redirectUri: process.env.LOGNAME
+    ? 'http://localhost:4321/auth/facebook/'
+    : 'https://dr-novoselska.com/auth/facebook/',
 });
 
 export type Auth = typeof auth;
