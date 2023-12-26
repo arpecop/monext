@@ -45,9 +45,6 @@ export async function GET({ url }: APIRoute & { url: URL }) {
     sameSite: "strict",
   });
 
-
-
-
   return new Response(
     JSON.stringify({
       id: googleUser.sub,
