@@ -1,11 +1,10 @@
 import { gql } from '@apollo/client';
 import type { Session } from '@auth/core/types';
-import { getSession } from "auth-astro/client";
+
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
 import { useLocalStorage } from '../lib/useStorage';
-console.log(getSession);
 
 
 type Message = {
