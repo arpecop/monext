@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
-import type { Session } from '@auth/core/types';
-
+import Cookies from "js-cookie";
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
@@ -21,7 +20,7 @@ subscription MyQuery($userid: String = "", $channel: Int = 1000) {
   }
 }
 `;
-function Form({ topic, session }: { topic: number, session: Session }) {
+function Form({ topic }: { topic: number }) {
   const [user] = useLocalStorage("user", { id: '1', name: 'Medeia', picture: '/avatar.jpg' })
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -36,14 +35,12 @@ function Form({ topic, session }: { topic: number, session: Session }) {
 
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  window.addEventListener('storage', function (event) {
-    if (event.key === 'user') {
 
-      // setUser(JSON.parse(event.newValue ?? '{}'));
-      setResponseReceived(true);
-    }
-  });
+  const [authToken, setAuthToken] = useState(Cookies.get("authjs.session-token"));
+  useEffect(() => {
+    console.log('authToken', authToken);
 
+  }, [authToken]);
 
 
   const handleSendMessage = () => {
