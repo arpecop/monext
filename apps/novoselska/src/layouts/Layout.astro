@@ -1,6 +1,7 @@
 ---
+import type { Session } from '@auth/core/types';
+import { Auth, SignOut } from 'auth-astro/components';
 import SEO from './SEO.astro';
-
 export interface Props {
   title: string;
   description?: string;
@@ -27,13 +28,26 @@ const { title, description } = Astro.props;
   <body class="flex h-screen flex-col">
     <header class="top-5 w-full justify-between p-5 flex grow-0">
       <div class="flex">
-        <img src="/logo.png" class="logo w-12 h-12 mr-3" />
         <h1 class="text-lg text-gray-800 font-extrabold">
           Д-р М. Новоселска <div class="font-thin text-xs">
             клиничен психиатър
           </div>
         </h1>
       </div>
+      <Auth>
+        {
+          (session: Session | null) =>
+            session && (
+              <div class="flex justify-center align-middle">
+                <img
+                  src={session.user?.image}
+                  class="rounded-full w-6 h-6 mr-3"
+                />
+                <SignOut class="text-xs">Изход</SignOut>
+              </div>
+            )
+        }
+      </Auth>
     </header>
 
     <slot />
