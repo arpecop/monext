@@ -1,33 +1,32 @@
 import { faComment, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export default function Search() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [data, setData] = useState([]);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`https://img.userz.net/embed?text=${searchTerm}&token=eyJhbGciOiJIUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLXVzZXItaWQiOiIxMTU0NzkxMTY3MjYxNDM2NTUzMjUiLCJ4LWhhc3VyYS1kZWZhdWx0LXJvbGUiOiJwdWJsaWMiLCJ4LWhhc3VyYS1hbGxvd2VkLXJvbGVzIjpbInB1YmxpYyJdfSwiaWF0IjoxNzAzMzYwMzMwfQ.Jex6YnFP3cWuhX3MfjN_eZmOakyPMIURTlMKQitKXJQ`);
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    await fetchData();
     setSearchTerm('');
     alert(`Submitting Name ${searchTerm}`);
   };
 
-  useEffect(() => {
 
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`https://img.userz.net/embed?text=${searchTerm}&token=eyJhbGciOiJIUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLXVzZXItaWQiOiIxMTU0NzkxMTY3MjYxNDM2NTUzMjUiLCJ4LWhhc3VyYS1kZWZhdWx0LXJvbGUiOiJwdWJsaWMiLCJ4LWhhc3VyYS1hbGxvd2VkLXJvbGVzIjpbInB1YmxpYyJdfSwiaWF0IjoxNzAzMzYwMzMwfQ.Jex6YnFP3cWuhX3MfjN_eZmOakyPMIURTlMKQitKXJQ`);
-        const data = await response.json();
-        console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, []);
 
   return (
     <div
@@ -88,9 +87,10 @@ export default function Search() {
               d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
             ></path>
           </svg>
-          <span className="sr-only">Close banner</span>
+          <span className="sr-only">Close</span>
         </button>
       </div>
+
     </div>
   );
 }

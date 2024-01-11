@@ -6,11 +6,21 @@ export default function GoogleLogin({ loginUrl }: { loginUrl: string }) {
   if (user?.id !== '1') {
     return null;
   }
-  return (<div
-    className="flex items-center justify-center h-full absolute w-full bg-slate-100 bg-opacity-40"
-  >
-    <a
-      href={loginUrl}
+  return (<form action="/api/auth/signin/google" method="POST" className="flex items-center justify-center h-full absolute w-full bg-slate-100 bg-opacity-40">
+    <input
+      type="hidden"
+      name="csrfToken"
+      value="96de66687cad9bc57deb291e4ae08ff3148ad867046ff04a59d39675428e0b92"
+    /><input
+      type="hidden"
+      name="callbackUrl"
+      value={process.env.LOGNAME
+        ? 'http://localhost:4321/'
+        : 'https://dr-novoselska.com/'}
+    />
+    <button
+      type="submit"
+
       className="py-2 pr-4 rounded-md  flex border border-gray-200 hover:border-gray-300 h-10 bg-white items-center justify-center space-x-2 relative text-sm text-gray-700 pl-10 shadow-md overflow-hidden w-1/3 max-w-xs"
     >
       <div className="bg-blue-500 hover:bg-blue-600   flex absolute left-0 top-0 h-10 px-1.5   items-center rounded-l-md">
@@ -26,7 +36,7 @@ export default function GoogleLogin({ loginUrl }: { loginUrl: string }) {
         </svg>
       </div>
       Продължи с Google
-    </a>
-  </div>
+    </button>
+  </form>
   );
 }

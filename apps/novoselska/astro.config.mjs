@@ -2,6 +2,7 @@ import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
+import auth from 'auth-astro';
 
 export default defineConfig({
   output: 'server',
@@ -9,7 +10,7 @@ export default defineConfig({
     wasmModuleImports: true,
     imageService: "passthrough"
   }),
-  integrations: [tailwind(), react()],
+  integrations: [tailwind(), react(), auth()],
   vite: {
     build: {
       minify: false

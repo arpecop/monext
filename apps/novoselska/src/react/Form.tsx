@@ -1,8 +1,12 @@
 import { gql } from '@apollo/client';
+import type { Session } from '@auth/core/types';
+import { getSession } from "auth-astro/client";
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
 import { useLocalStorage } from '../lib/useStorage';
+console.log(getSession);
+
 
 type Message = {
   message: string;
@@ -18,7 +22,7 @@ subscription MyQuery($userid: String = "", $channel: Int = 1000) {
   }
 }
 `;
-function Form({ topic }: { topic: number, url: string; cookie?: { value: string } }) {
+function Form({ topic, session }: { topic: number, session: Session }) {
   const [user] = useLocalStorage("user", { id: '1', name: 'Medeia', picture: '/avatar.jpg' })
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);

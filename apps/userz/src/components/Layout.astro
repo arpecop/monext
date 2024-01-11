@@ -11,7 +11,8 @@ export interface Props {
   tags?: { hashtag: string; count: number }[];
 }
 const { title, description, logo, tags, topic, image } = Astro.props;
-const session = await Astro.locals.auth.validate();
+// const session = await Astro.locals.auth.validate();
+// console.log(session);
 ---
 
 <!DOCTYPE html>
