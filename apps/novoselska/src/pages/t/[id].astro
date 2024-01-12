@@ -1,24 +1,13 @@
 ---
+import type { Session } from '@auth/core/types';
+import { Auth } from 'auth-astro/components';
+import GoogleButton from '~/components/GoogleButton.astro';
 import Form from '~/react/Form';
-import GoogleLogin from '~/react/SSOLogin';
 import Layout from '../../layouts/Layout.astro';
 import { topics } from '../../lib/topics';
-const cookie = Astro.cookies.get('google_oauth_state') as {
-  value: string;
-};
 const { id } = Astro.params as { id: string };
 
-const signInUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=505450551021-vu1amcbd0ls2gokvssqqh5k1gdq3s55q.apps.googleusercontent.com&redirect_uri=${
-  process.env.LOGNAME
-    ? 'http://localhost:4321/auth/google/'
-    : 'https://dr-novoselska.com/auth/google/'
-}&response_type=code&scope=email%20profile`;
 const topic = topics.find((t) => t.slug === id);
-const ref = process.env.LOGNAME
-  ? `http://localhost:4321/t/${id}`
-  : `https://dr-novoselska.com/t/${id}`;
-
-Astro.cookies.set('ref', ref, { path: '/' });
 ---
 
 <Layout
@@ -43,7 +32,15 @@ Astro.cookies.set('ref', ref, { path: '/' });
     </div>
   </div>
   <div class="h-20 relative">
-    <GoogleLogin client:only="react" loginUrl={signInUrl} />
+    <GoogleButton topics={topics} />
   </div>
-  <Form client:only="react" cookie={cookie} url={signInUrl} topic={1000} />
-</Layout>~/react/SSOLogin
+  <Auth>
+    {
+      (session: Session | null) => (
+        <>
+          <Form client:only="react" session={session} topic={1000} />
+        </>
+      )
+    }
+  </Auth>
+</Layout>

@@ -3,7 +3,9 @@ import type { Session } from '@auth/core/types';
 import { Auth, SignIn } from 'auth-astro/components';
 ---
 
-<div class="flex items-center justify-center h-full absolute w-full bg-white">
+<div
+  class="flex items-center justify-center h-full absolute w-full bg-white -mt-12"
+>
   <Auth>
     {
       (session: Session | null) =>

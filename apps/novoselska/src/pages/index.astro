@@ -1,4 +1,6 @@
 ---
+import type { Session } from '@auth/core/types';
+import { Auth } from 'auth-astro/components';
 import GoogleButton from '~/components/GoogleButton.astro';
 import Layout from '~/layouts/Layout.astro';
 import { topics } from '~/lib/topics';
@@ -48,5 +50,13 @@ import Form from '~/react/Form';
     </div>
   </div>
 
-  <Form client:only="react" />
+  <Auth>
+    {
+      (session: Session | null) => (
+        <>
+          <Form client:only="react" session={session} />
+        </>
+      )
+    }
+  </Auth>
 </Layout>

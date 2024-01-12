@@ -1,9 +1,8 @@
 import { gql } from '@apollo/client';
-import Cookies from "js-cookie";
+import type { Session } from '@auth/core/types';
 import { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import client from '../lib/client';
-import { useLocalStorage } from '../lib/useStorage';
 
 
 type Message = {
@@ -20,8 +19,8 @@ subscription MyQuery($userid: String = "", $channel: Int = 1000) {
   }
 }
 `;
-function Form({ topic }: { topic: number }) {
-  const [user] = useLocalStorage("user", { id: '1', name: 'Medeia', picture: '/avatar.jpg' })
+function Form({ topic, session }: { topic: number, session: Session }) {
+  const [user, setUser] = useState<Session>()
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [numRows, setNumRows] = useState(1);
@@ -31,16 +30,13 @@ function Form({ topic }: { topic: number }) {
   const [threadid, setThreadId] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
   const preRef = useRef(null);
 
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [authToken, setAuthToken] = useState(Cookies.get("authjs.session-token"));
-  useEffect(() => {
-    console.log('authToken', authToken);
 
-  }, [authToken]);
 
 
   const handleSendMessage = () => {
@@ -56,7 +52,7 @@ function Form({ topic }: { topic: number }) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message, userid: user?.id, threadid, topic })
+      body: JSON.stringify({ message, userid: user?.user?.email, threadid, topic })
     }).then((response) => {
       response.json().then((json) => {
         console.log(json);
@@ -85,12 +81,16 @@ function Form({ topic }: { topic: number }) {
     }
   };
   useEffect(() => {
+    if (session) {
+      setUser(session)
+    }
+
     scrollToBottom();
-  }, [messages]);
+  }, [messages, session]);
 
   useEffect(() => {
     setResponseReceived(true);
-    client.subscribe({ query: MY_QUERY, variables: { userid: user?.id } }).subscribe({
+    client.subscribe({ query: MY_QUERY, variables: { userid: user?.user?.email } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
         console.log(chat_history);
@@ -107,7 +107,7 @@ function Form({ topic }: { topic: number }) {
       error(err) { console.error('err', err) },
       complete() { console.log('complete') },
     })
-  }, [user?.id]);
+  }, [user?.user]);
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -125,9 +125,9 @@ function Form({ topic }: { topic: number }) {
     calculateLines();
   }, [message]);
 
+
   return (
     <div className='flex flex-col w-full grow justify-center items-center'>
-
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0 grow-0">
         {loading && <div className='absolute flex justify-center left-4 -mt-12'>
           <img src='/type.gif' alt="" className='h-10' />
@@ -143,13 +143,13 @@ function Form({ topic }: { topic: number }) {
             maxLength={250}
             rows={numRows}
             autoFocus
-            placeholder={!user?.id ? 'Влезте с Google, за да започнете да пишете' : 'Напишете съобщение'}
+            placeholder={!user?.user?.name ? 'Влезте с Google, за да започнете да пишете' : 'Напишете съобщение'}
             spellCheck="false"
             className="w-full pr-10 focus:outline-none"
             value={message}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyPress}
-            disabled={!responseReceived || !user?.id}
+            disabled={!responseReceived || !user?.user?.name}
           />
           <button
             className={numRows > 3 ? "absolute inset-y-0 right-8 bottom-0 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600" : "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all bg-green-500 hover:bg-green-600"}
@@ -172,7 +172,7 @@ function Form({ topic }: { topic: number }) {
             className="flex   w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
           >
             <div className="relative">
-              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.picture} className="w-8 sm:w-14 rounded-full" />
+              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.user?.image} className="w-8 sm:w-14 rounded-full" />
               <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white"></div>
             </div>
             <div className="prose mt-1 w-full  prose-p:leading-relaxed">
