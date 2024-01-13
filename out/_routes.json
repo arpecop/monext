@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "include": [
+    "/",
+    "/t/*",
+    "/_image",
+    "/api/chat",
+    "/api/auth/*",
+    "/auth/google",
+    "/api/chat_old"
+  ],
+  "exclude": []
+}
