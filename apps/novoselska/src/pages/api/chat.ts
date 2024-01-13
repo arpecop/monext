@@ -21,7 +21,7 @@ function sleep(seconds: number): Promise<void> {
 export async function POST({ request }: APIContext) {
   const jsonData = await request.json();
   const { message, userid, threadid, topic, channel } = jsonData;
-  console.log(jsonData);
+
   if (message.length < 5) {
     await sleep(3);
     return new Response(JSON.stringify({ error: 'Съобщението е твърде кратко' }), {
@@ -41,7 +41,7 @@ export async function POST({ request }: APIContext) {
 
 
   } else {
-    console.log(topic);
+
 
     const topicd = topics.find(predicate => predicate.id === topic)
     const instructions = topic === 1000 ? "" : '  Отговаряш само на въпроси в сферата на: "' + topicd?.topic + '". ' + topicd?.data.instruct as string;

@@ -55,7 +55,7 @@ function Form({ topic, session }: { topic: number, session: Session | null }) {
       body: JSON.stringify({ message, userid: user?.user?.email, threadid, topic })
     }).then((response) => {
       response.json().then((json) => {
-        console.log(json);
+
 
         setResponseReceived(true);
         setLoading(false);
@@ -90,12 +90,12 @@ function Form({ topic, session }: { topic: number, session: Session | null }) {
 
   useEffect(() => {
     setResponseReceived(true);
-    console.log(user?.user?.email);
+
 
     client.subscribe({ query: MY_QUERY, variables: { userid: user?.user?.email, channel: topic } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
-        console.log(chat_history);
+
 
         if (chat_history.length === 0) {
           return;
