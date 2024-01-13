@@ -41,6 +41,8 @@ export async function POST({ request }: APIContext) {
 
 
   } else {
+    console.log(topic);
+
     const topicd = topics.find(predicate => predicate.id === topic)
     const instructions = topic === 1000 ? "" : '  Отговаряш само на въпроси в сферата на: "' + topicd?.topic + '". ' + topicd?.data.instruct as string;
 
@@ -100,7 +102,7 @@ export async function POST({ request }: APIContext) {
           'message': message,
           'threadid': machineMessage?.thread_id,
           msgid: 'user',
-          channel
+          channel: topic
         }
       }
     );
@@ -111,7 +113,7 @@ export async function POST({ request }: APIContext) {
           'message': chunk,
           'threadid': machineMessage?.thread_id,
           msgid: 'system',
-          channel
+          channel: topic
         }
       }
     );

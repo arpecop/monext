@@ -19,7 +19,7 @@ subscription MyQuery($userid: String = "", $channel: Int = 1000) {
   }
 }
 `;
-function Form({ topic, session }: { topic: number, session: Session }) {
+function Form({ topic, session }: { topic: number, session: Session | null }) {
   const [user, setUser] = useState<Session>()
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -90,7 +90,9 @@ function Form({ topic, session }: { topic: number, session: Session }) {
 
   useEffect(() => {
     setResponseReceived(true);
-    client.subscribe({ query: MY_QUERY, variables: { userid: user?.user?.email } }).subscribe({
+    console.log(user?.user?.email);
+
+    client.subscribe({ query: MY_QUERY, variables: { userid: user?.user?.email, channel: topic } }).subscribe({
       next(data) {
         const { chat_history } = data.data;
         console.log(chat_history);
@@ -99,7 +101,7 @@ function Form({ topic, session }: { topic: number, session: Session }) {
           return;
         }
         const lastMessage = chat_history[0];
-        // setMessages((prevMessages) => [...prevMessages, { message: lastMessage.chunk, system: true }]);
+
 
         setMessages(chat_history)
         setThreadId(lastMessage.threadid);
@@ -172,7 +174,7 @@ function Form({ topic, session }: { topic: number, session: Session }) {
             className="flex   w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0"
           >
             <div className="relative">
-              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.user?.image} className="w-8 sm:w-14 rounded-full" />
+              <img src={msg.msgid === 'system' ? "/avatar.jpg" : user?.user?.image || ''} className="w-8 sm:w-14 rounded-full" alt="" />
               <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white"></div>
             </div>
             <div className="prose mt-1 w-full  prose-p:leading-relaxed">

@@ -7,7 +7,13 @@ import Layout from '../../layouts/Layout.astro';
 import { topics } from '../../lib/topics';
 const { id } = Astro.params as { id: string };
 
-const topic = topics.find((t) => t.slug === id);
+const topic = topics.find((t) => t.slug === id) as {
+  id: number;
+  data: {
+    info: string;
+  };
+};
+console.log(topic?.id);
 ---
 
 <Layout
@@ -38,7 +44,7 @@ const topic = topics.find((t) => t.slug === id);
     {
       (session: Session | null) => (
         <>
-          <Form client:only="react" session={session} topic={1000} />
+          <Form client:only="react" session={session} topic={topic?.id} />
         </>
       )
     }

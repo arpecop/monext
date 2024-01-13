@@ -54,7 +54,7 @@ import Form from '~/react/Form';
     {
       (session: Session | null) => (
         <>
-          <Form client:only="react" session={session} />
+          <Form client:only="react" session={session} topic={1000} />
         </>
       )
     }
