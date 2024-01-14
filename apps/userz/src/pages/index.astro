@@ -22,10 +22,6 @@ const simOne = await gquery(
   {}
 );
 
-// const simResultsTwo = await getByVector("emoji", simResultsOne[3].vector, 3);
-
-// console.log(simResultsTwo);
-
 const data = await gquery(
   `query MyQuery( $_in: [String!])  {
 	  questions: q_q(where: {genid: {_in: $_in}}) {
