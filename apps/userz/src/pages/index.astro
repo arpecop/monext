@@ -3,7 +3,6 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery } from "../lib/graph";
-import { getsimilar } from "../lib/vector";
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
 const dayOfYear: number = Math.floor(
@@ -13,8 +12,15 @@ const dayOfYear: number = Math.floor(
     1
 );
 const genid = daysarr[dayOfYear];
-
-const simResultsOne = await getsimilar("answers", genid, 30, true);
+const simOne = await gquery(
+  `query MyQuery($_eq: String ) {
+      similar: quq(args: {genid: "${genid}"}) {
+    genid
+  }
+}
+`,
+  {}
+);
 
 // const simResultsTwo = await getByVector("emoji", simResultsOne[3].vector, 3);
 
@@ -35,9 +41,9 @@ const data = await gquery(
 		  hashtag
 		}
 	}`,
-  { _in: simResultsOne.map((x) => x.payload.id) }
+  { _in: simOne.similar.map(({ genid }: { genid: string }) => genid) }
 );
-const { questions, answers, qtags } = data;
+const { questions, answers } = data;
 
 const chunks = chunk(questions, 10) as Data[];
 const chunksa = chunk(answers, 10) as Data[];
