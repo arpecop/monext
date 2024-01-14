@@ -2,7 +2,6 @@
 import Layout from "../components/Layout.astro";
 import Search from "../components/Search";
 import { gquery } from "../lib/graph";
-import { getsimilar } from "../lib/vector";
 
 const { threadid } = Astro.params as { threadid: string };
 
@@ -24,24 +23,12 @@ function removeHashtags(inputString: string): string {
     .replace(hashtagRegex, "");
   return stringWithoutHashtags;
 }
-const respreEmbed = await gquery(
-  `query MyQuery(  $_eq: String = "4MKg-Q7h8PEu") {
-  q_byuuid(where: {genid: {_eq: $_eq}}) {
-    genid
-    uuid
-  }
-}`,
-  { _eq: threadid }
-);
-
-const embeddings = await getsimilar(
-  "answers",
-  respreEmbed.q_byuuid[0].uuid,
-  10
-);
 
 const respOne = await gquery(
-  `query MyQuery($_eq: String, $_in: [String!] = "") {
+  `query MyQuery($_eq: String ) {
+      similar: quq(args: {genid: "${threadid}"}) {
+    genid
+  }
   single: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "q"}}) {
     uuid
     genid
@@ -54,18 +41,30 @@ const respOne = await gquery(
     text
     image
   }
-  q_q(where: {genid: {_in: $_in}}) {
-    genid
-    text
-  }
-   q_a(where: {genid: {_in: $_in}}) {
-    genid
-    text
-  }
+   
 }
-
 `,
-  { _eq: threadid, _in: embeddings.map((x) => x.payload.id) }
+  { _eq: threadid }
+);
+const _eq = JSON.stringify(
+  respOne.similar.map((x: { genid: string }) => x.genid)
+);
+
+const respTwo = await gquery(
+  `query MyQueryx {
+   
+  q_q(where: {genid: {_in: ${_eq}}}) {
+    genid
+    text
+    embed
+  }
+   q_a(where: {genid: {_in: ${_eq}}}) {
+    genid
+    text
+  }
+
+}`,
+  {}
 );
 
 const image = respOne.single[0]?.image;
@@ -86,8 +85,8 @@ const formatter = (text: string) => {
 };
 ///dasdsad
 
-const questions = respOne.q_q;
-const answers = respOne.q_a;
+const questions = respTwo.q_q;
+const answers = respTwo.q_a;
 
 const thread = questions
   .map((x: { text: string; genid: string }, i: number) => ({

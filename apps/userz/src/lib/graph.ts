@@ -12,6 +12,7 @@ export const gquery = async (
   });
 
   const json = await response.json();
+  if (json.errors) throw new Error(JSON.stringify(json.errors));
 
   return Promise.resolve(json.data);
 };
