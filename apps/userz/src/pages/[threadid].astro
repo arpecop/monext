@@ -111,7 +111,6 @@ if (flat[0]) {
        hashtag
      }
    }
-
  `,
     { _in: flat.map((x) => x.hashtag) }
   );
@@ -164,7 +163,7 @@ if (flat[0]) {
   <Search client:load />
   {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
   {
-    thread.map((q) => (
+    thread.slice(0, 5).map((q) => (
       <article class="prose prose-invert mx-auto">
         <a class="flex items-center" href={"/" + q.q.genid}>
           <h2 class="pl-2 text-gray-200 underline">

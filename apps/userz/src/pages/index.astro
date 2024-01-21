@@ -39,6 +39,8 @@ const data = await gquery(
 	}`,
   { _in: simOne.similar.map(({ genid }: { genid: string }) => genid) }
 );
+console.log(data);
+
 const { questions, answers } = data;
 
 const chunks = chunk(questions, 10) as Data[];
@@ -64,7 +66,7 @@ const chunksa = chunk(answers, 10) as Data[];
                     {" "}
                     {text.replaceAll("?", " ")}
                   </h5>
-                  {chunksa[i][i1].text.slice(0, 150)} ...
+                  {chunksa[i][i1]?.text.slice(0, 150)} ...
                 </a>
               </div>
             ))}
