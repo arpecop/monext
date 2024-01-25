@@ -39,7 +39,6 @@ const data = await gquery(
 	}`,
   { _in: simOne.similar.map(({ genid }: { genid: string }) => genid) }
 );
-console.log(data);
 
 const { questions, answers } = data;
 
