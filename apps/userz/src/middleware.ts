@@ -13,7 +13,7 @@ export const onRequest: MiddlewareHandler = ((context, next) => {
   // Check if the user agent is a mobile browser
   const isMobileBrowser = userAgent && /android|iphone|ipad|ipod/i.test(userAgent);
 
-  if (botDiff === "AI Crawler" || botDiff === "Search Engine Optimization") {
+  if (botDiff === "AI Crawler") {
     return new Response(
       'Sorry, this site is not available in your country.',
       {
