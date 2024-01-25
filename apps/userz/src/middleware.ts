@@ -5,9 +5,6 @@ export const onRequest: MiddlewareHandler = ((context, next) => {
   const botDiff = context.request.cf?.verifiedBotCategory
 
 
-
-
-  // Check if the user agent is a popular bot like Google
   const isBot = userAgent && /googlebot|bingbot|yandexbot|slurp|duckduckbot/i.test(userAgent);
 
   // Check if the user agent is a common browser
@@ -17,11 +14,21 @@ export const onRequest: MiddlewareHandler = ((context, next) => {
   const isMobileBrowser = userAgent && /android|iphone|ipad|ipod/i.test(userAgent);
 
   if (botDiff === "AI Crawler" || botDiff === "Search Engine Optimization") {
-    return;
+    return new Response(
+      'Sorry, this site is not available in your country.',
+      {
+        status: 404,
+      }
+    );
   } else if (isBrowser || isMobileBrowser || isBot) {
     return next();
   } else {
-    return;
+    return new Response(
+      'Sorry, this site is not available in your country.',
+      {
+        status: 404,
+      }
+    );
   }
 }
 );
