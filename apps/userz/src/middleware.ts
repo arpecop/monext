@@ -1,9 +1,9 @@
 
-
-
-export const onRequest: defineMiddleware = ((context, next) => {
+import { MiddlewareHandler } from "astro";
+export const onRequest: MiddlewareHandler = ((context, next) => {
   const userAgent = context.request.headers.get("user-agent");
   const botDiff = context.request.cf?.verifiedBotCategory
+
 
 
 
