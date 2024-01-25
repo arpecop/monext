@@ -1,10 +1,9 @@
 
 
-import type { MiddlewareHandler } from "astro";
 
-export const onRequest: MiddlewareHandler = async (context, next) => {
+export const onRequest: defineMiddleware = ((context, next) => {
   const userAgent = context.request.headers.get("user-agent");
-  const botDiff = context.request.cf.verifiedBotCategory
+  const botDiff = context.request.cf?.verifiedBotCategory
 
 
 
@@ -24,5 +23,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   } else {
     return;
   }
-};
+}
+);
 
