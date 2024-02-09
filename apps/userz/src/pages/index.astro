@@ -11,7 +11,7 @@ const dayOfYear: number = Math.floor(
     86400000 +
     1
 );
-const genid = daysarr[dayOfYear];
+const genid = daysarr[dayOfYear - 2];
 const simOne = await gquery(
   `query MyQuery($_eq: String ) {
       similar: quq(args: {genid: "${genid}"}) {
@@ -41,7 +41,6 @@ const data = await gquery(
 );
 
 const { questions, answers } = data;
-
 const chunks = chunk(questions, 10) as Data[];
 const chunksa = chunk(answers, 10) as Data[];
 ---
