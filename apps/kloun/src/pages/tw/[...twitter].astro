@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import { viewh } from "../../../data/hasura";
+import client, { gql } from "../../../data/hasura";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
 const alphabet = [
@@ -34,17 +34,26 @@ const alphabet = [
 const { twitter } = Astro.params as { twitter: string };
 const x = twitter ? twitter.split("_") : (["a"] as string[]);
 const pagenum = x[1] ? Number(x[1]) : 1;
-console.log(x);
 
 const skip = pagenum * 100 - 100;
 
-const resp = await viewh(`twitter`,{
-  _eq:x[0],
-  _eq1:x[0]+'_tweets',
-  limit: 100,
-  offset: skip,
+const resp = await client.query({
+  query: gql`
+    query MyQuery($_eq: String = "", $_eq1: String = "", $offset: Int = 10) {
+      aggregator(where: { cat_with_suffix: { _eq: $_eq } }, limit: 1) {
+        total_count
+      }
+      tweets(where: { cat: { _eq: $_eq1 } }, limit: 30, offset: $offset) {
+        uid
+      }
+    }
+  `,
+  variables: {
+    _eq1: x[0],
+    _eq: x[0] + "_tweets",
+    offset: skip,
+  },
 });
- 
 ---
 
 <Layout
@@ -65,19 +74,18 @@ const resp = await viewh(`twitter`,{
   </div>
   <div class="flex flex-row flex-wrap justify-center p-0 gap-2">
     {
-      resp.tweets.map(({ uid }: { uid: string }) => (
+      resp.data.tweets.map(({ uid }: { uid: string }) => (
         <a
           class="active flex  bg-slate-900 font-bold text-white dark:bg-white dark:text-slate-900 px-3 rounded-xl text-sm"
           href={"/tw/u/" + uid.replace("_tw", "")}
         >
-     
           {uid.replace("_tw", "")}{" "}
         </a>
       ))
     }
   </div>
   <Pagination
-    items={resp.aggregator[0].total_count}
+    items={resp.data.aggregator[0].total_count}
     currentPage={pagenum}
     pageSize={100}
     prefix={"/tw/" + x[0] + "_"}
