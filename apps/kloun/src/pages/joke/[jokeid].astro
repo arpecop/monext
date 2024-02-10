@@ -2,27 +2,38 @@
 export const prerender = false;
 
 import { chunk } from "lodash";
- 
-import { sql } from "../../../data/hasura";
+
+import client, { gql } from "../../../data/hasura";
 import FacebookShare from "../../components/FacebookShare.astro";
 import FormatJoke from "../../components/FormatJoke.astro";
 import JokeThumbnail from "../../components/JokeThumbnail.astro";
 import RudSense from "../../components/RudSense.astro";
 import Layout from "../../layouts/Layout.astro";
- 
 
 const { jokeid } = Astro.params;
- 
-const x1 = sql(`select joke,uid from jokes where uid = '${jokeid}' limit 1`)
-const x2 = sql(`select  joke,uid  from jokes where uid <= '${jokeid}' and lang= 'bg' limit 30 offset 1`)
- const resp = await Promise.all([x1, x2]).then((results) => ({
-   joke: results[0],
-   jokes: results[1],
- }));
-const joke  = resp.joke[0];
- 
-const jokes = resp.jokes.filter((x:{uid:string}) => x.uid !== jokeid)
+
+const resp = await client.query({
+  query: gql`
+    query MyQuery($_lte: String = "") {
+      jokes(limit: 31, where: { lang: { _eq: "bg" }, uid: { _lte: $_lte } }) {
+        joke
+        uid
+        cat
+      }
+    }
+  `,
+  variables: {
+    _lte: jokeid,
+  },
+});
+
+const joke = resp.data.jokes[0];
+
+const jokes = resp.data.jokes.filter(
+  (x: { uid: string }) => x.uid !== jokeid
+) as { joke: string; cat: string; _id: string }[];
 const chunks = chunk(jokes, 3);
+console.log(chunks);
 
 if (!joke) {
   return new Response("Not Found", {
@@ -30,11 +41,11 @@ if (!joke) {
     statusText: "Not Found",
   });
 }
-const meta = joke.joke.replaceAll('\n',' ')
+const meta = joke.joke.replaceAll("\n", " ");
 ---
 
 <Layout
-  title={meta.substring(0,60)}
+  title={meta.substring(0, 60)}
   description={meta}
   image={`https://kloun.lol/api/joke/og/?idx=${jokeid}`}
 >

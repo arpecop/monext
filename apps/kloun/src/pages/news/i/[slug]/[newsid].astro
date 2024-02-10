@@ -1,9 +1,8 @@
 ---
 export const prerender = false;
-import {uniqBy} from "lodash";
- 
-import { sql } from "../../../../../data/hasura";
+import { uniqBy } from "lodash";
 
+import client, { gql } from "../../../../../data/hasura";
 import CardNews from "../../../../components/CardNews.astro";
 import RudSense from "../../../../components/RudSense.astro";
 import Layout from "../../../../layouts/Layout.astro";
@@ -13,10 +12,39 @@ function countAlphanumeric(str: string) {
   return matches ? matches.length : 0;
 }
 const { newsid } = Astro.params as { newsid: string; slug?: string };
- 
-const newsfetch = await sql(`select * from newsbg where nid >= '${newsid}' limit 10`)
- 
- const { title,  date ,html} = newsfetch[0]  
+
+const newsfetch = await client.query({
+  query: gql`
+    query MyQuery($_eq: String = "", $_lte: String = "") {
+      item: newsbg(
+        where: { cat: { _eq: "NewsBG" }, nid: { _lte: $_lte } }
+        limit: 1
+        order_by: { id: desc }
+      ) {
+        html
+        image
+        link
+        title
+        date
+      }
+      newsbg(
+        where: { cat: { _eq: "NewsBG" }, nid: { _lte: $_lte } }
+        limit: 21
+        order_by: { id: desc }
+      ) {
+        image
+        link
+        title
+        date
+      }
+    }
+  `,
+  variables: {
+    _lte: newsid,
+  },
+});
+
+const { title, date, html } = newsfetch.data.item[0];
 function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
     if (typeof x === "string") {
@@ -34,7 +62,8 @@ function getLastP(arrz: (string | { type: string; content: string })[]) {
   }, 0);
   const filteredArr = arr.slice(0, lastPElemIndex + 1);
   const removeNoImages = filteredArr.filter(
-    (x:{type:string; content:string}) => x.type === "p" || (x.type === "img" && x.content.includes("http"))
+    (x: { type: string; content: string }) =>
+      x.type === "p" || (x.type === "img" && x.content.includes("http"))
   );
   const arrx = uniqBy(removeNoImages, function (e) {
     return e.content;
@@ -42,39 +71,39 @@ function getLastP(arrz: (string | { type: string; content: string })[]) {
   return arrx;
 }
 
- function formatDate(date: Date): string {
-   const options: Intl.DateTimeFormatOptions = {
-     year: "numeric",
-     month: "long",
-     day: "numeric",
-     hour: "numeric",
-     minute: "numeric",
-     hour12: false,
-   };
-   return date.toLocaleString("bg-BG", options);
- }
- function getRandomDate(year: number): Date {
-   const month = Math.floor(Math.random() * 12) + 1;
-   const day = Math.floor(Math.random() * 31) + 1;
-   const hour = Math.floor(Math.random() * 14) + 9;
-   return new Date(year, month - 1, day, hour);
- }
+function formatDate(date: Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  };
+  return date.toLocaleString("bg-BG", options);
+}
+function getRandomDate(year: number): Date {
+  const month = Math.floor(Math.random() * 12) + 1;
+  const day = Math.floor(Math.random() * 31) + 1;
+  const hour = Math.floor(Math.random() * 14) + 9;
+  return new Date(year, month - 1, day, hour);
+}
 
 type Article = {
-   type: string;
-   content: string;
-   i: number;
-   html?:Article
- }[]
+  type: string;
+  content: string;
+  i: number;
+  html?: Article;
+}[];
 
- let contentfetch:Article;
- if(!html) {
-    contentfetch = await fetch(
-     `https://cdn.kloun.lol/${newsid}.json`
-   ).then((res) => res.json()) as Article;
- } else {
-   contentfetch = html
- }
+let contentfetch: Article;
+if (!html) {
+  contentfetch = (await fetch(`https://cdn.kloun.lol/${newsid}.json`).then(
+    (res) => res.json()
+  )) as Article;
+} else {
+  contentfetch = html;
+}
 ---
 
 <Layout
@@ -99,7 +128,7 @@ type Article = {
     <RudSense type="inarticle" />
     <article class="leading-relaxed" id="article">
       {
-        getLastP(  html || contentfetch.html ).map(
+        getLastP(html || contentfetch.html).map(
           ({
             type,
             content,
@@ -147,7 +176,7 @@ type Article = {
   </div>
   <div class="flex flex-wrap gap-3">
     {
-      newsfetch.map(({ nid, title, key, date, image,id }) => (
+      newsfetch.data.newsbg.map(({ nid, title, key, date, image, id }) => (
         <CardNews
           title={title}
           img={image}

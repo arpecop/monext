@@ -8,7 +8,7 @@ const items = await fetch(
 ).then((res) => res.json());
 ---
 
-<Layout title="memes">
+<Layout title="memes" description="">
   <div class="container flex flex-wrap items-center justify-center sm:mx-auto">
     {
       items.items.map(

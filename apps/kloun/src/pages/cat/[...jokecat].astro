@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import { sql } from "../../../data/hasura";
+import client, { gql } from "../../../data/hasura";
 import JokeThumbnail, { Doc } from "../../components/JokeThumbnail.astro";
 import Pagination from "../../components/Pagination.astro";
 import RudSense from "../../components/RudSense.astro";
@@ -11,14 +11,28 @@ const x = jokecat.split("/") as string[];
 const cat = jokecats.find((xx) => xx.slug === x[0])?.cat;
 const pagenum = x[1] ? Number(x[1]) : 1;
 const skip = pagenum * 30 - 30;
-const x1 = sql(`select joke,uid from jokes where cat = '${'JOK'+cat}' limit 30 offset ${skip}`)
-const x2 = sql(`select total_count from aggregator where cat_with_suffix = '${'JOK'+cat}' limit 1`)
+console.log(cat);
 
-const resp = await Promise.all([x1, x2]).then((results) => ({
-  jokes: results[0],
-  aggregator: results[1],
-}));
- 
+const resp = await client.query({
+  query: gql`
+    query MyQuery($_eq: String = "", $offset: Int = 10, $_eq1: String = "") {
+      jokes(where: { cat: { _eq: $_eq } }, limit: 30, offset: $offset) {
+        joke
+        uid
+      }
+      aggregator(where: { cat_with_suffix: { _eq: $_eq1 } }, limit: 1) {
+        cat_with_suffix
+        total_count
+      }
+    }
+  `,
+  variables: {
+    _eq: `JOKBG_${cat}`,
+    _eq1: `JOKBG_${cat}_jokes`,
+    offset: skip,
+  },
+});
+const { jokes, aggregator } = resp.data;
 ---
 
 <Layout
@@ -69,7 +83,7 @@ const resp = await Promise.all([x1, x2]).then((results) => ({
       <RudSense />
     </div>
     {
-      resp.jokes.map((item: Doc) => (
+      jokes.map((item: Doc) => (
         <JokeThumbnail item={item} showcats={false} short={true} />
       ))
     }
@@ -79,7 +93,7 @@ const resp = await Promise.all([x1, x2]).then((results) => ({
   </div>
 
   <Pagination
-    items={resp.aggregator[0].total_count}
+    items={aggregator[0].total_count}
     currentPage={pagenum}
     pageSize={30}
     prefix={`/cat/${x[0]}/`}

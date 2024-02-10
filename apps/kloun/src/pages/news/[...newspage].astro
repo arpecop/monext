@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
- 
-import { sql } from "../../../data/hasura";
+
+import client, { gql } from "../../../data/hasura";
 import CardNews from "../../components/CardNews.astro";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -10,16 +10,31 @@ const { newspage } = Astro.params as { newspage: string };
 const pagenum = newspage ? Number(newspage) : 1;
 
 const skip = pagenum * 30 - 30;
- 
-const x1 = sql(`select nid,title,date,image,id from newsbg where cat = 'NewsBG' order by id desc limit 30  offset ${skip}`)
-const x2 = sql(`select total_count from aggregator where cat_with_suffix = 'NewsBG' limit 1`)
- const resp = await Promise.all([x1, x2]).then((results) => ({
-   newsbg: results[0],
-   aggregator: results[1],
- }));
- 
- console.log(resp);
- 
+const resp = await client.query({
+  query: gql`
+    query MyQuery($offset: Int = 0) {
+      newsbg(
+        where: { cat: { _eq: "NewsBG" } }
+        limit: 30
+        order_by: { id: desc }
+        offset: $offset
+      ) {
+        image
+        link
+        title
+        nid
+        date
+      }
+      aggregator(where: { cat_with_suffix: { _eq: "NewsBG_newsbg" } }) {
+        total_count
+      }
+    }
+  `,
+  variables: {
+    offset: skip,
+  },
+});
+console.log(resp);
 ---
 
 <Layout
@@ -29,31 +44,38 @@ const x2 = sql(`select total_count from aggregator where cat_with_suffix = 'News
 >
   <div class="flex flex-wrap gap-3">
     {
-      resp.newsbg.map(
+      resp.data.newsbg.map(
         ({
           nid,
           title,
           date,
           key,
           image,
-          id
+          id,
         }: {
           nid: string;
           title: string;
           date: string;
           key: string;
           image: string;
-          id:number;
+          id: number;
         }) => (
-          <CardNews title={title} img={image} date={date} key={key} nid={nid} id={id} />
+          <CardNews
+            title={title}
+            img={image}
+            date={date}
+            key={key}
+            nid={nid}
+            id={id}
+          />
         )
       )
     }
   </div>
   <Pagination
-    items={resp.aggregator[0].total_count}
+    items={resp.data.aggregator[0].total_count}
     currentPage={pagenum}
     pageSize={30}
     prefix="/news/"
-  />  
+  />
 </Layout>
