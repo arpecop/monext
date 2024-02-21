@@ -1,0 +1,179 @@
+---
+import Layout from "../components/Layout.astro";
+import Search from "../components/Search";
+import { gquery } from "../lib/graph";
+
+const { threadid } = Astro.params as { threadid: string };
+
+async function extractUniqueHashtags(
+  inputString: string
+): Promise<{ hashtag: string; count: number }[]> {
+  const hashtagRegex = /#(\w+)/g;
+  const hashtags = inputString.match(hashtagRegex);
+  if (!hashtags) return [];
+  const uniqueHashtags = Array.from(
+    new Set(hashtags.map((tag) => ({ hashtag: tag.slice(1), count: 10 })))
+  );
+  return uniqueHashtags;
+}
+function removeHashtags(inputString: string): string {
+  const hashtagRegex = /#\w+/g;
+  const stringWithoutHashtags = inputString
+    .replaceAll("\\n", "\n")
+    .replace(hashtagRegex, "");
+  return stringWithoutHashtags;
+}
+
+const respOne = await gquery(
+  `query MyQuery($_eq: String ) {
+      similar: quq(args: {genid: "${threadid}"}) {
+    genid
+  }
+  single: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "q"}}) {
+    uuid
+    genid
+    text
+    image
+  }
+  answer: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "a"}}) {
+    uuid
+    genid
+    text
+    image
+  }
+   
+}
+`,
+  { _eq: threadid }
+);
+const _eq = JSON.stringify(
+  respOne.similar.map((x: { genid: string }) => x.genid)
+);
+
+const respTwo = await gquery(
+  `query MyQueryx {
+   
+  q_q(where: {genid: {_in: ${_eq}}}) {
+    genid
+    text
+    embed
+  }
+   q_a(where: {genid: {_in: ${_eq}}}) {
+    genid
+    text
+  }
+
+}`,
+  {}
+);
+
+const image = respOne.single[0]?.image;
+const question = respOne.single[0]?.text;
+
+if (!question) {
+  return Astro.redirect("/404");
+}
+
+const answer = respOne.answer[0].text;
+
+const formatter = (text: string) => {
+  let resp = removeHashtags(text)
+    .replaceAll("@username,", "")
+    .replaceAll("@username", "")
+    .split("\n");
+  return resp;
+};
+
+const questions = respTwo.q_q;
+const answers = respTwo.q_a;
+
+const thread = questions
+  .map((x: { text: string; genid: string }, i: number) => ({
+    q: { text: x.text, genid: x.genid },
+    a: answers[i]?.text || "",
+  }))
+  .filter((x: { q: { genid: string } }) => x.q.genid !== threadid) as {
+  q: { text: string; genid: string };
+  a: string;
+}[];
+
+const flat = await extractUniqueHashtags(
+  thread.flatMap((x: { a: any }) => x.a).join(" ")
+);
+
+let tagzfiltered: { count: number; hashtag: string }[];
+
+if (flat[0]) {
+  const qtags = await gquery(
+    `query MyQuery($_in: [String!] = "") {
+     qtags(where: {hashtag: {_in: $_in}}) {
+       count
+       hashtag
+     }
+   }
+ `,
+    { _in: flat.map((x) => x.hashtag) }
+  );
+
+  tagzfiltered = qtags.qtags
+    .filter((x: { count: number }) => x.count >= 10)
+    .sort((a: { count: number }, z: { count: number }) => {
+      return z.count - a.count;
+    })
+    .slice(0, 30);
+} else {
+  tagzfiltered = [];
+}
+---
+
+<Layout
+  title={question}
+  description={""}
+  logo={"inner"}
+  tags={tagzfiltered}
+  image={image}
+>
+  {
+    image && image !== "none" ? (
+      <div class="relative">
+        <img
+          src={`https://img.userz.net/uz/${threadid}/img.jpg`}
+          width="1250"
+          height="500"
+          class="object-cover w-full h-64 lg:h-96"
+          style="aspect-ratio: 1250 / 500; object-fit: cover;"
+          alt={question}
+        />
+        <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 lg:p-8">
+          <h1 class="text-3xl   text-white text-center bg-black bg-opacity-80 rounded-lg p-2">
+            {question}
+          </h1>
+        </div>
+      </div>
+    ) : (
+      <h1 class="text-white font-medium text-3xl text-center">{question}</h1>
+    )
+  }
+  <article class="prose prose-invert mx-auto">
+    <div class="text-white text-xl font-light">
+      {formatter(answer).map((x) => <p>{x}</p>)}
+    </div>
+  </article>
+
+  <Search client:load />
+  {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
+  {
+    thread.slice(0, 5).map((q) => (
+      <article class="prose prose-invert mx-auto">
+        <a class="flex items-center" href={"/" + q.q.genid}>
+          <h2 class="pl-2 text-gray-200 underline">
+            {q.q.text.replace("?", "")}
+          </h2>
+        </a>
+        {formatter(q.a).map((x) => (
+          <p>{x}</p>
+        ))}
+      </article>
+    ))
+  }
+</Layout>

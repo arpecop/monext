@@ -1,0 +1,76 @@
+---
+import chunk from "lodash/chunk";
+import Layout from "../components/Layout.astro";
+import { daysarr } from "../lib/days";
+import { gquery } from "../lib/graph";
+type Data = { genid: string; text: string }[];
+const currentDate = new Date();
+const dayOfYear: number = Math.floor(
+  (currentDate.getTime() -
+    new Date(currentDate.getFullYear(), 0, 0).getTime()) /
+    86400000 +
+    1
+);
+const genid = daysarr[dayOfYear - 2];
+const simOne = await gquery(
+  `query MyQuery($_eq: String ) {
+      similar: quq(args: {genid: "${genid}"}) {
+    genid
+  }
+}
+`,
+  {}
+);
+
+const data = await gquery(
+  `query MyQuery( $_in: [String!])  {
+	  questions: q_q(where: {genid: {_in: $_in}}) {
+		text
+		genid
+	  }
+    answers: q_a(where: {genid: {_in: $_in}}) {
+		text
+		genid
+	  }
+	  qtags(order_by: {count: desc}, limit: 40) {
+		  count
+		  hashtag
+		}
+	}`,
+  { _in: simOne.similar.map(({ genid }: { genid: string }) => genid) }
+);
+
+const { questions, answers } = data;
+const chunks = chunk(questions, 10) as Data[];
+const chunksa = chunk(answers, 10) as Data[];
+---
+
+<Layout title="userz dot net." tags={data.qtags}>
+  <div class="max-w-screen-xl px-4 py-3 mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+      {
+        chunks.map((chunk, i) => (
+          <div>
+            {chunk.map(({ genid, text }, i1) => (
+              <div class="grid">
+                <a
+                  href={"/" + genid}
+                  class="p-6  m-3 border-emerald-600 border-4 rounded-lg shadow hover:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 relative"
+                >
+                  <div class="absolute -top-1 -right-0.5 bg-emerald-600 px-2 rounded-bl-md  rounded-tr-lg text-xs text-black">
+                    {new Date().toISOString().split("T")[0]}
+                  </div>
+                  <h5 class="mb-2 text-xl xs:text-2xl sm:text-3xl font-bold tracking-tight text-gray-200">
+                    {" "}
+                    {text.replaceAll("?", " ")}
+                  </h5>
+                  {chunksa[i][i1]?.text.slice(0, 150)} ...
+                </a>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,90 @@
+body {
+  background-color: #030905;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: #ffffff;
+}
+
+h1 {
+  font-family: "Tilt", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+}
+
+:root {
+  --accent: 124, 58, 237;
+  --accent-gradient: linear-gradient(
+    45deg,
+    rgb(var(--accent)),
+    #909090 30%,
+    white 60%
+  );
+}
+ul::-webkit-scrollbar {
+  height: 10px;
+}
+
+ul::-webkit-scrollbar-thumb {
+  background-color: #333; /* Customize thumb color */
+  border-radius: 6px; /* Adjust border radius to round corners */
+}
+.bgr {
+  background-color: "red";
+}
+
+ul::-webkit-scrollbar-track {
+  background-color: #030905; /* Customize track color */
+}
+.instructions {
+  line-height: 1.6;
+  margin: 1rem 0;
+  border: 1px solid rgba(var(--accent), 25%);
+  background-color: rgb(25, 25, 25);
+  padding: 1rem;
+  border-radius: 0.4rem;
+}
+.instructions code {
+  font-size: 0.875em;
+  font-weight: bold;
+  background: rgba(var(--accent), 12%);
+  color: rgb(var(--accent));
+  border-radius: 4px;
+  padding: 0.3em 0.45em;
+}
+.instructions strong {
+  color: rgb(var(--accent));
+}
+.link-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+.nrgpro form label input,
+.multiple label input {
+  @apply bg-transparent border border-gray-300 text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:ring-blue-500;
+}
+.nrgpro form label input[name="id"] {
+  display: none;
+}
+
+.multiple {
+  @apply relative;
+}
+
+.nrgpro form button {
+  @apply px-2 bg-gray-900 mt-2 p-2 border rounded-md;
+}
+.multiple .add {
+  @apply px-2 bg-gray-900 mt-2 p-2 border rounded-md absolute top-4 right-0 rounded-l-none cursor-pointer;
+}
+.multiple form a {
+  @apply ml-1 mt-6 px-2 bg-gray-900 border rounded-md w-10 h-2;
+}
+@font-face {
+  font-family: "Tilt";
+  src: url("/fonts/tilt.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
