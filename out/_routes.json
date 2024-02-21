@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/favicon.svg",
+    "/_astro/index.jk32IXV-.js",
+    "/_astro/Search.m1aHJcYa.js",
+    "/_astro/client.BANxgMj2.js",
+    "/_astro/hoisted.BWC-BU_0.js",
+    "/_astro/_threadid_.VxUrD4Mg.css",
+    "/_astro/_threadid_.Y1m8o3aG.css"
+  ]
+}

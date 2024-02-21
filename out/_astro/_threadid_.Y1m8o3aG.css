@@ -1,0 +1,163 @@
+body {
+  background-color: #030905;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: #ffffff;
+}
+
+h1 {
+  font-family: "Tilt", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+}
+
+:root {
+  --accent: 124, 58, 237;
+  --accent-gradient: linear-gradient(
+    45deg,
+    rgb(var(--accent)),
+    #909090 30%,
+    white 60%
+  );
+}
+ul::-webkit-scrollbar {
+  height: 10px;
+}
+
+ul::-webkit-scrollbar-thumb {
+  background-color: #333; /* Customize thumb color */
+  border-radius: 6px; /* Adjust border radius to round corners */
+}
+.bgr {
+  background-color: "red";
+}
+
+ul::-webkit-scrollbar-track {
+  background-color: #030905; /* Customize track color */
+}
+.instructions {
+  line-height: 1.6;
+  margin: 1rem 0;
+  border: 1px solid rgba(var(--accent), 25%);
+  background-color: rgb(25, 25, 25);
+  padding: 1rem;
+  border-radius: 0.4rem;
+}
+.instructions code {
+  font-size: 0.875em;
+  font-weight: bold;
+  background: rgba(var(--accent), 12%);
+  color: rgb(var(--accent));
+  border-radius: 4px;
+  padding: 0.3em 0.45em;
+}
+.instructions strong {
+  color: rgb(var(--accent));
+}
+.link-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+.nrgpro form label input,
+.multiple label input {
+  display: block;
+  width: 100%;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
+  background-color: transparent;
+  padding: 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  --tw-text-opacity: 1;
+  color: rgb(243 244 246 / var(--tw-text-opacity));
+}
+.nrgpro form label input:focus,
+.multiple label input:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(63 131 248 / var(--tw-border-opacity));
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(63 131 248 / var(--tw-ring-opacity));
+}
+:is(.dark .nrgpro form label input),:is(.dark 
+.multiple label input) {
+  --tw-border-opacity: 1;
+  border-color: rgb(75 85 99 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+:is(.dark .nrgpro form label input)::-moz-placeholder, :is(.dark 
+.multiple label input)::-moz-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
+}
+:is(.dark .nrgpro form label input)::placeholder,:is(.dark 
+.multiple label input)::placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
+}
+:is(.dark .nrgpro form label input:focus),:is(.dark 
+.multiple label input:focus) {
+  --tw-border-opacity: 1;
+  border-color: rgb(63 131 248 / var(--tw-border-opacity));
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(63 131 248 / var(--tw-ring-opacity));
+}
+.nrgpro form label input[name="id"] {
+  display: none;
+}
+
+.multiple {
+  position: relative;
+}
+
+.nrgpro form button {
+  margin-top: 0.5rem;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  padding: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.multiple .add {
+  position: absolute;
+  top: 1rem;
+  right: 0px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-width: 1px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  padding: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.multiple form a {
+  margin-left: 0.25rem;
+  margin-top: 1.5rem;
+  height: 0.5rem;
+  width: 2.5rem;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+@font-face {
+  font-family: "Tilt";
+  src: url("/fonts/tilt.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
