@@ -2,7 +2,7 @@ export const gquery = async (
   query: string,
   variables?: { [key: string]: unknown }
 ) => {
-  const response = await fetch("https://hasura2.kloun.lol/v1/graphql", {
+  const response = await fetch("http://hasura2.kloun.lol/v1/graphql", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
