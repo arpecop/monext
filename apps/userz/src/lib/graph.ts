@@ -2,7 +2,7 @@ export const gquery = async (
   query: string,
   variables?: { [key: string]: unknown }
 ) => {
-  const response = await fetch("http://130.204.65.82:8080/v1/graphql", {
+  const response = await fetch("//130.204.65.82:8080/v1/graphql", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
