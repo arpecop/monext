@@ -11,7 +11,7 @@ const dayOfYear: number = Math.floor(
     86400000 +
     1
 );
-const genid = daysarr[dayOfYear - 2];
+const genid = daysarr[dayOfYear];
 const simOne = await gquery(
   `query MyQuery($_eq: String ) {
       similar: quq(args: {genid: "${genid}"}) {
