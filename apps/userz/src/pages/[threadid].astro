@@ -114,8 +114,9 @@ if (flat[0]) {
  `,
     { _in: flat.map((x) => x.hashtag) }
   );
+ 
 
-  tagzfiltered = qtags.qtags
+  tagzfiltered = qtags.q_qtags
     .filter((x: { count: number }) => x.count >= 10)
     .sort((a: { count: number }, z: { count: number }) => {
       return z.count - a.count;
