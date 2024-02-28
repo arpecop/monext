@@ -6,7 +6,7 @@ import {gquery} from '../../lib/graph'
 const { tag } = Astro.params as { tag: string };
  
  const resp = await gquery(`query MyQuery($_eq: String ) {
-      qtags(where: {hashtag: {_eq: $_eq}}) {
+      q_qtags(where: {hashtag: {_eq: $_eq}}) {
         count
         hashtag
         rows_with_tag

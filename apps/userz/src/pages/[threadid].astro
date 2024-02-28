@@ -106,7 +106,7 @@ let tagzfiltered: { count: number; hashtag: string }[];
 if (flat[0]) {
   const qtags = await gquery(
     `query MyQuery($_in: [String!] = "") {
-     qtags(where: {hashtag: {_in: $_in}}) {
+     q_qtags(where: {hashtag: {_in: $_in}}) {
        count
        hashtag
      }

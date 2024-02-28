@@ -21,7 +21,7 @@ const queries = {
      text
      genid
    }
-   qtags(order_by: {count: desc},limit: 50 ) {
+   q_qtags(order_by: {count: desc},limit: 50 ) {
      count
      hashtag
    }
@@ -49,7 +49,7 @@ query MyQuery($_eq: String = "b82f99b1") {
   `,
   tags: `
   query MyQuery($_eq: String = "SafetyFirst") {
-    qtags(  where: {hashtag: {_eq: $_eq}}) {
+    q_qtags(  where: {hashtag: {_eq: $_eq}}) {
       count
       hashtag
       rows_with_tag
@@ -65,7 +65,7 @@ query MyQuery($_eq: String = "b82f99b1") {
 }`,
   specifictags: `
 query MyQuery2($_in: [String!]) {
-    qtags(where: {hashtag: {_in: $_in}}) {
+    q_qtags(where: {hashtag: {_in: $_in}}) {
       count
       hashtag
    
