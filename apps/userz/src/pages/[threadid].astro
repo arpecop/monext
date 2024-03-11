@@ -50,12 +50,15 @@ const _eq = JSON.stringify(
   respOne.similar.map((x: { genid: string }) => x.genid)
 );
 
+console.log(respOne.single);
+
 const respTwo = await gquery(
   `query MyQueryx {
    
   q_q(where: {genid: {_in: ${_eq}}}) {
     genid
     text
+    image
     embed
   }
    q_a(where: {genid: {_in: ${_eq}}}) {
@@ -114,7 +117,6 @@ if (flat[0]) {
  `,
     { _in: flat.map((x) => x.hashtag) }
   );
- 
 
   tagzfiltered = qtags.q_qtags
     .filter((x: { count: number }) => x.count >= 10)
@@ -125,6 +127,7 @@ if (flat[0]) {
 } else {
   tagzfiltered = [];
 }
+const split = threadid.split("");
 ---
 
 <Layout
@@ -138,7 +141,7 @@ if (flat[0]) {
     image && image !== "none" ? (
       <div class="relative">
         <img
-          src={`https://img.userz.net/uz/${threadid}/img.jpg`}
+          src={`https://cdn2.userz.net/static/out/${split[0]}/${split[1]}/${split[2]}/${threadid}.jpg`}
           width="1250"
           height="500"
           class="object-cover w-full h-64 lg:h-96"
