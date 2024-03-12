@@ -7,8 +7,11 @@
     "public"
   ],
   "workspace.color" : 9,
+  "workspace.name" : "kloun",
+  "workspace.preview_append_paths" : false,
   "workspace.preview_root" : "src\/pages",
   "workspace.preview_server_allow_external" : true,
   "workspace.preview_server_port" : 3000,
-  "workspace.preview_url" : "http:\/\/localhost:3000\/"
+  "workspace.preview_type" : "custom",
+  "workspace.preview_url" : "https:\/\/gemini.google.com\/app"
 }

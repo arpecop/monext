@@ -1,3 +1,10 @@
+import { drizzle } from "drizzle-orm/postgres-js";
+
+import postgres from "postgres";
+
+const sql = postgres(process.env.DATABASE_URL as string, { max: 1 });
+export const db = drizzle(sql);
+
 export const gquery = async (
   query: string,
   variables?: { [key: string]: unknown }
