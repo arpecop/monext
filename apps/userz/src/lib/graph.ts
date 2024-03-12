@@ -4,6 +4,14 @@ import { neon } from "@neondatabase/serverless";
 const sql = neon(process.env.DATABASE_URL!) as any;
 
 export const db = drizzle(sql);
+import { text, pgSchema } from "drizzle-orm/pg-core";
+import { customVector } from "@useverk/drizzle-pgvector";
+const mySchema = pgSchema("q");
+export const ans = mySchema.table("a", {
+  genid: text("genid"),
+  image: text("image"),
+  embed: customVector("embed", { dimensions: 30 }),
+});
 
 export const gquery = async (
   query: string,
