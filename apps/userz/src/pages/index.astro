@@ -3,10 +3,20 @@
 import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
-import { gquery } from "../lib/graph";
- 
+import { gquery, db } from "../lib/graph";
 
- //const test = await questionsSql.findMany({  limit: 1, });
+try {  
+  const result = await db.query.questions.findMany({
+    with: {
+      posts: true      
+    },
+  });
+} catch(x) {
+  
+}
+
+
+ 
  
  
 type Data = { genid: string; text: string }[];
