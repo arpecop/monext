@@ -7,6 +7,7 @@ export const questionz = pgTable("questions", {
   embed: customVector("embed", { dimensions: 30 }),
 });
 
+//
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
