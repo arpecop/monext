@@ -6,13 +6,10 @@ import { daysarr } from "../lib/days";
 import { gquery, db } from "../lib/graph";
 
 try {  
-  const result = await db.query.questions.findMany({
-    with: {
-      posts: true      
-    },
-  });
+  const result = await db.query.questions.findMany();
+  console.log(result);
 } catch(x) {
-  
+  console.log(x);
 }
 
 

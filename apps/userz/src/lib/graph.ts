@@ -1,25 +1,22 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import pkg from "pg";
-const { Client } = pkg;
+import { drizzle } from "drizzle-orm/neon-serverless";
 
-import { text, pgTable } from "drizzle-orm/pg-core";
-import { customVector } from "@useverk/drizzle-pgvector";
-const questions = pgTable("questions", {
-  genid: text("genid"),
-  image: text("image"),
-  embed: customVector("embed", { dimensions: 30 }),
+import { Pool } from "@neondatabase/serverless";
+
+export const sql = new Pool({
+  connectionString:
+    "postgresql://rudix.lab:sV6LEpc7KWmd@ep-ancient-bread-80418612.eu-central-1.aws.neon.tech/neondb?sslmode=require",
 });
 
-export const db = async () => {
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-  }) as any;
-  await client.connect();
-  const dbx = drizzle(client, { schema: { questions } });
-  return dbx;
-};
+// import { text, pgTable } from "drizzle-orm/pg-core";
+// import { customVector } from "@useverk/drizzle-pgvector";
+//
+// const questions = pgTable("questions", {
+//   genid: text("genid"),
+//   image: text("image"),
+//   embed: customVector("embed", { dimensions: 30 }),
+// });
 
-// export const db = drizzle(sql, { schema: { questions } });
+export const db = drizzle(sql);
 
 export const gquery = async (
   query: string,
