@@ -3,7 +3,13 @@ import { Query } from "drizzle-orm";
 import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
-import { gquery,db } from "../lib/graph";
+import { gquery ,questions} from "../lib/graph";
+ 
+
+ // const test = await questionsSql.findMany({
+ //   limit: 1,
+ // });
+ 
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
@@ -48,7 +54,8 @@ const chunksa = chunk(answers, 10) as Data[];
 ---
 
 <Layout title="userz dot net." tags={data.qtags}> 
-  <div class="max-w-screen-xl px-4 py-3 mx-auto">
+  <div class="max-w-screen-xl px-4 py-3 mx-auto"> {JSON.stringify(questions)}
+ 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {
         chunks.map((chunk, i) => (

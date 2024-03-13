@@ -1,17 +1,22 @@
 import { drizzle } from "drizzle-orm/neon-http";
 
 import { neon } from "@neondatabase/serverless";
-const sql = neon(process.env.DATABASE_URL!) as any;
+export const sql = neon(process.env.DATABASE_URL!) as any;
 
-export const db = drizzle(sql);
-import { text, pgSchema } from "drizzle-orm/pg-core";
+console.log(sql);
+
+import { text, pgTable } from "drizzle-orm/pg-core";
 import { customVector } from "@useverk/drizzle-pgvector";
-const mySchema = pgSchema("q");
-export const ans = mySchema.table("a", {
+
+const questions = pgTable("questions", {
   genid: text("genid"),
   image: text("image"),
   embed: customVector("embed", { dimensions: 30 }),
 });
+
+export const db = drizzle(sql, { schema: { questions } });
+
+export const questionsSql = db.query.questions;
 
 export const gquery = async (
   query: string,
