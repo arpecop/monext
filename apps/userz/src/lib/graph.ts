@@ -1,9 +1,7 @@
 import { drizzle } from "drizzle-orm/neon-http";
 
 import { neon } from "@neondatabase/serverless";
-export const sql = neon(process.env.DATABASE_URL!) as any;
-
-console.log(sql);
+const sql = neon(process.env.DATABASE_URL!) as any;
 
 import { text, pgTable } from "drizzle-orm/pg-core";
 import { customVector } from "@useverk/drizzle-pgvector";
