@@ -9,7 +9,7 @@ module.exports = {
       },
     },
   ],
-  documents: ["./src/**/*.tsx", "./src/**/*.ts"],
+
   overwrite: true,
   generates: {
     "./src/generated/graphql.tsx": {

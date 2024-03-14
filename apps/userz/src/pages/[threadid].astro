@@ -26,20 +26,17 @@ function removeHashtags(inputString: string): string {
 
 const respOne = await gquery(
   `query MyQuery($_eq: String ) {
-      similar: quq(args: {genid: "${threadid}"}) {
+    similar: quq(args: {genid: "${threadid}"}) {
     genid
   }
-  single: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "q"}}) {
-    uuid
+  single: q_q(limit: 1, where: {genid: {_eq: $_eq}}) {
     genid
     text
     image
   }
-  answer: questions(limit: 1, where: {genid: {_eq: $_eq}, type: {_eq: "a"}}) {
-    uuid
+  answer: q_a(limit: 1, where: {genid: {_eq: $_eq} }) {
     genid
     text
-    image
   }
    
 }
