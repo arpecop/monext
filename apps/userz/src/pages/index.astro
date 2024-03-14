@@ -3,9 +3,9 @@
 import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
-import { gquery, db,questionz } from "../lib/graph";
+import { gquery} from "../lib/graph";
 
-const x = await db.select().from(questionz).limit(1)
+ 
  
 
  
@@ -54,7 +54,7 @@ const chunksa = chunk(answers, 10) as Data[];
 ---
 
 <Layout title="userz dot net." tags={data.qtags}> 
-  <div class="max-w-screen-xl px-4 py-3 mx-auto"> - {JSON.stringify(x)} -
+  <div class="max-w-screen-xl px-4 py-3 mx-auto"> 
  
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {
