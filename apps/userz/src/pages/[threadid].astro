@@ -28,6 +28,7 @@ const respOne = await gquery(
   `query MyQuery($_eq: String ) {
     similar: quq(args: {genid: "${threadid}"}) {
     genid
+    text
   }
   single: q_q(limit: 1, where: {genid: {_eq: $_eq}}) {
     genid
@@ -38,7 +39,6 @@ const respOne = await gquery(
     genid
     text
   }
-   
 }
 `,
   { _eq: threadid }
@@ -46,21 +46,13 @@ const respOne = await gquery(
 const _eq = JSON.stringify(
   respOne.similar.map((x: { genid: string }) => x.genid)
 );
-
-console.log(respOne.single);
-
+ 
 const respTwo = await gquery(
   `query MyQueryx {
-   
   q_q(where: {genid: {_in: ${_eq}}}) {
     genid
     text
     image
-    embed
-  }
-   q_a(where: {genid: {_in: ${_eq}}}) {
-    genid
-    text
   }
 
 }`,
@@ -85,7 +77,8 @@ const formatter = (text: string) => {
 };
 
 const questions = respTwo.q_q;
-const answers = respTwo.q_a;
+const answers = respOne.similar;
+console.log(answers);
 
 const thread = questions
   .map((x: { text: string; genid: string }, i: number) => ({
