@@ -78,11 +78,11 @@ const formatter = (text: string) => {
 
 const questions = respTwo.q_q;
 const answers = respOne.similar;
-console.log(answers);
+ 
 
 const thread = questions
-  .map((x: { text: string; genid: string }, i: number) => ({
-    q: { text: x.text, genid: x.genid },
+  .map((x: { text: string; genid: string ; image?:string}, i: number) => ({
+    q: { text: x.text, genid: x.genid ,image:x.image},
     a: answers[i]?.text || "",
   }))
   .filter((x: { q: { genid: string } }) => x.q.genid !== threadid) as {
@@ -157,7 +157,7 @@ const split = threadid.split("");
   <Search client:load />
   {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
   {
-    thread.slice(0, 5).map((q) => (
+    thread.map((q) => (
       <article class="prose prose-invert mx-auto">
         <a class="flex items-center" href={"/" + q.q.genid}>
           <h2 class="pl-2 text-gray-200 underline">
