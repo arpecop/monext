@@ -127,9 +127,9 @@ const split = threadid.split("");
   tags={tagzfiltered}
   image={image}
 >
-  {
-    image && image !== "none" ? (
+  { image && image !== "none" ? (
       <div class="relative">
+         
         <img
           src={`https://cdn2.userz.net/static/out/${split[0]}/${split[1]}/${split[2]}/${threadid}.jpg`}
           width="1250"
@@ -158,12 +158,19 @@ const split = threadid.split("");
   {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
   {
     thread.map((q) => {
-    const img = q.q.image && (<h1>ok</h1>)
+    const spl = q.q.genid.split('');
+    const img = q.q.image && ( <img
+        src={`https://cdn2.userz.net/static/out/${spl[0]}/${spl[1]}/${spl[2]}/${q.q.genid}.jpg`}
+        width="100"
+        class="rounded-md mr-2 -mb-2"
+        alt={question}
+      />)
       return(
       <article class="prose prose-invert mx-auto">
         <a class="flex items-center" href={"/" + q.q.genid}>
+          {img} 
           <h2 class="pl-2 text-gray-200 underline">
-           {img} {q.q.text.replace("?", "")}
+          {q.q.text.replace("?", "")}
           </h2>
         </a>
         {formatter(q.a).map((x) => (
