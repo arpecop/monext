@@ -1,7 +1,7 @@
 import cloudflare from "@astrojs/cloudflare";
 import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
-import auth from 'auth-astro';
+import auth from "auth-astro";
 
 import react from "@astrojs/react";
 
@@ -12,10 +12,10 @@ export default defineConfig({
   integrations: [tailwind(), react(), auth()],
   vite: {
     build: {
-      minify: false
+      minify: false,
     },
     define: {
-      "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2)
-    }
-  }
+      "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
+    },
+  },
 });

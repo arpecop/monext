@@ -1,16 +1,17 @@
 import { text, pgTable } from "drizzle-orm/pg-core";
 import { customVector } from "@useverk/drizzle-pgvector";
+import { Pool } from "@neondatabase/serverless";
 //
+
 export const questionz = pgTable("questions", {
   genid: text("genid"),
   image: text("image"),
   embed: customVector("embed", { dimensions: 30 }),
 });
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/neon-serverless";
 
-const client = postgres(process.env.DATABASE_URL!);
+const client = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle(client);
 
 export const gquery = async (
