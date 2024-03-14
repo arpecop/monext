@@ -4,11 +4,6 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery} from "../lib/graph";
-
- 
- 
-
- 
  
  
 type Data = { genid: string; text: string }[];
@@ -22,7 +17,7 @@ const dayOfYear: number = Math.floor(
 const genid = daysarr[dayOfYear];
 const simOne = await gquery(
   `query MyQuery($_eq: String ) {
-      similar: quq(args: {genid: "${genid}"}) {
+    similar: quq(args: {genid: "${genid}"}) {
     genid
   }
 }
@@ -49,8 +44,8 @@ const data = await gquery(
 );
 
 const { questions, answers } = data;
-const chunks = chunk(questions, 10) as Data[];
-const chunksa = chunk(answers, 10) as Data[];
+const chunks = chunk(questions, 3) as Data[];
+const chunksa = chunk(answers, 3) as Data[];
 ---
 
 <Layout title="userz dot net." tags={data.qtags}> 
