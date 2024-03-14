@@ -86,7 +86,7 @@ const thread = questions
     a: answers[i]?.text || "",
   }))
   .filter((x: { q: { genid: string } }) => x.q.genid !== threadid) as {
-  q: { text: string; genid: string };
+  q: { text: string; genid: string; image?: string  };
   a: string;
 }[];
 
@@ -157,17 +157,19 @@ const split = threadid.split("");
   <Search client:load />
   {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
   {
-    thread.map((q) => (
+    thread.map((q) => {
+    const img = q.q.image && (<h1>ok</h1>)
+      return(
       <article class="prose prose-invert mx-auto">
         <a class="flex items-center" href={"/" + q.q.genid}>
           <h2 class="pl-2 text-gray-200 underline">
-            {q.q.text.replace("?", "")}
+           {img} {q.q.text.replace("?", "")}
           </h2>
         </a>
         {formatter(q.a).map((x) => (
           <p>{x}</p>
         ))}
       </article>
-    ))
+    )})
   }
 </Layout>
