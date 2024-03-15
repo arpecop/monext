@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+html {
+	font-family: "Montserrat", sans-serif;
+	width: 100vw;
+	height: 100%;
+	overflow: hidden;
+}
+
+main {
+	@apply mx-auto w-full;
+}
+
+h1 {
+	@apply text-2xl font-bold md:text-4xl;
+	letter-spacing: -1.125px;
+}
+
+h2 {
+	@apply text-2xl font-bold;
+	letter-spacing: -0.75px;
+}
+
+h3 {
+	font-size: 15px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 24px;
+	letter-spacing: -0.25px;
+}
+
+p {
+	@apply text-foreground;
+	font-size: 13px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: 18px;
+	letter-spacing: -0.1px;
+}
+
+.gutter {
+	scrollbar-gutter: stable;
+}
+
+@layer base {
+	:root {
+		--background: 0 0% 100%;
+		--navbar: 233 31% 17%;
+		--base: 240 27% 98%;
+		--invoice-footer: 231 67% 99%;
+		--invoice-footer-total: 231 20% 27%;
+		--foreground: 233 31% 17%;
+		--card: 0 0% 100%;
+		--card-foreground: 233 31% 17%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 233 31% 17%;
+		--primary: 252 94% 67%;
+		--primary-foreground: 210 20% 98%;
+		--secondary: 220 14.3% 95.9%;
+		--secondary-foreground: 220.9 39.3% 11%;
+		--muted: 220 14.3% 95.9%;
+		--muted-foreground: 220 8.9% 46.1%;
+		--accent: 220 14.3% 95.9%;
+		--accent-foreground: 220.9 39.3% 11%;
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 210 20% 98%;
+		--border: 220 13% 91%;
+		--input: 220 13% 91%;
+		--ring: 252 94% 67%;
+		--radius: 0.75rem;
+	}
+
+	.dark {
+		--background: 233 31% 17%;
+		--base: 233 30% 11%;
+		--invoice-footer: 233 30% 21%;
+		--invoice-footer-total: 228 29% 7%;
+		--foreground: 210 20% 98%;
+		--card: 233 31% 17%;
+		--card-foreground: 210 20% 98%;
+		--popover: 233 31% 17%;
+		--popover-foreground: 210 20% 98%;
+		--primary: 252 94% 67%;
+		--primary-foreground: 210 20% 98%;
+		--secondary: 215 27.9% 16.9%;
+		--secondary-foreground: 210 20% 98%;
+		--muted: 215 27.9% 16.9%;
+		--muted-foreground: 217.9 10.6% 64.9%;
+		--accent: 215 27.9% 16.9%;
+		--accent-foreground: 210 20% 98%;
+		--destructive: 0 62.8% 30.6%;
+		--destructive-foreground: 210 20% 98%;
+		--border: 215 27.9% 16.9%;
+		--input: 215 27.9% 16.9%;
+		--ring: 252 94% 67%;
+	}
+
+	::-webkit-scrollbar {
+		@apply w-4 rounded-full bg-background;
+	}
+
+	::-webkit-scrollbar-track {
+		@apply px-3;
+	}
+
+	::-webkit-scrollbar-thumb {
+		@apply rounded-full border-solid border-background;
+		border-width: 3px;
+		background-color: hsl(252 54% 50%);
+	}
+
+	input {
+		accent-color: hsl(var(--primary));
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-base text-foreground;
+		grid-template-rows: auto 1fr;
+		height: 100%;
+	}
+}

@@ -1,55 +1,110 @@
 ---
-import type { Session } from '@auth/core/types';
-import { Auth, SignOut } from 'auth-astro/components';
-import SEO from './SEO.astro';
+import {  SITE } from "@config";
+import "@styles/base.css";
+import { ViewTransitions } from "astro:transitions";
+
+ 
+
 export interface Props {
-  title: string;
+  title?: string;
+  author?: string;
   description?: string;
+  ogImage?: string;
+  canonicalURL?: string;
+  pubDatetime?: Date;
+  modDatetime?: Date | null;
+  scrollSmooth?: boolean;
 }
 
-const { title, description } = Astro.props;
+const {
+  title = SITE.title,
+  author = SITE.author,
+  description = SITE.desc,
+  ogImage = SITE.ogImage,
+  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  pubDatetime,
+  modDatetime,
+ 
+} = Astro.props;
+
+const socialImageURL = new URL(
+  ogImage ?? SITE.ogImage ?? "og.png",
+  Astro.url.origin
+).href;
 ---
 
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<!doctype html>
+<html
+  lang="bg"
+  class={"scroll-smooth"}
+>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#9EA3FA" />
+
+    <!-- General Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="author" content={author} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={socialImageURL} />
+
+    <!-- Article Published/Modified time -->
+    {
+      pubDatetime && (
+        <meta
+          property="article:published_time"
+          content={pubDatetime.toISOString()}
+        />
+      )
+    }
+    {
+      modDatetime && (
+        <meta
+          property="article:modified_time"
+          content={modDatetime.toISOString()}
+        />
+      )
+    }
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={socialImageURL} />
+
+    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
+      rel="stylesheet"
+    />
 
-    <SEO title={title} description={description || title} />
+    <meta name="theme-color" content="" />
 
-    <title>{title}</title>
+    {
+      // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
+      // include google-site-verification tag in the heading
+      // Learn more: https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag
+      
+    }
+
+    <ViewTransitions />
+
+    <script is:inline src="/toggle-theme.js"></script>
   </head>
-  <body class="flex h-screen flex-col">
-    <header class="top-5 w-full justify-between p-5 flex grow-0">
-      <div class="flex">
-        <h1 class="text-lg text-gray-800 font-extrabold">
-          Д-р М. Новоселска <div class="font-thin text-xs">
-            клиничен психиатър
-          </div>
-        </h1>
-      </div>
-      <Auth>
-        {
-          (session: Session | null) =>
-            session && (
-              <div class="flex justify-center align-middle">
-                <img
-                  src={session.user?.image}
-                  class="rounded-full w-6 h-6 mr-3"
-                />
-                <SignOut class="text-xs">Изход</SignOut>
-              </div>
-            )
-        }
-      </Auth>
-    </header>
-
+  <body>
     <slot />
   </body>
 </html>
