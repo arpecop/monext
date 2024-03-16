@@ -5,6 +5,10 @@ import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery} from "../lib/graph";
  
+ import { db ,Company} from 'astro:db';
+ 
+const comments = await db.select().from(Company);
+console.log(comments);
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
