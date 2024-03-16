@@ -1,14 +1,3 @@
-import { text, pgTable } from "drizzle-orm/pg-core";
-import { customVector } from "@useverk/drizzle-pgvector";
-
-//
-
-export const questionz = pgTable("questions", {
-  genid: text("genid"),
-  image: text("image"),
-  embed: customVector("embed", { dimensions: 30 }),
-});
-
 export const gquery = async (
   query: string,
   variables?: { [key: string]: unknown }

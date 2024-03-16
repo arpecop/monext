@@ -9,7 +9,8 @@ import { gquery} from "../lib/graph";
 import { lucia } from "../lib/lucia";
  
 const sessionId = Astro.cookies.get('session')
- //const { session, user } = await lucia.validateSession(sessionId)
+//const { session, user } = await lucia.validateSession(sessionId.value);
+ 
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();

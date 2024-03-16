@@ -11,16 +11,17 @@ export const Company = defineTable({
 
 export const Users = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
     username: column.text(),
-    email: column.text(),
     name: column.text(),
+    id: column.text({ primaryKey: true }),
+    email: column.text({ unique: true }),
+    password_hash: column.text(),
   },
 });
 const Sessions = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
-    userId: column.number({ references: () => Users.columns.id }),
+    id: column.text({ primaryKey: true }),
+    userId: column.text({ references: () => Users.columns.id, notNull: true }),
     expiresAt: column.number(),
   },
 });
