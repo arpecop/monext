@@ -9,7 +9,7 @@ export const Company = defineTable({
   },
 });
 
-export const UserTable = defineTable({
+export const Users = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
     username: column.text(),
@@ -17,7 +17,13 @@ export const UserTable = defineTable({
     name: column.text(),
   },
 });
-
+const Sessions = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    userId: column.number({ references: () => Users.columns.id }),
+    expiresAt: column.number(),
+  },
+});
 export const JobType = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
@@ -45,5 +51,7 @@ export default defineDb({
     JobPosting,
     Company,
     JobType,
+    Users,
+    Sessions,
   },
 });

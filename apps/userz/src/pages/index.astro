@@ -5,10 +5,11 @@ import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery} from "../lib/graph";
  
- import { db ,Company} from 'astro:db';
  
-const comments = await db.select().from(Company);
-console.log(comments);
+import { lucia } from "../lib/lucia";
+ 
+const sessionId = Astro.cookies.get('session')
+ //const { session, user } = await lucia.validateSession(sessionId)
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
@@ -53,7 +54,7 @@ const chunksa = chunk(answers, 3) as Data[];
 ---
 
 <Layout title="userz dot net." tags={data.qtags}> 
-  <div class="max-w-screen-xl px-4 py-3 mx-auto"> 
+  <div class="max-w-screen-xl px-4 py-3 mx-auto"> -{sessionId}
  
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {
