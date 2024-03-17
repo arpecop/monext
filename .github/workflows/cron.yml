@@ -40,9 +40,6 @@ jobs:
       - name: mediapool
         run: |
           ts-node ./.github/crons/_mediapool.ts
-      - name: darik
-        run: |
-          ts-node ./.github/crons/_darik.ts
       - name: sega
         run: |
           ts-node ./.github/crons/_sega.ts
