@@ -12,7 +12,6 @@ pnpm-lock.yaml
 
 # Next.js x
 .next
-.astro
 out
 
 # Production
