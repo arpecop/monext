@@ -26,7 +26,7 @@ jobs:
           node -v
           echo $APP
           cd ./apps/$APP
-          npm install
+          npm install --force
           npm run build
           npm run export
           rm -rf ./.next/cache ./pnpm*  ../../package.json ../../pnpm* ./package.json
