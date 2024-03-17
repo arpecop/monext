@@ -1,5 +1,5 @@
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
-import { db, Sessions, Users } from "astro:db";
+
 import { Lucia } from "lucia";
 
 //@ts-ignore - missmatch between AstroText and SQLiteColumn
