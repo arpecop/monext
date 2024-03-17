@@ -11,7 +11,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.7",
     "@astrojs/cloudflare": "^9.1.0",
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/ts-plugin": "^1.6.0",
@@ -22,11 +21,9 @@
     "astro": "^4.5.5",
     "astro-icon": "^0.8.2",
     "astro-navbar": "^2.3.1",
-    "graphql": "^16.8.1",
     "kysely": "^0.26.3",
     "lodash": "^4.17.21",
     "lucia": "^2.7.7",
-    "pg": "^8.11.3",
     "stopword": "^2.0.8",
     "tailwindcss": "^3.4.1"
   },
