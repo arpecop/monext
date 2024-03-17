@@ -1,16 +1,13 @@
 {
-    "version": 1,
-    "include": [
-        "/*"
-    ],
-    "exclude": [
-        "/1.txt",
-        "/[id].jpg.txt",
-        "/_astro/_id_.3132b4f7.css",
-        "/_astro/_id_.fea07b7e.css",
-        "/_worker.js",
-        "/ads.js",
-        "/ads.txt",
-        "/amp.js"
-    ]
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/1.txt",
+    "/[id].jpg.txt",
+    "/_astro/_id_.3132b4f7.css",
+    "/_astro/_id_.fea07b7e.css",
+    "/ads.js",
+    "/ads.txt",
+    "/amp.js"
+  ]
 }
