@@ -1,8 +1,18 @@
-import { ApolloClient, InMemoryCache, gql as gqla } from "@apollo/client";
-export const gql = gqla;
-const client = new ApolloClient({
-  uri: "https://hasura.kloun.lol/v1/graphql",
-  cache: new InMemoryCache(),
-});
+export const gql = async (
+  query: string,
+  variables?: { [key: string]: unknown }
+) => {
+  const response = await fetch("https://hasura.kloun.lol/v1/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+  });
 
-export default client;
+  const json = await response.json();
+  if (json.errors) throw new Error(JSON.stringify(json.errors));
+
+  return Promise.resolve(json.data);
+};
