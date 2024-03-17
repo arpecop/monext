@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
+        with:
+          node-version: 21
       - name: 🔽 Checkout
         uses: actions/checkout@v3
       - name: 🧐 Load .env file
@@ -13,8 +15,6 @@ jobs:
           path: ./
           mode: ""
       - name: 😳 Build
-        with:
-          node-version: 20
         env:
           DB_URL2: ${{ secrets.DB_URL2 }}
           DB_URL: ${{ secrets.DB_URL }}
