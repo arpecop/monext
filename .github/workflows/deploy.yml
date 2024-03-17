@@ -8,13 +8,15 @@ jobs:
         with:
           node-version: 21
       - name: 🔽 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.0
       - name: 🧐 Load .env file
         uses: xom9ikk/dotenv@v2
         with:
           path: ./
           mode: ""
       - name: 😳 Build
+        with:
+          node-version: 21
         env:
           DB_URL2: ${{ secrets.DB_URL2 }}
           DB_URL: ${{ secrets.DB_URL }}
