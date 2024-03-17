@@ -2,6 +2,7 @@ name: Deploy
 on: push
 jobs:
   build:
+    go-version: 1.17
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
@@ -15,8 +16,7 @@ jobs:
           path: ./
           mode: ""
       - name: 😳 Build
-        with:
-          node-version: 21
+
         env:
           DB_URL2: ${{ secrets.DB_URL2 }}
           DB_URL: ${{ secrets.DB_URL }}
