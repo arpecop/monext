@@ -2,7 +2,7 @@
 export const prerender = false;
 import { uniqBy } from "lodash";
 
-import client, { gql } from "../../../../../data/hasura";
+import { gql } from "../../../../../data/hasura";
 import CardNews from "../../../../components/CardNews.astro";
 import RudSense from "../../../../components/RudSense.astro";
 import Layout from "../../../../layouts/Layout.astro";
@@ -13,8 +13,7 @@ function countAlphanumeric(str: string) {
 }
 const { newsid } = Astro.params as { newsid: string; slug?: string };
 
-const newsfetch = await client.query({
-  query: gql`
+const newsfetch = await gql ( `
     query MyQuery($_eq: String = "", $_lte: String = "") {
       item: newsbg(
         where: { cat: { _eq: "NewsBG" }, nid: { _lte: $_lte } }
@@ -41,12 +40,12 @@ const newsfetch = await client.query({
       }
     }
   `,
-  variables: {
+   {
     _lte: newsid,
   },
-});
+);
 
-const { title, date, html } = newsfetch.data.item[0];
+const { title, date, html } = newsfetch.item[0];
 function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
     if (typeof x === "string") {

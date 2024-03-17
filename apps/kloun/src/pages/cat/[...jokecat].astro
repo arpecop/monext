@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import client, { gql } from "../../../data/hasura";
+import   { gql } from "../../../data/hasura";
 import JokeThumbnail, { Doc } from "../../components/JokeThumbnail.astro";
 import Pagination from "../../components/Pagination.astro";
 import RudSense from "../../components/RudSense.astro";
@@ -11,10 +11,9 @@ const x = jokecat.split("/") as string[];
 const cat = jokecats.find((xx) => xx.slug === x[0])?.cat;
 const pagenum = x[1] ? Number(x[1]) : 1;
 const skip = pagenum * 30 - 30;
-console.log(cat);
+ 
 
-const resp = await client.query({
-  query: gql`
+const resp = await gql( `
     query MyQuery($_eq: String = "", $offset: Int = 10, $_eq1: String = "") {
       jokes(where: { cat: { _eq: $_eq } }, limit: 30, offset: $offset) {
         joke
@@ -26,13 +25,12 @@ const resp = await client.query({
       }
     }
   `,
-  variables: {
+  {
     _eq: `JOKBG_${cat}`,
     _eq1: `JOKBG_${cat}_jokes`,
     offset: skip,
-  },
-});
-const { jokes, aggregator } = resp.data;
+  } );
+const { jokes, aggregator } = resp;
 ---
 
 <Layout

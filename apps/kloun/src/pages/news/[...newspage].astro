@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import client, { gql } from "../../../data/hasura";
+import   { gql } from "../../../data/hasura";
 import CardNews from "../../components/CardNews.astro";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -10,8 +10,7 @@ const { newspage } = Astro.params as { newspage: string };
 const pagenum = newspage ? Number(newspage) : 1;
 
 const skip = pagenum * 30 - 30;
-const resp = await client.query({
-  query: gql`
+const resp = await gql( `
     query MyQuery($offset: Int = 0) {
       newsbg(
         where: { cat: { _eq: "NewsBG" } }
@@ -30,11 +29,10 @@ const resp = await client.query({
       }
     }
   `,
-  variables: {
+  {
     offset: skip,
-  },
-});
-console.log(resp);
+  } );
+ 
 ---
 
 <Layout

@@ -1,9 +1,10 @@
 ---
 export const prerender = false;
 
-import { chunk } from "lodash";
+import pkg from 'lodash';
+const {chunk} = pkg;
 
-import client, { gql } from "../../../data/hasura";
+import  { gql } from "../../../data/hasura";
 import FacebookShare from "../../components/FacebookShare.astro";
 import FormatJoke from "../../components/FormatJoke.astro";
 import JokeThumbnail from "../../components/JokeThumbnail.astro";
@@ -12,8 +13,7 @@ import Layout from "../../layouts/Layout.astro";
 
 const { jokeid } = Astro.params;
 
-const resp = await client.query({
-  query: gql`
+const resp =   await gql( `
     query MyQuery($_lte: String = "") {
       jokes(limit: 31, where: { lang: { _eq: "bg" }, uid: { _lte: $_lte } }) {
         joke
@@ -22,14 +22,14 @@ const resp = await client.query({
       }
     }
   `,
-  variables: {
+  {
     _lte: jokeid,
   },
-});
+ );
 
-const joke = resp.data.jokes[0];
+const joke = resp.jokes[0];
 
-const jokes = resp.data.jokes.filter(
+const jokes = resp.jokes.filter(
   (x: { uid: string }) => x.uid !== jokeid
 ) as { joke: string; cat: string; _id: string }[];
 const chunks = chunk(jokes, 3);
