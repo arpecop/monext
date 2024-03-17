@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port=3000 --remote",
-    "start": "astro dev",
-    "build": "astro build",
+    "start": "astro dev --remote",
+    "build": "astro build  --remote",
     "export": "mkdir ./.next && cp -a ./dist ./out",
     "preview": "wrangler pages dev ./dist",
     "astro": "astro",
