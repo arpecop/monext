@@ -5,8 +5,13 @@ import tailwind from "@astrojs/tailwind";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  adapter: cloudflare({ mode: "directory" }),
-  integrations: [tailwind()],
+  adapter: cloudflare(),
+  server: { port: 3000, host: true },
+  integrations: [
+    tailwind({
+      config: { applyBaseStyles: false },
+    }),
+  ],
   vite: {
     build: {
       minify: false,
