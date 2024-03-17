@@ -10079,17 +10079,16 @@ var require_chunk = __commonJS({
   }
 });
 
-// dist/$server_build/chunks/pages/index_BKpgnZaI.mjs
-var index_BKpgnZaI_exports = {};
-__export(index_BKpgnZaI_exports, {
+// dist/$server_build/chunks/pages/index_BqeVm-hZ.mjs
+var index_BqeVm_hZ_exports = {};
+__export(index_BqeVm_hZ_exports, {
   default: () => $$Index,
   file: () => $$file3,
-  prerender: () => prerender3,
   url: () => $$url3
 });
-var import_chunk, daysarr, $$Astro4, prerender3, $$Index, $$file3, $$url3;
-var init_index_BKpgnZaI = __esm({
-  "dist/$server_build/chunks/pages/index_BKpgnZaI.mjs"() {
+var import_chunk, daysarr, $$Astro4, $$Index, $$file3, $$url3;
+var init_index_BqeVm_hZ = __esm({
+  "dist/$server_build/chunks/pages/index_BqeVm-hZ.mjs"() {
     "use strict";
     init_astro_sKHNJ3WQ();
     init_colors();
@@ -10499,7 +10498,6 @@ var init_index_BKpgnZaI = __esm({
       "000b1f1d"
     ];
     $$Astro4 = createAstro();
-    prerender3 = false;
     $$Index = createComponent(async ($$result, $$props, $$slots) => {
       const Astro2 = $$result.createAstro($$Astro4, $$props, $$slots);
       Astro2.self = $$Index;
@@ -10509,7 +10507,7 @@ var init_index_BKpgnZaI = __esm({
       );
       const genid = daysarr[dayOfYear];
       const simOne = await gquery(
-        `query MyQuery($_eq: String ) {
+        `query MyQuery($_eq: String ) @cached {
     similar: quq(args: {genid: "${genid}"}) {
     genid
   }
@@ -10545,25 +10543,25 @@ var init_index_BKpgnZaI = __esm({
   }
 });
 
-// dist/$server_build/chunks/index_BqEbS5kB.mjs
-var index_BqEbS5kB_exports = {};
-__export(index_BqEbS5kB_exports, {
+// dist/$server_build/chunks/index_Dw8UPmbP.mjs
+var index_Dw8UPmbP_exports = {};
+__export(index_Dw8UPmbP_exports, {
   page: () => page4,
   renderers: () => renderers
 });
 var page4;
-var init_index_BqEbS5kB = __esm({
-  "dist/$server_build/chunks/index_BqEbS5kB.mjs"() {
+var init_index_Dw8UPmbP = __esm({
+  "dist/$server_build/chunks/index_Dw8UPmbP.mjs"() {
     "use strict";
     init_renderers();
-    page4 = () => Promise.resolve().then(() => (init_index_BKpgnZaI(), index_BKpgnZaI_exports));
+    page4 = () => Promise.resolve().then(() => (init_index_BqeVm_hZ(), index_BqeVm_hZ_exports));
   }
 });
 
 // dist/$server_build/_worker.mjs
 init_renderers();
 
-// dist/$server_build/manifest_Ty5F-VFc.mjs
+// dist/$server_build/manifest_DXCwClrL.mjs
 var import_cookie = __toESM(require_cookie(), 1);
 init_colors();
 init_esm();
@@ -10804,7 +10802,7 @@ function flags(options) {
   return options && options.sensitive ? "" : "i";
 }
 
-// dist/$server_build/manifest_Ty5F-VFc.mjs
+// dist/$server_build/manifest_DXCwClrL.mjs
 var dateTimeFormat = new Intl.DateTimeFormat([], {
   hour: "2-digit",
   minute: "2-digit",
@@ -11001,7 +10999,7 @@ function deserializeManifest(serializedManifest) {
     routes
   };
 }
-var manifest = deserializeManifest({ "adapterName": "@astrojs/cloudflare", "routes": [{ "file": "", "links": [], "scripts": [], "styles": [], "routeData": { "type": "endpoint", "isIndex": false, "route": "/_image", "pattern": "^\\/_image$", "segments": [[{ "content": "_image", "dynamic": false, "spread": false }]], "params": [], "component": "../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic.js", "pathname": "/_image", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }, { "file": "", "links": [], "scripts": [], "styles": [{ "type": "external", "src": "/_astro/_threadid_.DY4-YYNx.css" }], "routeData": { "route": "/t/[tag]", "isIndex": false, "type": "page", "pattern": "^\\/t\\/([^/]+?)\\/?$", "segments": [[{ "content": "t", "dynamic": false, "spread": false }], [{ "content": "tag", "dynamic": true, "spread": false }]], "params": ["tag"], "component": "src/pages/t/[tag].astro", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }, { "file": "", "links": [], "scripts": [], "styles": [{ "type": "external", "src": "/_astro/_threadid_.DY4-YYNx.css" }], "routeData": { "route": "/[threadid]", "isIndex": false, "type": "page", "pattern": "^\\/([^/]+?)\\/?$", "segments": [[{ "content": "threadid", "dynamic": true, "spread": false }]], "params": ["threadid"], "component": "src/pages/[threadid].astro", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }, { "file": "", "links": [], "scripts": [], "styles": [{ "type": "external", "src": "/_astro/_threadid_.DY4-YYNx.css" }], "routeData": { "route": "/", "isIndex": true, "type": "page", "pattern": "^\\/$", "segments": [], "params": [], "component": "src/pages/index.astro", "pathname": "/", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }], "base": "/", "trailingSlash": "ignore", "compressHTML": true, "componentMetadata": [["/Users/rudix/Desktop/monext/apps/userz/src/pages/[threadid].astro", { "propagation": "none", "containsHead": true }], ["/Users/rudix/Desktop/monext/apps/userz/src/pages/index.astro", { "propagation": "none", "containsHead": true }], ["/Users/rudix/Desktop/monext/apps/userz/src/pages/t/[tag].astro", { "propagation": "none", "containsHead": true }]], "renderers": [], "clientDirectives": [["idle", '(()=>{var i=t=>{let e=async()=>{await(await t())()};"requestIdleCallback"in window?window.requestIdleCallback(e):setTimeout(e,200)};(self.Astro||(self.Astro={})).idle=i;window.dispatchEvent(new Event("astro:idle"));})();'], ["load", '(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();'], ["media", '(()=>{var s=(i,t)=>{let a=async()=>{await(await i())()};if(t.value){let e=matchMedia(t.value);e.matches?a():e.addEventListener("change",a,{once:!0})}};(self.Astro||(self.Astro={})).media=s;window.dispatchEvent(new Event("astro:media"));})();'], ["only", '(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();'], ["visible", '(()=>{var l=(s,i,o)=>{let r=async()=>{await(await s())()},t=typeof i.value=="object"?i.value:void 0,c={rootMargin:t==null?void 0:t.rootMargin},n=new IntersectionObserver(e=>{for(let a of e)if(a.isIntersecting){n.disconnect(),r();break}},c);for(let e of o.children)n.observe(e)};(self.Astro||(self.Astro={})).visible=l;window.dispatchEvent(new Event("astro:visible"));})();']], "entryModules": { "\0astro-internal:middleware": "_astro-internal_middleware.mjs", "\0@astrojs-ssr-virtual-entry": "_worker.mjs", "\0@astro-renderers": "renderers.mjs", "/src/pages/[threadid].astro": "chunks/pages/_threadid__D0zY-7gY.mjs", "/../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic.js": "chunks/pages/generic_BI1SnPB-.mjs", "/src/pages/index.astro": "chunks/pages/index_BKpgnZaI.mjs", "\0@astrojs-manifest": "manifest_Ty5F-VFc.mjs", "\0@astro-page:../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic@_@js": "chunks/generic_I9bw2KxD.mjs", "\0@astro-page:src/pages/t/[tag]@_@astro": "chunks/_tag__CtuL0ud6.mjs", "\0@astro-page:src/pages/[threadid]@_@astro": "chunks/_threadid__uDyofaKZ.mjs", "\0@astro-page:src/pages/index@_@astro": "chunks/index_BqEbS5kB.mjs", "/Users/rudix/Desktop/monext/apps/userz/src/components/Search": "_astro/Search.UYcR9SEx.js", "astro:scripts/before-hydration.js": "" }, "inlinedScripts": [], "assets": ["/_astro/_threadid_.DY4-YYNx.css", "/[type].ayth.html", "/ailogo.png", "/favicon.ico", "/favicon.svg", "/flow.js", "/logo.png", "/logo2.png", "/logotext.png", "/logotext.svg", "/roboto-regular.woff2", "/roboto.ttf", "/robots.txt", "/sam.html", "/test.js", "/$server_build/_astro-internal_middleware.mjs", "/$server_build/_worker.mjs", "/$server_build/middleware.mjs", "/$server_build/renderers.mjs", "/_astro/Search.UYcR9SEx.js", "/fonts/tilt.ttf", "/$server_build/_astro/_threadid_.DY4-YYNx.css", "/$server_build/chunks/_astro-internal_middleware_CLKuBCZI.mjs", "/$server_build/chunks/_tag__CtuL0ud6.mjs", "/$server_build/chunks/_threadid__uDyofaKZ.mjs", "/$server_build/chunks/astro_sKHNJ3WQ.mjs", "/$server_build/chunks/generic_I9bw2KxD.mjs", "/$server_build/chunks/index_BqEbS5kB.mjs", "/$server_build/chunks/astro/assets-service_CTJs1PP_.mjs", "/$server_build/chunks/pages/_tag__K0V7HO7C.mjs", "/$server_build/chunks/pages/_threadid__D0zY-7gY.mjs", "/$server_build/chunks/pages/generic_BI1SnPB-.mjs", "/$server_build/chunks/pages/index_BKpgnZaI.mjs"], "buildFormat": "directory" });
+var manifest = deserializeManifest({ "adapterName": "@astrojs/cloudflare", "routes": [{ "file": "", "links": [], "scripts": [], "styles": [], "routeData": { "type": "endpoint", "isIndex": false, "route": "/_image", "pattern": "^\\/_image$", "segments": [[{ "content": "_image", "dynamic": false, "spread": false }]], "params": [], "component": "../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic.js", "pathname": "/_image", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }, { "file": "", "links": [], "scripts": [], "styles": [{ "type": "external", "src": "/_astro/_threadid_.DY4-YYNx.css" }], "routeData": { "route": "/t/[tag]", "isIndex": false, "type": "page", "pattern": "^\\/t\\/([^/]+?)\\/?$", "segments": [[{ "content": "t", "dynamic": false, "spread": false }], [{ "content": "tag", "dynamic": true, "spread": false }]], "params": ["tag"], "component": "src/pages/t/[tag].astro", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }, { "file": "", "links": [], "scripts": [], "styles": [{ "type": "external", "src": "/_astro/_threadid_.DY4-YYNx.css" }], "routeData": { "route": "/[threadid]", "isIndex": false, "type": "page", "pattern": "^\\/([^/]+?)\\/?$", "segments": [[{ "content": "threadid", "dynamic": true, "spread": false }]], "params": ["threadid"], "component": "src/pages/[threadid].astro", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }, { "file": "", "links": [], "scripts": [], "styles": [{ "type": "external", "src": "/_astro/_threadid_.DY4-YYNx.css" }], "routeData": { "route": "/", "isIndex": true, "type": "page", "pattern": "^\\/$", "segments": [], "params": [], "component": "src/pages/index.astro", "pathname": "/", "prerender": false, "fallbackRoutes": [], "_meta": { "trailingSlash": "ignore" } } }], "base": "/", "trailingSlash": "ignore", "compressHTML": true, "componentMetadata": [["/Users/rudix/Desktop/monext/apps/userz/src/pages/[threadid].astro", { "propagation": "none", "containsHead": true }], ["/Users/rudix/Desktop/monext/apps/userz/src/pages/index.astro", { "propagation": "none", "containsHead": true }], ["/Users/rudix/Desktop/monext/apps/userz/src/pages/t/[tag].astro", { "propagation": "none", "containsHead": true }]], "renderers": [], "clientDirectives": [["idle", '(()=>{var i=t=>{let e=async()=>{await(await t())()};"requestIdleCallback"in window?window.requestIdleCallback(e):setTimeout(e,200)};(self.Astro||(self.Astro={})).idle=i;window.dispatchEvent(new Event("astro:idle"));})();'], ["load", '(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();'], ["media", '(()=>{var s=(i,t)=>{let a=async()=>{await(await i())()};if(t.value){let e=matchMedia(t.value);e.matches?a():e.addEventListener("change",a,{once:!0})}};(self.Astro||(self.Astro={})).media=s;window.dispatchEvent(new Event("astro:media"));})();'], ["only", '(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();'], ["visible", '(()=>{var l=(s,i,o)=>{let r=async()=>{await(await s())()},t=typeof i.value=="object"?i.value:void 0,c={rootMargin:t==null?void 0:t.rootMargin},n=new IntersectionObserver(e=>{for(let a of e)if(a.isIntersecting){n.disconnect(),r();break}},c);for(let e of o.children)n.observe(e)};(self.Astro||(self.Astro={})).visible=l;window.dispatchEvent(new Event("astro:visible"));})();']], "entryModules": { "\0astro-internal:middleware": "_astro-internal_middleware.mjs", "\0@astrojs-ssr-virtual-entry": "_worker.mjs", "\0@astro-renderers": "renderers.mjs", "/src/pages/[threadid].astro": "chunks/pages/_threadid__D0zY-7gY.mjs", "/../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic.js": "chunks/pages/generic_BI1SnPB-.mjs", "/src/pages/index.astro": "chunks/pages/index_BqeVm-hZ.mjs", "\0@astrojs-manifest": "manifest_DXCwClrL.mjs", "\0@astro-page:../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic@_@js": "chunks/generic_I9bw2KxD.mjs", "\0@astro-page:src/pages/t/[tag]@_@astro": "chunks/_tag__CtuL0ud6.mjs", "\0@astro-page:src/pages/[threadid]@_@astro": "chunks/_threadid__uDyofaKZ.mjs", "\0@astro-page:src/pages/index@_@astro": "chunks/index_Dw8UPmbP.mjs", "/Users/rudix/Desktop/monext/apps/userz/src/components/Search": "_astro/Search.UYcR9SEx.js", "astro:scripts/before-hydration.js": "" }, "inlinedScripts": [], "assets": ["/_astro/_threadid_.DY4-YYNx.css", "/[type].ayth.html", "/ailogo.png", "/favicon.ico", "/favicon.svg", "/flow.js", "/logo.png", "/logo2.png", "/logotext.png", "/logotext.svg", "/roboto-regular.woff2", "/roboto.ttf", "/robots.txt", "/sam.html", "/test.js", "/$server_build/_astro-internal_middleware.mjs", "/$server_build/_worker.mjs", "/$server_build/middleware.mjs", "/$server_build/renderers.mjs", "/_astro/Search.UYcR9SEx.js", "/fonts/tilt.ttf", "/$server_build/_astro/_threadid_.DY4-YYNx.css", "/$server_build/chunks/_astro-internal_middleware_CLKuBCZI.mjs", "/$server_build/chunks/_tag__CtuL0ud6.mjs", "/$server_build/chunks/_threadid__uDyofaKZ.mjs", "/$server_build/chunks/astro_sKHNJ3WQ.mjs", "/$server_build/chunks/generic_I9bw2KxD.mjs", "/$server_build/chunks/index_Dw8UPmbP.mjs", "/$server_build/chunks/astro/assets-service_CTJs1PP_.mjs", "/$server_build/chunks/pages/_tag__K0V7HO7C.mjs", "/$server_build/chunks/pages/_threadid__D0zY-7gY.mjs", "/$server_build/chunks/pages/generic_BI1SnPB-.mjs", "/$server_build/chunks/pages/index_BqeVm-hZ.mjs"], "buildFormat": "directory" });
 
 // dist/$server_build/_worker.mjs
 init_astro_sKHNJ3WQ();
@@ -12860,7 +12858,7 @@ var serverEntrypointModule = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Objec
 var _page0 = () => Promise.resolve().then(() => (init_generic_I9bw2KxD(), generic_I9bw2KxD_exports));
 var _page1 = () => Promise.resolve().then(() => (init_tag_CtuL0ud6(), tag_CtuL0ud6_exports));
 var _page2 = () => Promise.resolve().then(() => (init_threadid_uDyofaKZ(), threadid_uDyofaKZ_exports));
-var _page3 = () => Promise.resolve().then(() => (init_index_BqEbS5kB(), index_BqEbS5kB_exports));
+var _page3 = () => Promise.resolve().then(() => (init_index_Dw8UPmbP(), index_Dw8UPmbP_exports));
 var pageMap = /* @__PURE__ */ new Map([
   ["../../node_modules/.pnpm/astro@4.5.5_@types+node@20.11.28_typescript@5.4.2/node_modules/astro/dist/assets/endpoint/generic.js", _page0],
   ["src/pages/t/[tag].astro", _page1],
