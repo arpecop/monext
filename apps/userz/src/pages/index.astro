@@ -3,7 +3,7 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { l2Distance,cosineDistance,maxInnerProduct } from 'pgvector/drizzle-orm';
-import { gquery,db,eq,q_a,questions,or} from "../lib/graph";
+import { gquery,db,eq,q_a} from "../lib/graph";
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
