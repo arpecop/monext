@@ -1,27 +1,42 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
-import { serial, text, integer, pgSchema } from "drizzle-orm/pg-core";
+import { serial, text, integer, pgSchema, pgTable } from "drizzle-orm/pg-core";
 import axios from "axios";
-const db = drizzle(async (sql, params, method) => {
-  try {
-    const rows = await axios.post("https://sql.kloun.lol/", {
-      sql,
-      params,
-      method,
-    });
-    return { rows: rows.data };
-  } catch (e: any) {
-    console.error("Error from pg proxy server: ", e.response.data);
-    return { rows: [] };
-  }
-});
 
-export const mySchema = pgSchema("q");
-export const q_q = mySchema.table("q", {
-  id: serial("genid").primaryKey(),
+const mySchema = pgSchema("q");
+const q_q = mySchema.table("q", {
+  id: text("genid").primaryKey(),
   text: text("text"),
   image: text("image"),
   rand: integer("rand"),
 });
+const q_a = mySchema.table("a", {
+  id: text("genid").primaryKey(),
+  text: text("text"),
+  image: text("image"),
+  rand: integer("rand"),
+});
+const questions = pgTable("questions", {
+  id: serial("id").primaryKey(),
+  text: text("text"),
+  image: text("image"),
+  rand: integer("rand"),
+});
+export const db = drizzle(
+  async (sql, params, method) => {
+    try {
+      const rows = await axios.post("http://wasp.local:3003", {
+        sql,
+        params,
+        method,
+      });
+      return { rows: rows.data };
+    } catch (e: any) {
+      console.error("Error from pg proxy server: ", e.response.data);
+      return { rows: [] };
+    }
+  },
+  { schema: { q_a, q_q, questions } }
+);
 
 export const gquery = async (
   query: string,
