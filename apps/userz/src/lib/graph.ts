@@ -24,7 +24,7 @@ const questions = pgTable("questions", {
 export const db = drizzle(
   async (sql, params, method) => {
     try {
-      const rows = await axios.post("https://sql.kloun.lol", {
+      const rows = await axios.post("https://sql.kloun.lol/", {
         sql,
         params,
         method,
