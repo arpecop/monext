@@ -35,7 +35,7 @@ export const db = drizzle(
       const json = await rows.json();
       return { rows: json };
     } catch (e: any) {
-      console.error("Error from pg proxy server: ", e.response.data);
+      console.error("Error from pg proxy server: ", e.response);
       return { rows: [] };
     }
   },

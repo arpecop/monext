@@ -4,7 +4,14 @@ import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery,db} from "../lib/graph";
 
-const test = await db.query.questions.findFirst()
+try{
+  const test = await db.query.questions.findFirst()
+  console.log(test);
+} catch(e) {
+  
+}
+
+
  
  
  
@@ -60,7 +67,7 @@ const chunks = chunk(questions, 3) as Data[];
 const chunksa = chunk(answers, 3) as Data[];
 ---
 
-<Layout title="userz dot net." tags={data.qtags}> {JSON.stringify(test)}
+<Layout title="userz dot net." tags={data.qtags}>  
   <div class="max-w-screen-xl px-4 py-3 mx-auto">  
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
