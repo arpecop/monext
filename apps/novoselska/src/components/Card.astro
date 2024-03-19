@@ -1,10 +1,8 @@
 ---
-import type { CollectionEntry } from "astro:content";
-
 export interface Props {
   href?: string;
-  frontmatter: CollectionEntry<"blog">["data"];
-  secHeading?: boolean;
+  title: string;
+  description?: string;
 }
 const { title, description, href } = Astro.props;
 ---

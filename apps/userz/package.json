@@ -23,6 +23,8 @@
     "@prisma/extension-accelerate": "^1.0.0",
     "@tailwindcss/typography": "^0.5.10",
     "astro": "^4.5.5",
+    "axios": "^1.6.8",
+    "drizzle-orm": "^0.30.3",
     "flowbite": "^1.8.1",
     "fortawesome": "0.0.1-security",
     "graphql": "^16.8.1",
