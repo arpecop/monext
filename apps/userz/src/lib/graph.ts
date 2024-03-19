@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
 import { text, integer, pgSchema, pgTable } from "drizzle-orm/pg-core";
-import { vector } from "pgvector/drizzle-orm";
-import { eq, lt, gte, ne, and, or } from "drizzle-orm";
-export { eq, lt, gte, ne, and, or };
+
+import { eq, lt, gte, ne, and, or, sql } from "drizzle-orm";
+export { eq, lt, gte, ne, and, or, sql };
 
 const mySchema = pgSchema("q");
 export const q_q = mySchema.table("q", {
@@ -14,7 +14,6 @@ export const q_q = mySchema.table("q", {
 export const q_a = mySchema.table("a", {
   genid: text("genid").primaryKey(),
   text: text("text"),
-  embed: vector("embed", { dimensions: 30 }),
 });
 export const questions = pgTable("questions", {
   genid: text("genid").primaryKey(),
