@@ -1,6 +1,5 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
 import { serial, text, integer, pgSchema, pgTable } from "drizzle-orm/pg-core";
-import axios from "axios";
 
 const mySchema = pgSchema("q");
 const q_q = mySchema.table("q", {
@@ -24,12 +23,17 @@ const questions = pgTable("questions", {
 export const db = drizzle(
   async (sql, params, method) => {
     try {
-      const rows = await axios.post("http://130.204.65.82:3003", {
-        sql,
-        params,
-        method,
+      const rows = await fetch("http://130.204.65.82:3003", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sql,
+          params,
+          method,
+        }),
       });
-      return { rows: rows.data };
+      const json = await rows.json();
+      return { rows: json };
     } catch (e: any) {
       console.error("Error from pg proxy server: ", e.response.data);
       return { rows: [] };
