@@ -3,12 +3,12 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
 import { gquery,db} from "../lib/graph";
-
+let test 
 try{
-  const test = await db.query.questions.findFirst()
+  test = await db.query.questions.findFirst()
   console.log(test);
 } catch(e) {
-  
+  test = e
 }
 
 
@@ -67,7 +67,7 @@ const chunks = chunk(questions, 3) as Data[];
 const chunksa = chunk(answers, 3) as Data[];
 ---
 
-<Layout title="userz dot net." tags={data.qtags}>  
+<Layout title="userz dot net." tags={data.qtags}>  {JSON.stringify(test)}
   <div class="max-w-screen-xl px-4 py-3 mx-auto">  
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
