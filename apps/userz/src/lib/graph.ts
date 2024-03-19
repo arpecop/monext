@@ -1,24 +1,25 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
-import { serial, text, integer, pgSchema, pgTable } from "drizzle-orm/pg-core";
+import { text, integer, pgSchema, pgTable } from "drizzle-orm/pg-core";
+import { vector } from "pgvector/drizzle-orm";
+import { eq, lt, gte, ne, and, or } from "drizzle-orm";
+export { eq, lt, gte, ne, and, or };
 
 const mySchema = pgSchema("q");
-const q_q = mySchema.table("q", {
-  id: text("genid").primaryKey(),
+export const q_q = mySchema.table("q", {
+  genid: text("genid").primaryKey(),
   text: text("text"),
   image: text("image"),
   rand: integer("rand"),
 });
-const q_a = mySchema.table("a", {
-  id: text("genid").primaryKey(),
+export const q_a = mySchema.table("a", {
+  genid: text("genid").primaryKey(),
   text: text("text"),
-  image: text("image"),
-  rand: integer("rand"),
+  embed: vector("embed", { dimensions: 30 }),
 });
-const questions = pgTable("questions", {
-  id: serial("id").primaryKey(),
+export const questions = pgTable("questions", {
+  genid: text("genid").primaryKey(),
   text: text("text"),
-  image: text("image"),
-  rand: integer("rand"),
+  type: text("type"),
 });
 export const db = drizzle(
   async (sql, params, method) => {
