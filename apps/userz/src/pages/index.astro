@@ -3,7 +3,7 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
  import { sql } from 'drizzle-orm' 
-import { gquery,db,q_a,q_q} from "../lib/graph";
+import { db,q_a,q_q} from "../lib/graph";
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();

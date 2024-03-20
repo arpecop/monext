@@ -6,7 +6,7 @@ export interface Props {
   description?: string;
   logo?: string;
   topic?: string;
-  image?: string;
+  image?: string | null;
   tags?: { hashtag: string; count: number }[];
 }
 const { title, description, logo, tags, topic, image } = Astro.props;

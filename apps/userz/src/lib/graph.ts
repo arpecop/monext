@@ -16,18 +16,24 @@ const mySchema = pgSchema("q");
 const mySchema1 = pgSchema("u");
 export const q_q = mySchema.table("q", {
   genid: text("genid").primaryKey(),
-  text: text("text"),
+  text: text("text").notNull(),
   image: text("image"),
   rand: integer("rand"),
 });
+export const q_qtags = mySchema.table("qtags", {
+  hashtag: text("hashtag").primaryKey(),
+  count: integer("count").notNull(),
+  rows_with_tag: text("rows_with_tag").notNull(),
+});
 export const q_a = mySchema.table("a", {
   genid: text("genid").primaryKey(),
-  text: text("text"),
+  text: text("text").notNull(),
 });
 export const questions = pgTable("questions", {
   genid: text("genid").primaryKey(),
-  text: text("text"),
-  type: text("type"),
+  text: text("text").notNull(),
+  image: text("image"),
+  type: text("type").notNull(),
 });
 export const db = drizzle(
   async (sql, params, method) => {

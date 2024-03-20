@@ -2,10 +2,10 @@
 export const prerender = false;
 import Layout from "../components/Layout.astro";
  
-import { gquery } from "../lib/graph";
-
+ 
+ import { sql } from 'drizzle-orm' 
 const { threadid } = Astro.params as { threadid: string };
-
+import { db,q_a,q_q,eq,questions,q_qtags} from "../lib/graph";
 async function extractUniqueHashtags(
   inputString: string
 ): Promise<{ hashtag: string; count: number }[]> {
@@ -24,50 +24,20 @@ function removeHashtags(inputString: string): string {
     .replace(hashtagRegex, "");
   return stringWithoutHashtags;
 }
-
-const respOne = await gquery(
-  `query MyQuery($_eq: String ) {
-    similar: quq(args: {genid: "${threadid}"}) {
-    genid
-    text
-  }
-  single: q_q(limit: 1, where: {genid: {_eq: $_eq}}) {
-    genid
-    text
-    image
-  }
-  answer: q_a(limit: 1, where: {genid: {_eq: $_eq} }) {
-    genid
-    text
-  }
-}
-`,
-  { _eq: threadid }
-);
-const _eq = JSON.stringify(
-  respOne.similar.map((x: { genid: string }) => x.genid)
-);
  
-const respTwo = await gquery(
-  `query MyQueryx {
-  q_q(where: {genid: {_in: ${_eq}}}) {
-    genid
-    text
-    image
-  }
+const respOne = await db.select().from(questions).where(eq(questions.genid, threadid));
+const similar   =  await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${threadid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${threadid}) LIMIT 30`);
+ 
+const respTwo =  await db.execute(sql`select * from ${q_q}  where genid IN ${ similar.map(x => x.genid)} `)
 
-}`,
-  {}
-);
-
-const image = respOne.single[0]?.image;
-const question = respOne.single[0]?.text;
+const image = respOne.find(x => x.type === 'q')?.image;
+const question = respOne.find(x => x.type === 'q')?.text;
 
 if (!question) {
   return Astro.redirect("/404");
 }
 
-const answer = respOne.answer[0].text;
+const answer =respOne.find(x => x.type === 'a')!.text;
 
 const formatter = (text: string) => {
   let resp = removeHashtags(text)
@@ -77,16 +47,16 @@ const formatter = (text: string) => {
   return resp;
 };
 
-const questions = respTwo.q_q;
-const answers = respOne.similar;
+const questions1 = respTwo;
+const answers = similar;
  
 
-const thread = questions
-  .map((x: { text: string; genid: string ; image?:string}, i: number) => ({
+const thread = questions1
+  .map((x, i) => ({
     q: { text: x.text, genid: x.genid ,image:x.image},
     a: answers[i]?.text || "",
   }))
-  .filter((x: { q: { genid: string } }) => x.q.genid !== threadid) as {
+  .filter((x) => x.q.genid !== threadid) as {
   q: { text: string; genid: string; image?: string  };
   a: string;
 }[];
@@ -94,24 +64,17 @@ const thread = questions
 const flat = await extractUniqueHashtags(
   thread.flatMap((x: { a: any }) => x.a).join(" ")
 );
+ 
 
 let tagzfiltered: { count: number; hashtag: string }[];
 
 if (flat[0]) {
-  const qtags = await gquery(
-    `query MyQuery($_in: [String!] = "") {
-     q_qtags(where: {hashtag: {_in: $_in}}) {
-       count
-       hashtag
-     }
-   }
- `,
-    { _in: flat.map((x) => x.hashtag) }
-  );
-
-  tagzfiltered = qtags.q_qtags
-    .filter((x: { count: number }) => x.count >= 10)
-    .sort((a: { count: number }, z: { count: number }) => {
+ 
+const qtags:{ count: number; hashtag: string }[] =  await db.execute(sql`select hashtag,count from ${q_qtags}  where hashtag IN ${  flat.map((x) => x.hashtag)} `)
+ 
+  tagzfiltered = qtags
+    .filter((x) => x.count >= 10)
+    .sort((a , z) => {
       return z.count - a.count;
     })
     .slice(0, 30);
@@ -151,12 +114,12 @@ const split = threadid.split("");
   }
   <article class="prose prose-invert mx-auto">
     <div class="text-white text-xl font-light">
-      {formatter(answer).map((x) => <p>{x}</p>)}
+      {answer && formatter(answer).map((x) => <p>{x}</p>)}
     </div>
   </article>
 
  
-  {questions[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
+  {thread[0] && <h2 class="text-gray-100 font-bold">Extended FAQ</h2>}
   {
     thread.map((q) => {
     const spl = q.q.genid.split('');
