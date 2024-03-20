@@ -54,7 +54,7 @@ const answers = similar;
 const thread = questions1
   .map((x, i) => ({
     q: { text: x.text, genid: x.genid ,image:x.image},
-    a: answers[i]?.text || "",
+    a: answers.find(y => y.genid === x.genid)?.text,
   }))
   .filter((x) => x.q.genid !== threadid) as {
   q: { text: string; genid: string; image?: string  };
