@@ -17,9 +17,9 @@ const genid = daysarr[dayOfYear];
  
  const   simOne =    await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
 
- console.log(simOne);
+ 
  //const sessionId = Astro.cookies.get('session')
-//const { session, user } = await lucia.validateSession(sessionId.value);
+ //const { session, user } = await lucia.validateSession(sessionId.value);
  
  
  
