@@ -2,8 +2,8 @@
 import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
- 
-import { gquery,db,q_a,sql,lucia} from "../lib/graph";
+ import { sql } from 'drizzle-orm' 
+import { gquery,db,q_a,q_q} from "../lib/graph";
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
@@ -14,39 +14,37 @@ const dayOfYear: number = Math.floor(
     1
 );
 const genid = daysarr[dayOfYear];
+console.log(genid);
  
- const   simOne =    await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
+ const   answers1 =  await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
 
  
- const sessionId = Astro.cookies.get(lucia.sessionCookieName)?.value ?? null;
-const { session, user } = await lucia.validateSession(sessionId);
+//  const sessionId = Astro.cookies.get(lucia.sessionCookieName)?.value ?? null;
+// // const { session, user } = await lucia.validateSession(sessionId);
+//  
+ const ids =  answers1.map(x => x.genid) 
  
  
+ const questions1 = await db.execute(sql`select * from ${q_q}  where genid IN ${ids} `)
  
-
+ 
  
 
 const data = await gquery(
   `query MyQuery( $_in: [String!])  {
-	  questions1: q_q(where: {genid: {_in: $_in}}) {
-		text
-		genid
-	  }
-    answers: q_a(where: {genid: {_in: $_in}}) {
-		text
-		genid
-	  }
+ 
+ 
 	  q_qtags(order_by: {count: desc}, limit: 40) {
 		  count
 		  hashtag
 		}
 	}`,
-  { _in: simOne.map(({ genid }: { genid: string }) => genid) }
+  {  }
 );
 
-const { questions1, answers } = data;
+ 
 const chunks = chunk(questions1, 10) as Data[];
-const chunksa = chunk(answers, 10) as Data[];
+const chunksa = chunk(answers1, 10) as Data[];
 ---
 
 <Layout title="userz dot net." tags={data.qtags}>  
