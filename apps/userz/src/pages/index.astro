@@ -2,8 +2,8 @@
 import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
-import { l2Distance} from 'pgvector/drizzle-orm';
-import { gquery,db,eq,q_a,sql} from "../lib/graph";
+ 
+import { gquery,db,q_a,sql} from "../lib/graph";
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
@@ -15,9 +15,9 @@ const dayOfYear: number = Math.floor(
 );
 const genid = daysarr[dayOfYear];
  
- const   simOne =    await db.select().from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
+ const   simOne =    await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
 
- 
+ console.log(simOne);
  //const sessionId = Astro.cookies.get('session')
 //const { session, user } = await lucia.validateSession(sessionId.value);
  

@@ -23,9 +23,10 @@ export const questions = pgTable("questions", {
 export const db = drizzle(
   async (sql, params, method) => {
     try {
-      const rows = await fetch("https://sql.kloun.lol/", {
+      const rows = await fetch("http://sql.kloun.lol", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify({
           sql,
           params,
