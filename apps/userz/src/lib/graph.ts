@@ -13,6 +13,7 @@ import { eq, lt, gte, ne, and, or, sql } from "drizzle-orm";
 export { eq, lt, gte, ne, and, or, sql };
 
 const mySchema = pgSchema("q");
+const mySchema1 = pgSchema("u");
 export const q_q = mySchema.table("q", {
   genid: text("genid").primaryKey(),
   text: text("text"),
@@ -51,11 +52,11 @@ export const db = drizzle(
   { schema: { q_a, q_q, questions } }
 );
 
-const userTable = pgTable("user", {
+const userTable = mySchema1.table("user", {
   id: text("id").primaryKey(),
 });
 
-const sessionTable = pgTable("session", {
+const sessionTable = mySchema1.table("session", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
