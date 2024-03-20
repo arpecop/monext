@@ -16,6 +16,9 @@ export default defineConfig({
     build: {
       minify: false,
     },
+    optimizeDeps: {
+      exclude: ["oslo"],
+    },
     define: {
       "process.env.DB_URL2": JSON.stringify(process.env.DB_URL2),
       "process.env.DB_URL1": JSON.stringify(process.env.DB_URL1),

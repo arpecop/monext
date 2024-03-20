@@ -1,4 +1,5 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
+import { Lucia } from "lucia";
 import {
   text,
   integer,
@@ -65,6 +66,21 @@ const sessionTable = pgTable("session", {
   }).notNull(),
 });
 const adapter = new DrizzlePostgreSQLAdapter(db, sessionTable, userTable);
+
+export const lucia = new Lucia(adapter, {
+  sessionCookie: {
+    attributes: {
+      // set to `true` when using HTTPS
+      secure: import.meta.env.PROD,
+    },
+  },
+});
+
+declare module "lucia" {
+  interface Register {
+    Lucia: typeof lucia;
+  }
+}
 
 export const gquery = async (
   query: string,

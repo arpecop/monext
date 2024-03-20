@@ -3,7 +3,7 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
  
-import { gquery,db,q_a,sql} from "../lib/graph";
+import { gquery,db,q_a,sql,lucia} from "../lib/graph";
  
 type Data = { genid: string; text: string }[];
 const currentDate = new Date();
@@ -18,8 +18,8 @@ const genid = daysarr[dayOfYear];
  const   simOne =    await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
 
  
- //const sessionId = Astro.cookies.get('session')
- //const { session, user } = await lucia.validateSession(sessionId.value);
+ const sessionId = Astro.cookies.get('session')
+ //const { session, user } = await lucia.validateSession(sessionId);
  
  
  
