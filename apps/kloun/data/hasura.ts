@@ -1,14 +1,7 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
 
 // import { Lucia } from "lucia";
-import {
-  text,
-  integer,
-  pgSchema,
-  pgTable,
-  json,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { text, integer, pgTable, json } from "drizzle-orm/pg-core";
 
 import { eq, lt, gte, ne, and, or, sql, desc } from "drizzle-orm";
 export { eq, lt, gte, ne, and, or, sql, desc };
@@ -24,11 +17,16 @@ export const newsbg = pgTable("newsbg", {
   id: integer("id").primaryKey(),
   nid: text("nid").notNull(),
   title: text("title").notNull(),
-  image: text("image"),
+  image: text("image").notNull(),
   date: text("date"),
   cat: text("cat").notNull(),
   html: json("html"),
   type: text("type").notNull(),
+});
+
+export const agregator = pgTable("newsbg", {
+  cat: text("cat_with_suffix").notNull().primaryKey(),
+  count: integer("total_count").notNull(),
 });
 export const db = drizzle(
   async (sql, params, method) => {

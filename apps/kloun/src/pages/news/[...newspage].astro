@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import   { gql } from "../../../data/hasura";
+import   { db, gql, newsbg ,desc,eq} from "../../../data/hasura";
 import CardNews from "../../components/CardNews.astro";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -10,7 +10,7 @@ const { newspage } = Astro.params as { newspage: string };
 const pagenum = newspage ? Number(newspage) : 1;
 
 const skip = pagenum * 30 - 30;
-const resp = await gql( `
+const respxx = await gql( `
     query MyQuery($offset: Int = 0) {
       newsbg(
         where: { cat: { _eq: "NewsBG" } }
@@ -32,6 +32,12 @@ const resp = await gql( `
   {
     offset: skip,
   } );
+  
+ const respx = await  db
+   .select({id:newsbg.id,nid:newsbg.nid,title:newsbg.title,image:newsbg.image,date:newsbg.date}).from(newsbg)
+   .limit(30)
+   .offset(skip)
+   .where(eq(newsbg.cat, 'NewsBG')).orderBy(desc(newsbg.id))
  
 ---
 
@@ -42,27 +48,19 @@ const resp = await gql( `
 >
   <div class="flex flex-wrap gap-3">
     {
-      resp.data.newsbg.map(
+      respx.map(
         ({
           nid,
           title,
           date,
-          key,
           image,
           id,
-        }: {
-          nid: string;
-          title: string;
-          date: string;
-          key: string;
-          image: string;
-          id: number;
-        }) => (
+        } ) => (
           <CardNews
             title={title}
-            img={image}
+            img={image || null}
             date={date}
-            key={key}
+       
             nid={nid}
             id={id}
           />
@@ -70,10 +68,10 @@ const resp = await gql( `
       )
     }
   </div>
-  <Pagination
+  <!-- <Pagination
     items={resp.data.aggregator[0].total_count}
     currentPage={pagenum}
     pageSize={30}
     prefix="/news/"
-  />
+  /> -->
 </Layout>
