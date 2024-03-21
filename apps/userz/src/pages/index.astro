@@ -3,7 +3,7 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
  import { sql } from 'drizzle-orm' 
-import { db,q_a,questions} from "../lib/graph";
+import { db,q_a,questions,lucia} from "../lib/graph";
  type Thread = {
    q: { text: string; genid: string; image?: string  };
    a: string;
@@ -22,9 +22,9 @@ console.log(genid);
  const   answers1 =  await db.select({genid:q_a.genid}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
 
  
-//  const sessionId = Astro.cookies.get(lucia.sessionCookieName)?.value ?? null;
-// // const { session, user } = await lucia.validateSession(sessionId);
-//  
+ const sessionId = Astro.cookies.get(lucia.sessionCookieName)?.value ?? '';
+ const { session, user } = await lucia.validateSession(sessionId);
+ console.log({ session, user });
  
 
 const respTwo =  await db.execute(sql`select genid,text,type from ${questions}  where genid IN ${ answers1.map(x => x.genid)} `)
@@ -33,7 +33,7 @@ const respTwo =  await db.execute(sql`select genid,text,type from ${questions}  
 
 const  thread= answers1
   .map((x) => ({
-    q: { text: respTwo.find(yz => yz.genid === x.genid && yz.type === 'q')?.text, genid: x.genid ,image:x.image},
+    q: { text: respTwo.find(yz => yz.genid === x.genid && yz.type === 'q')?.text, genid: x.genid },
     a: respTwo.find(yz => yz.genid === x.genid && yz.type === 'a')?.text,
   })) as  Thread[];
  
