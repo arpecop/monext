@@ -6,16 +6,28 @@ import {
   integer,
   pgSchema,
   pgTable,
+  json,
   timestamp,
 } from "drizzle-orm/pg-core";
 
-import { eq, lt, gte, ne, and, or, sql } from "drizzle-orm";
-export { eq, lt, gte, ne, and, or, sql };
+import { eq, lt, gte, ne, and, or, sql, desc } from "drizzle-orm";
+export { eq, lt, gte, ne, and, or, sql, desc };
 
 export const questions = pgTable("questions", {
   genid: text("genid").primaryKey(),
   text: text("text").notNull(),
   image: text("image"),
+  type: text("type").notNull(),
+});
+
+export const newsbg = pgTable("newsbg", {
+  id: integer("id").primaryKey(),
+  nid: text("nid").notNull(),
+  title: text("title").notNull(),
+  image: text("image"),
+  date: text("date"),
+  cat: text("cat").notNull(),
+  html: json("html"),
   type: text("type").notNull(),
 });
 export const db = drizzle(

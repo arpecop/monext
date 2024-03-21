@@ -1,33 +1,20 @@
 ---
 export const prerender = false;
 
-import  { gql } from "../../data/hasura";
+import  {  db,newsbg,eq,desc} from "../../data/hasura";
 import CardNews from "../components/CardNews.astro";
 import CatButton from "../components/CatButton.astro";
 import RudSense from "../components/RudSense.astro";
 import { jokecats } from "../components/utils/data/jokecats.js";
 import Layout from "../layouts/Layout.astro";
 
-const resp =    await gql(`query MyQuery {
-      newsbg(
-        limit: 30
-        order_by: { id: desc }
-        where: { cat: { _eq: "NewsBG" } }
-      ) {
-        date
-        title
-        nid
-        image
-      }
-    }
-  ` );
+ 
   
+ const respx = await  db
+ .select({id:newsbg.id,nid:newsbg.nid,title:newsbg.title,image:newsbg.image,date:newsbg.date}).from(newsbg).limit(30).where(eq(newsbg.cat, 'NewsBG')).orderBy(desc(newsbg.id))
  
  
 
- 
- 
- 
 ---
 
 <Layout
@@ -66,7 +53,7 @@ const resp =    await gql(`query MyQuery {
   <RudSense />
   <div class="flex flex-wrap gap-3">
     {
-      resp.newsbg.map(
+      respx.map(
         ({
           nid,
           title,
