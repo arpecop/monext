@@ -8,7 +8,6 @@ import {
   pgTable,
   timestamp,
 } from "drizzle-orm/pg-core";
-import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 
 import { eq, lt, gte, ne, and, or, sql } from "drizzle-orm";
 export { eq, lt, gte, ne, and, or, sql };
