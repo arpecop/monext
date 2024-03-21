@@ -18,13 +18,13 @@ export const newsbg = pgTable("newsbg", {
   nid: text("nid").notNull(),
   title: text("title").notNull(),
   image: text("image").notNull(),
-  date: text("date"),
+  date: text("date").notNull(),
   cat: text("cat").notNull(),
   html: json("html"),
   type: text("type").notNull(),
 });
 
-export const agregator = pgTable("newsbg", {
+export const agregator = pgTable("aggregator", {
   cat: text("cat_with_suffix").notNull().primaryKey(),
   count: integer("total_count").notNull(),
 });

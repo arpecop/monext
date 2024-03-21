@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import   { db, gql, newsbg ,desc,eq} from "../../../data/hasura";
+import   { db, gql, newsbg ,desc,eq, agregator} from "../../../data/hasura";
 import CardNews from "../../components/CardNews.astro";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -9,35 +9,21 @@ const { newspage } = Astro.params as { newspage: string };
 
 const pagenum = newspage ? Number(newspage) : 1;
 
-const skip = pagenum * 30 - 30;
-const respxx = await gql( `
-    query MyQuery($offset: Int = 0) {
-      newsbg(
-        where: { cat: { _eq: "NewsBG" } }
-        limit: 30
-        order_by: { id: desc }
-        offset: $offset
-      ) {
-        image
-        link
-        title
-        nid
-        date
-      }
-      aggregator(where: { cat_with_suffix: { _eq: "NewsBG_newsbg" } }) {
-        total_count
-      }
-    }
-  `,
-  {
-    offset: skip,
-  } );
+const skip = pagenum * 30 - 30; 
   
- const respx = await  db
+ const respxx =    db
    .select({id:newsbg.id,nid:newsbg.nid,title:newsbg.title,image:newsbg.image,date:newsbg.date}).from(newsbg)
    .limit(30)
    .offset(skip)
    .where(eq(newsbg.cat, 'NewsBG')).orderBy(desc(newsbg.id))
+  const countx =    db
+   .select({count:agregator.count}).from(agregator)
+   .where(eq(agregator.cat, 'NewsBG_newsbg'))
+ 
+   
+  const respx = await Promise.all([respxx,countx]).then((values) => {
+     return({news:values[0],count:values[1][0].count});
+   });
  
 ---
 
@@ -48,7 +34,7 @@ const respxx = await gql( `
 >
   <div class="flex flex-wrap gap-3">
     {
-      respx.map(
+      respx.news.map(
         ({
           nid,
           title,
@@ -58,9 +44,8 @@ const respxx = await gql( `
         } ) => (
           <CardNews
             title={title}
-            img={image || null}
+            img={image}
             date={date}
-       
             nid={nid}
             id={id}
           />
@@ -68,10 +53,10 @@ const respxx = await gql( `
       )
     }
   </div>
-  <!-- <Pagination
-    items={resp.data.aggregator[0].total_count}
+  <Pagination
+    items={respx.count}
     currentPage={pagenum}
     pageSize={30}
     prefix="/news/"
-  /> -->
+  /> 
 </Layout>
