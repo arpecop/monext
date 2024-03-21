@@ -1,4 +1,5 @@
 import { drizzle } from "drizzle-orm/pg-proxy";
+import { Client } from "pg";
 import { Lucia } from "lucia";
 import {
   text,
