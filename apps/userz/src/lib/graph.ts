@@ -39,7 +39,7 @@ export const questions = pgTable("questions", {
 export const db = drizzle(
   async (sql, params, method) => {
     try {
-      const rows = await fetch("https://sqltunnel.kloun.lol", {
+      const rows = await fetch("http://130.204.65.82:3003", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
 
