@@ -3,9 +3,12 @@ import chunk from "lodash/chunk";
 import Layout from "../components/Layout.astro";
 import { daysarr } from "../lib/days";
  import { sql } from 'drizzle-orm' 
-import { db,q_a,q_q} from "../lib/graph";
+import { db,q_a,questions} from "../lib/graph";
+ type Thread = {
+   q: { text: string; genid: string; image?: string  };
+   a: string;
+ }
  
-type Data = { genid: string; text: string }[];
 const currentDate = new Date();
 const dayOfYear: number = Math.floor(
   (currentDate.getTime() -
@@ -16,16 +19,27 @@ const dayOfYear: number = Math.floor(
 const genid = daysarr[dayOfYear];
 console.log(genid);
  
- const   answers1 =  await db.select({genid:q_a.genid,text:q_a.text}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
+ const   answers1 =  await db.select({genid:q_a.genid}).from(q_a).where(sql`genid != ${genid} ORDER BY embed <-> (SELECT embed FROM q.a WHERE genid = ${genid}) LIMIT 30`);
 
  
 //  const sessionId = Astro.cookies.get(lucia.sessionCookieName)?.value ?? null;
 // // const { session, user } = await lucia.validateSession(sessionId);
 //  
-const questions1 = await db.execute(sql`select * from ${q_q}  where genid IN ${ answers1.map(x => x.genid)} `)
  
-const chunks = chunk(questions1, 10) as Data[];
-const chunksa = chunk(answers1, 10) as Data[];
+
+const respTwo =  await db.execute(sql`select genid,text,type from ${questions}  where genid IN ${ answers1.map(x => x.genid)} `)
+
+const filt  = respTwo.filter(x => x.type === 'q')
+ 
+
+const  thread= answers1
+  .map((x) => ({
+    q: { text: respTwo.find(yz => yz.genid === x.genid && yz.type === 'q')?.text, genid: x.genid ,image:x.image},
+    a: respTwo.find(yz => yz.genid === x.genid && yz.type === 'a')?.text,
+  })) as  Thread[];
+ 
+const chunks = chunk(thread, 10) as Thread[][];
+ 
 ---
 
 <Layout title="userz dot net." >  
@@ -33,12 +47,12 @@ const chunksa = chunk(answers1, 10) as Data[];
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {
-        chunks.map((chunk, i) => (
+        chunks.map((chunk) => (
           <div>
-            {chunk.map(({ genid, text }, i1) => (
+            {chunk.map(({ q,a }) => (
               <div class="grid">
                 <a
-                  href={"/" + genid}
+                  href={"/" + q.genid}
                   class="p-6  m-3 border-emerald-600 border-4 rounded-lg shadow hover:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 relative"
                 >
                   <div class="absolute -top-1 -right-0.5 bg-emerald-600 px-2 rounded-bl-md  rounded-tr-lg text-xs text-black">
@@ -46,9 +60,9 @@ const chunksa = chunk(answers1, 10) as Data[];
                   </div>
                   <h5 class="mb-2 text-xl xs:text-2xl sm:text-3xl font-bold tracking-tight text-gray-200">
                     {" "}
-                    {text.replaceAll("?", " ").slice(0, 90)} ...
+                    {q.text.replaceAll("?", " ").slice(0, 90)} ...
                   </h5>
-                  {chunksa[i][i1]?.text.slice(0, 150)} ...
+                  {a.slice(0, 150)} ...
                 </a>
               </div>
             ))}
