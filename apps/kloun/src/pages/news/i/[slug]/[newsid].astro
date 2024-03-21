@@ -1,6 +1,7 @@
 ---
 export const prerender = false;
-import { uniqBy } from "lodash";
+import pkg from 'lodash';
+const {uniqBy} = pkg;
 
 import { gql } from "../../../../../data/hasura";
 import CardNews from "../../../../components/CardNews.astro";
@@ -44,7 +45,7 @@ const newsfetch = await gql ( `
     _lte: newsid,
   },
 );
-
+console.log(newsfetch);
 const { title, date, html } = newsfetch.item[0];
 function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
@@ -177,7 +178,7 @@ if (!html) {
   </div>
   <div class="flex flex-wrap gap-3">
     {
-      newsfetch.data.newsbg.map(({ nid, title, key, date, image, id }) => (
+      newsfetch.newsbg.map(({ nid, title, key, date, image, id }) => (
         <CardNews
           title={title}
           img={image}
