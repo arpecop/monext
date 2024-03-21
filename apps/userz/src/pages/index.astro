@@ -29,7 +29,6 @@ console.log(genid);
 
 const respTwo =  await db.execute(sql`select genid,text,type from ${questions}  where genid IN ${ answers1.map(x => x.genid)} `)
 
-const filt  = respTwo.filter(x => x.type === 'q')
  
 
 const  thread= answers1
