@@ -1,47 +1,34 @@
 ---
 export const prerender = false;
 
-import pkg from 'lodash';
-const {chunk} = pkg;
+ 
 
-import  { gql } from "../../../data/hasura";
+import  {  db,jokes ,eq,lt} from "../../../data/hasura";
 import FacebookShare from "../../components/FacebookShare.astro";
 import FormatJoke from "../../components/FormatJoke.astro";
 import JokeThumbnail from "../../components/JokeThumbnail.astro";
 import RudSense from "../../components/RudSense.astro";
 import Layout from "../../layouts/Layout.astro";
 
-const { jokeid } = Astro.params;
+const jokeid  = Astro.params.jokeid as string ;
+ 
+const joke = await db.select({uid:jokes.uid,joke:jokes.joke,id:jokes.id}).from(jokes).where(eq(jokes.uid, jokeid)).limit(1);
 
-const resp =   await gql( `
-    query MyQuery($_lte: String = "") {
-      jokes(limit: 31, where: { lang: { _eq: "bg" }, uid: { _lte: $_lte } }) {
-        joke
-        uid
-        cat
-      }
-    }
-  `,
-  {
-    _lte: jokeid,
-  },
- );
+const jokez =  await db.select({uid:jokes.uid,joke:jokes.joke,id:jokes.id,cat:jokes.cat}).from(jokes).where(lt(jokes.id, joke[0].id)).limit(30);
+console.log(jokez, joke[0].id);
+ 
 
-const joke = resp.jokes[0];
+ 
+ 
+ 
 
-const jokes = resp.jokes.filter(
-  (x: { uid: string }) => x.uid !== jokeid
-) as { joke: string; cat: string; _id: string }[];
-const chunks = chunk(jokes, 3);
-console.log(chunks);
-
-if (!joke) {
+if (!joke[0]) {
   return new Response("Not Found", {
     status: 404,
     statusText: "Not Found",
   });
 }
-const meta = joke.joke.replaceAll("\n", " ");
+const meta = joke[0].joke.replaceAll("\n", " ");
 ---
 
 <Layout
@@ -53,20 +40,18 @@ const meta = joke.joke.replaceAll("\n", " ");
     <article
       class="mx-auto mb-6 px-10 text-xl leading-relaxed xs:px-2 sm:px-4 lg:w-2/3"
     >
-      <FormatJoke joke={joke.joke} />
+      <FormatJoke joke={joke[0].joke} />
     </article>
     <div class="flex justify-end items-center">
       <FacebookShare url={`https://kloun.lol/joke/${jokeid}`} />
     </div>
   </div>
-  {
-    chunks.map((piece) => (
+  
       <div class="flex flex-wrap">
         <RudSense type="inarticle" />
-        {piece.map((joke: { joke: string; cat: string; _id: string }) => (
+        {jokez.map((joke) => (
           <JokeThumbnail item={joke} showcats={false} short />
         ))}
       </div>
-    ))
-  }
+   
 </Layout>

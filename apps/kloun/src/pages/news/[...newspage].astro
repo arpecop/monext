@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import   { db, gql, newsbg ,desc,eq, agregator} from "../../../data/hasura";
+import   { db,  newsbg ,desc,eq, agregator} from "../../../data/hasura";
 import CardNews from "../../components/CardNews.astro";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -16,7 +16,7 @@ const skip = pagenum * 30 - 30;
    .limit(30)
    .offset(skip)
    .where(eq(newsbg.cat, 'NewsBG')).orderBy(desc(newsbg.id))
-  const countx =    db
+  const countx = db
    .select({count:agregator.count}).from(agregator)
    .where(eq(agregator.cat, 'NewsBG_newsbg'))
  
@@ -47,6 +47,7 @@ const skip = pagenum * 30 - 30;
             img={image}
             date={date}
             nid={nid}
+            key={nid}
             id={id}
           />
         )
