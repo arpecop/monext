@@ -15,13 +15,7 @@ const jokeid  = Astro.params.jokeid as string ;
 const joke = await db.select({uid:jokes.uid,joke:jokes.joke,id:jokes.id}).from(jokes).where(eq(jokes.uid, jokeid)).limit(1);
 
 const jokez =  await db.select({uid:jokes.uid,joke:jokes.joke,id:jokes.id,cat:jokes.cat}).from(jokes).where(lt(jokes.id, joke[0].id)).limit(30);
-console.log(jokez, joke[0].id);
  
-
- 
- 
- 
-
 if (!joke[0]) {
   return new Response("Not Found", {
     status: 404,

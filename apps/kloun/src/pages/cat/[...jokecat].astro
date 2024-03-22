@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import   { gql } from "../../../data/hasura";
+import   { agregator, db, gql,eq ,jokes,desc} from "../../../data/hasura";
 import JokeThumbnail, { Doc } from "../../components/JokeThumbnail.astro";
 import Pagination from "../../components/Pagination.astro";
 import RudSense from "../../components/RudSense.astro";
@@ -12,25 +12,24 @@ const cat = jokecats.find((xx) => xx.slug === x[0])?.cat;
 const pagenum = x[1] ? Number(x[1]) : 1;
 const skip = pagenum * 30 - 30;
  
+ 
+  
 
-const resp = await gql( `
-    query MyQuery($_eq: String = "", $offset: Int = 10, $_eq1: String = "") {
-      jokes(where: { cat: { _eq: $_eq } }, limit: 30, offset: $offset) {
-        joke
-        uid
-      }
-      aggregator(where: { cat_with_suffix: { _eq: $_eq1 } }, limit: 1) {
-        cat_with_suffix
-        total_count
-      }
-    }
-  `,
-  {
-    _eq: `JOKBG_${cat}`,
-    _eq1: `JOKBG_${cat}_jokes`,
-    offset: skip,
-  } );
-const { jokes, aggregator } = resp;
+   const respxx =    db
+     .select({uid:jokes.uid,joke:jokes.joke,id:jokes.id,cat:jokes.cat}).from(jokes)
+     .limit(30)
+     .offset(skip)
+     .where(eq(jokes.cat, `JOKBG_${cat}`)).orderBy(desc(jokes.id))
+    const countx = db
+     .select({count:agregator.count}).from(agregator)
+     .where(eq(agregator.cat, `JOKBG_${cat}_jokes`))
+   
+     
+    const respx = await Promise.all([respxx,countx]).then((values) => {
+       return({jokesmany:values[0],count:values[1][0].count});
+     });
+ 
+const {  jokesmany, count } = respx;
 ---
 
 <Layout
@@ -81,7 +80,7 @@ const { jokes, aggregator } = resp;
       <RudSense />
     </div>
     {
-      jokes.map((item: Doc) => (
+     jokesmany.map((item: Doc) => (
         <JokeThumbnail item={item} showcats={false} short={true} />
       ))
     }
@@ -91,7 +90,7 @@ const { jokes, aggregator } = resp;
   </div>
 
   <Pagination
-    items={aggregator[0].total_count}
+    items={count}
     currentPage={pagenum}
     pageSize={30}
     prefix={`/cat/${x[0]}/`}
