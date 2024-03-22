@@ -20,7 +20,7 @@ export const newsbg = pgTable("newsbg", {
   image: text("image").notNull(),
   date: text("date").notNull(),
   cat: text("cat").notNull(),
-  html: json("html"),
+  html: json("html").notNull(),
   type: text("type").notNull(),
 });
 

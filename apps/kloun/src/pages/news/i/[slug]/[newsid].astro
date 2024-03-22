@@ -3,7 +3,7 @@ export const prerender = false;
 import pkg from 'lodash';
 const {uniqBy} = pkg;
 
-import { gql } from "../../../../../data/hasura";
+import { db,  newsbg,desc,eq,and,lt } from "../../../../../data/hasura";
 import CardNews from "../../../../components/CardNews.astro";
 import RudSense from "../../../../components/RudSense.astro";
 import Layout from "../../../../layouts/Layout.astro";
@@ -14,39 +14,28 @@ function countAlphanumeric(str: string) {
 }
 const { newsid } = Astro.params as { newsid: string; slug?: string };
 
-const newsfetch = await gql ( `
-    query MyQuery($_eq: String = "", $_lte: String = "") {
-      item: newsbg(
-        where: { cat: { _eq: "NewsBG" }, nid: { _lte: $_lte } }
-        limit: 1
-        order_by: { id: desc }
-      ) {
-        html
-        image
-        link
-        nid
-        title
-        date
-      }
-      newsbg(
-        where: { cat: { _eq: "NewsBG" }, nid: { _lte: $_lte } }
-        limit: 21
-        order_by: { id: desc }
-      ) {
-        image
-        link
-        nid
-        title
-        date
-      }
-    }
-  `,
-   {
-    _lte: newsid,
-  },
-);
-console.log(newsfetch);
-const { title, date, html } = newsfetch.item[0];
+ 
+
+const itemx = await db
+ .select({title:newsbg.title,image:newsbg.image, html:newsbg.html, date:newsbg.date, id:newsbg.id}).from(newsbg)
+ .limit(1)
+ .where(and(
+   eq(newsbg.cat, `NewsBG`),
+   eq(newsbg.nid, newsid)
+ ))
+ const { title, date, html,id } = itemx[0];
+const itemz = await db
+  .select({id:newsbg.id,title:newsbg.title,image:newsbg.image, date:newsbg.date, nid:newsbg.nid}).from(newsbg)
+  .limit(20)
+  .where(and(
+    eq(newsbg.cat, `NewsBG`),
+    lt(newsbg.id, id)
+  )).orderBy(desc(newsbg.id))
+ 
+ 
+ 
+
+
 function getLastP(arrz: (string | { type: string; content: string })[]) {
   const arr = arrz.map((x, i) => {
     if (typeof x === "string") {
@@ -91,21 +80,9 @@ function getRandomDate(year: number): Date {
   return new Date(year, month - 1, day, hour);
 }
 
-type Article = {
-  type: string;
-  content: string;
-  i: number;
-  html?: Article;
-}[];
+ 
 
-let contentfetch: Article;
-if (!html) {
-  contentfetch = (await fetch(`https://cdn.kloun.lol/${newsid}.json`).then(
-    (res) => res.json()
-  )) as Article;
-} else {
-  contentfetch = html;
-}
+ 
 ---
 
 <Layout
@@ -130,7 +107,7 @@ if (!html) {
     <RudSense type="inarticle" />
     <article class="leading-relaxed" id="article">
       {
-        getLastP(html || contentfetch.html).map(
+        getLastP(html).map(
           ({
             type,
             content,
@@ -178,13 +155,13 @@ if (!html) {
   </div>
   <div class="flex flex-wrap gap-3">
     {
-      newsfetch.newsbg.map(({ nid, title, key, date, image, id }) => (
+      itemz.map(({ nid, title, date, image, id }) => (
         <CardNews
           title={title}
           img={image}
           id={id}
           date={date || ""}
-          key={key || ""}
+          key={nid || ""}
           nid={nid || ""}
         />
       ))
