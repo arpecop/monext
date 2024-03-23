@@ -1,24 +1,11 @@
 import type { APIRoute } from "astro";
 
-import { gql } from "../../../../data/hasura";
 export const prerender = false;
 
 export const get: APIRoute = async function get({ params }) {
-  const id = params.id || "";
+  const id = params.id as string;
   try {
-    const datax = await gql(
-      `
-       query MyQuery($offset: Int = 0, $_eq: String = "") {
-      newsbg(limit: 30, offset: $offset, where: { nid: { _eq: $_eq } }) {
-        image
-      }
-    }
-  `,
-      {
-        _eq: id,
-      }
-    );
-    const response = await fetch(datax[0].image);
+    const response = await fetch("datax[0].image");
     const buffer = await response.arrayBuffer();
     return new Response(buffer, {
       status: 200,

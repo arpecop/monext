@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import  { gql } from "../../../data/hasura";
+import  { tweets,eq,db,agregator} from "../../../data/hasura";
 import Pagination from "../../components/Pagination.astro";
 import Layout from "../../layouts/Layout.astro";
 const alphabet = [
@@ -36,21 +36,23 @@ const x = twitter ? twitter.split("_") : (["a"] as string[]);
 const pagenum = x[1] ? Number(x[1]) : 1;
 
 const skip = pagenum * 100 - 100;
-
-const resp = await gql( `
-    query MyQuery($_eq: String = "", $_eq1: String = "", $offset: Int = 10) {
-      aggregator(where: { cat_with_suffix: { _eq: $_eq } }, limit: 1) {
-        total_count
-      }
-      tweets(where: { cat: { _eq: $_eq1 } }, limit: 30, offset: $offset) {
-        uid
-      }
-    }
-  `, {
-    _eq1: x[0],
-    _eq: x[0] + "_tweets",
-    offset: skip,
-  } );
+ 
+  
+  const respxx = db
+   .select({uid:tweets.uid,cat:tweets.cat}).from(tweets)
+   .limit(100)
+   .offset(skip)
+   .where(eq(tweets.cat, x[0]))
+  const countx = db
+   .select({count:agregator.count}).from(agregator)
+   .where(eq(agregator.cat, `${x[0]}_tweets`))
+  
+   
+  const respx = await Promise.all([respxx,countx]).then((values) => {
+     return({data:values[0],count:values[1][0].count});
+   });
+   
+  
 ---
 
 <Layout
@@ -71,7 +73,7 @@ const resp = await gql( `
   </div>
   <div class="flex flex-row flex-wrap justify-center p-0 gap-2">
     {
-      resp.data.tweets.map(({ uid }: { uid: string }) => (
+      respx.data.map(({ uid }: { uid: string }) => (
         <a
           class="active flex  bg-slate-900 font-bold text-white dark:bg-white dark:text-slate-900 px-3 rounded-xl text-sm"
           href={"/tw/u/" + uid.replace("_tw", "")}
@@ -82,7 +84,7 @@ const resp = await gql( `
     }
   </div>
   <Pagination
-    items={resp.data.aggregator[0].total_count}
+    items={respx.count}
     currentPage={pagenum}
     pageSize={100}
     prefix={"/tw/" + x[0] + "_"}

@@ -36,6 +36,11 @@ export const jokes = pgTable("jokes", {
   joke: text("joke").notNull(),
   count: integer("total_count").notNull(),
 });
+export const tweets = pgTable("tweets", {
+  uid: text("uid").notNull().primaryKey(),
+  cat: text("cat").notNull(),
+});
+
 export const db = drizzle(
   async (sql, params, method) => {
     try {
